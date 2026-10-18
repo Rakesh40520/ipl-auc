@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gavel: IPL auction with friends</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f1fb;--sf:#fff;--ink:#14122b;--mut:#6b6891;--line:#e1def2;--acc:#5b3df5;--acc2:#ff4d8d;--ok:#12b76a;--bad:#e5484d;--sh:0 10px 30px -12px rgba(60,40,160,.25);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c0b1d;--sf:#15142e;--ink:#f1efff;--mut:#9a97c4;--line:#272552;--acc:#8b73ff;--sh:0 10px 30px -12px rgba(0,0,0,.6);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0c0b1d;--sf:#15142e;--ink:#f1efff;--mut:#9a97c4;--line:#272552;--acc:#8b73ff;--sh:0 10px 30px -12px rgba(0,0,0,.6);color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:500 15px/1.5 "DM Sans",system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+h1,h2,h3,.disp{font-family:"Bricolage Grotesque","DM Sans",system-ui,sans-serif;letter-spacing:-.02em}
+.aur{position:fixed;inset:-20% -10% auto;height:70vh;z-index:0;pointer-events:none;filter:blur(70px);opacity:.35;background:radial-gradient(40% 50% at 25% 40%,var(--acc),transparent),radial-gradient(35% 45% at 75% 30%,var(--acc2),transparent);animation:drift 18s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(4%,6%) scale(1.1)}}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:20px 18px 40px}
+header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 22px}
+.logo{display:flex;gap:10px;align-items:center;font-weight:800;font-size:22px}
+.logo b{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;color:#fff;font-size:18px;transform:rotate(-8deg)}
+.pill{padding:6px 12px;border:1px solid var(--line);border-radius:99px;background:var(--sf);font-size:13px;color:var(--mut)}
+.view{display:none}
+body[data-v="home"] #home,body[data-v="lobby"] #lobby,body[data-v="auction"] #auction{display:block;animation:vin .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes vin{from{opacity:0;transform:translateY(14px) scale(.985)}}
+.card{background:var(--sf);border:1px solid var(--line);border-radius:22px;box-shadow:var(--sh)}
+/* buttons */
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 24px;border:0;border-radius:14px;font:700 15px "DM Sans",sans-serif;color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--acc),#7a5cff 60%,var(--acc2));background-size:160% 100%;transition:transform .15s,box-shadow .25s,background-position .4s,opacity .2s;box-shadow:0 10px 24px -10px var(--acc)}
+.btn:hover{background-position:100% 0;transform:translateY(-2px)}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible,input:focus-visible,.team:focus-visible{outline:3px solid var(--acc2);outline-offset:2px}
+.btn.ghost{background:var(--sf);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn .sp{display:none;width:16px;height:16px;border-radius:50%;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .7s linear infinite}
+.btn.ghost .sp{border-color:var(--line);border-top-color:var(--acc)}
+.btn.loading .sp{display:block}
+.btn.loading{pointer-events:none;filter:saturate(.8)}
+.btn::before{content:"";position:absolute;inset:0;width:var(--p,0%);background:rgba(255,255,255,.28);transition:width .12s linear}
+.rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.5);transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(4);opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn.big{min-height:64px;font-size:19px;width:100%;border-radius:18px}
+/* home */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;padding:20px 0}
+.hero h1{font-size:clamp(38px,6vw,68px);line-height:1;font-weight:800}
+.hero p.sub{color:var(--mut);font-size:18px;max-width:46ch;margin:18px 0 26px}
+.form{padding:22px;display:grid;gap:12px;max-width:440px}
+input{width:100%;height:48px;padding:0 16px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:500 15px "DM Sans",sans-serif;transition:border-color .2s,box-shadow .2s}
+input:focus{border-color:var(--acc);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 20%,transparent);outline:0}
+.or{text-align:center;color:var(--mut);font-size:13px}
+.row2{display:grid;grid-template-columns:1fr auto;gap:10px}
+.demo{padding:22px;position:relative;transform:rotate(2deg);animation:float 6s ease-in-out infinite}
+@keyframes float{50%{transform:rotate(2deg) translateY(-10px)}}
+.demo .big{font-size:52px;font-weight:800;line-height:1}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:99px;font-weight:700;font-size:13px;background:color-mix(in srgb,var(--tc) 18%,transparent);color:var(--ink);border:1px solid color-mix(in srgb,var(--tc) 55%,transparent)}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--tc)}
+.av{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;font:800 24px "Bricolage Grotesque",sans-serif;color:#fff;background:linear-gradient(135deg,var(--acc),var(--acc2))}
+/* lobby */
+.top{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.top h2{font-size:clamp(28px,4vw,40px)}
+.code{font:800 22px "Bricolage Grotesque",sans-serif;letter-spacing:.18em;padding:8px 16px;border:2px dashed var(--line);border-radius:14px;cursor:pointer}
+.teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.team{position:relative;padding:18px;border-radius:20px;border:1.5px solid var(--line);background:var(--sf);cursor:pointer;text-align:left;color:var(--ink);font:inherit;transition:transform .25s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .25s;overflow:hidden}
+.team::after{content:"";position:absolute;inset:auto -20% -60% -20%;height:90%;background:radial-gradient(closest-side,var(--tc),transparent);opacity:.18;transition:opacity .3s,transform .4s}
+.team:hover{transform:translateY(-5px);border-color:var(--tc)}
+.team:hover::after{opacity:.4;transform:translateY(-12%)}
+.team .lg{width:46px;height:46px;border-radius:14px;background:var(--tc);display:grid;place-items:center;font:800 16px "Bricolage Grotesque",sans-serif;color:var(--tx,#fff);margin-bottom:14px}
+.team strong{display:block;font-size:16px}
+.team small{color:var(--mut)}
+.team.mine{border-color:var(--tc);box-shadow:0 0 0 3px color-mix(in srgb,var(--tc) 35%,transparent)}
+.team.taken{opacity:.62;cursor:not-allowed}
+.team.shake{animation:shake .4s}
+.team.pop{animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop{40%{transform:scale(1.06)}}
+.lbar{display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:14px;flex-wrap:wrap}
+/* auction */
+.grid{display:grid;grid-template-columns:300px 1fr 280px;gap:16px}
+.pc{padding:22px;position:relative;overflow:hidden;min-height:420px}
+.pc .av{width:96px;height:96px;border-radius:28px;font-size:36px;margin-bottom:16px}
+.pc h3{font-size:28px;line-height:1.1}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.meta span{padding:4px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--line);font-size:13px}
+.base{margin-top:18px;color:var(--mut);font-size:13px}
+.base b{display:block;color:var(--ink);font:800 24px "Bricolage Grotesque",sans-serif}
+.sk .av,.sk h3,.sk .meta,.sk .base{color:transparent;background:linear-gradient(90deg,var(--line) 30%,var(--bg) 50%,var(--line) 70%);background-size:200% 100%;animation:shim 1.1s linear infinite;border-radius:12px}
+.sk .meta span{opacity:0}
+@keyframes shim{to{background-position:-200% 0}}
+.stage{padding:26px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
+.ringw{position:relative;width:150px;height:150px}
+.ringw svg{transform:rotate(-90deg)}
+.ringw circle{fill:none;stroke-width:9;stroke-linecap:round}
+.rbg{stroke:var(--line)}
+.rfg{stroke:var(--acc);stroke-dasharray:327;transition:stroke-dashoffset .1s linear,stroke .3s}
+.low .rfg{stroke:var(--bad)}
+.low .ringw{animation:beat .6s infinite}
+@keyframes beat{50%{transform:scale(1.05)}}
+.ringw b{position:absolute;inset:0;display:grid;place-items:center;font:800 40px "Bricolage Grotesque",sans-serif}
+.cur{font:800 clamp(44px,7vw,72px)/1 "Bricolage Grotesque",sans-serif}
+.cur.pop{animation:cp .35s}
+@keyframes cp{40%{transform:scale(1.12);color:var(--acc)}}
+.lead{min-height:34px}
+.stamp{position:absolute;inset:0;display:none;place-items:center;z-index:5;background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(4px)}
+.stamp.on{display:grid}
+.stamp div{padding:14px 30px;border:6px solid var(--tc,var(--bad));border-radius:16px;color:var(--tc,var(--bad));font:800 46px "Bricolage Grotesque",sans-serif;transform:rotate(-8deg);text-align:center;animation:st .5s cubic-bezier(.2,1.5,.4,1);background:var(--sf)}
+.stamp small{display:block;font:700 15px "DM Sans",sans-serif;color:var(--ink)}
+@keyframes st{from{transform:rotate(-20deg) scale(2.6);opacity:0}}
+.hist{max-height:170px;overflow:auto;width:100%;display:grid;gap:6px;text-align:left}
+.hist div{display:flex;justify-content:space-between;padding:8px 12px;border-radius:12px;background:var(--bg);animation:hin .35s}
+@keyframes hin{from{opacity:0;transform:translateX(-14px)}}
+.side{padding:14px}
+.side h4{font:700 14px "DM Sans";color:var(--mut);margin:4px 6px 10px}
+.pr{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;transition:background .3s}
+.pr i{width:10px;height:10px;border-radius:50%;background:var(--tc)}
+.pr span{margin-left:auto;font-weight:700;font-size:14px}
+.pr.lead{background:color-mix(in srgb,var(--tc) 18%,transparent)}
+.pr.me{outline:1.5px solid var(--tc)}
+.cf{position:fixed;top:-12px;width:9px;height:14px;border-radius:2px;z-index:50;pointer-events:none;animation:fall 2s ease-in forwards}
+@keyframes fall{to{transform:translate(var(--dx),105vh) rotate(720deg);opacity:.9}}
+.modal{position:fixed;inset:0;z-index:40;display:none;place-items:center;background:rgba(10,8,30,.6);backdrop-filter:blur(6px);padding:18px}
+.modal.on{display:grid}
+.modal .card{padding:26px;max-width:420px;width:100%;animation:vin .4s}
+.modal li{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);list-style:none}
+@media (max-width:940px){.hero,.grid{grid-template-columns:1fr}.demo{display:none}.pc{min-height:0}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body data-v="home">
+<div class="aur"></div>
+<div class="wrap">
+<header><div class="logo"><b>G</b>Gavel</div><span class="pill" id="pill">Prototype · mock data</span></header>
+
+<section class="view" id="home">
+ <div class="hero">
+  <div>
+   <h1>Run your own IPL auction with friends.</h1>
+   <p class="sub">Pick a franchise, set your purse and outbid your mates live. Same teams, same star players.</p>
+   <div class="card form">
+    <input id="nm" placeholder="Your name" maxlength="16" autocomplete="off">
+    <button class="btn" id="mk"><i class="sp"></i><span class="lb">Create room</span></button>
+    <div class="or">or join a friend’s room</div>
+    <div class="row2"><input id="cd" placeholder="Room code" maxlength="5" style="text-transform:uppercase"><button class="btn ghost" id="jn"><i class="sp"></i><span class="lb">Join</span></button></div>
+   </div>
+  </div>
+  <div class="card demo">
+   <div style="display:flex;gap:14px;align-items:center;margin-bottom:18px"><div class="av">VK</div><div><div class="disp" style="font-size:22px;font-weight:800">Virat Kohli</div><div style="color:var(--mut)">Batter · India</div></div></div>
+   <div class="big disp" id="dbid">₹2 Cr</div>
+   <div style="margin-top:14px"><span class="chip" id="dch" style="--tc:#D1121B"><i></i><span>RCB</span></span></div>
+  </div>
+ </div>
+</section>
+
+<section class="view" id="lobby">
+ <div class="top"><div><h2>Pick your franchise</h2><p style="color:var(--mut)">Each team can be claimed once. Friends appear as they join.</p></div><div class="code" id="rc" title="Copy room code">K7Q2X</div></div>
+ <div class="teams" id="teams"></div>
+ <div class="lbar"><span class="pill" id="lst">Waiting for you to pick a team</span><button class="btn" id="go" disabled><i class="sp"></i><span class="lb">Start auction</span></button></div>
+</section>
+
+<section class="view" id="auction">
+ <div class="grid">
+  <div class="card pc" id="pc">
+   <div class="av" id="av"></div><h3 id="pn"></h3>
+   <div class="meta" id="pm"></div>
+   <div class="base">Base price<b id="pb"></b></div>
+   <div class="base" id="pq"></div>
+   <div class="stamp" id="sp"><div id="st"></div></div>
+  </div>
+  <div class="card stage" id="stage">
+   <div class="ringw"><svg viewBox="0 0 120 120" width="150" height="150"><circle class="rbg" cx="60" cy="60" r="52"/><circle class="rfg" id="rf" cx="60" cy="60" r="52"/></svg><b id="tm">10</b></div>
+   <div><div style="color:var(--mut);font-size:13px">Current bid</div><div class="cur" id="cur">₹0</div></div>
+   <div class="lead" id="ld"></div>
+   <button class="btn big" id="bid"><i class="sp"></i><span class="lb">Bid</span></button>
+   <div class="hist" id="hs"></div>
+  </div>
+  <div class="card side"><h4>Purse left</h4><div id="pl"></div></div>
+ </div>
+</section>
+</div>
+
+<div class="modal" id="rs"><div class="card"><h2 class="disp" style="font-size:28px;margin-bottom:4px">Auction complete</h2><p style="color:var(--mut);margin-bottom:14px" id="rsub"></p><ul id="rl"></ul><button class="btn" style="margin-top:18px;width:100%" id="again"><i class="sp"></i><span class="lb">Back to lobby</span></button></div></div>
+
+<script>
+const $=s=>document.querySelector(s),T=[
+["CSK","Chennai Super Kings","#F4C20D","#1a1500"],["MI","Mumbai Indians","#0B8EC9"],["RCB","Royal Challengers","#D1121B"],["KKR","Kolkata Knight Riders","#6A3FA0"],["SRH","Sunrisers Hyderabad","#F26B1D"],["DC","Delhi Capitals","#3B5BDB"],["RR","Rajasthan Royals","#E83E8C"],["PBKS","Punjab Kings","#F25C54"],["LSG","Lucknow Super Giants","#1FA6B5"],["GT","Gujarat Titans","#8296AE"]].map(([c,n,col,tx])=>({c,n,col,tx}));
+const P=[["Virat Kohli","Batter","India"],["Jasprit Bumrah","Bowler","India"],["Rashid Khan","Bowler","Afghanistan"],["Jos Buttler","WK-Batter","England"],["Suryakumar Yadav","Batter","India"],["Hardik Pandya","All-rounder","India"],["Pat Cummins","Bowler","Australia"],["Rishabh Pant","WK-Batter","India"]].map(([n,r,c])=>({n,r,c,base:200}));
+const fmt=l=>l>=100?"₹"+(l/100).toFixed(l%100?2:0).replace(/(\.\d)0$/,"$1")+" Cr":"₹"+l+" L";
+const inc=b=>b<100?5:b<200?10:b<500?20:25;
+const tc=c=>T.find(t=>t.c===c);
+const V=v=>document.body.dataset.v=v;
+// loading buttons: swap label, show spinner, then callback
+function load(b,txt,ms,cb){const l=b.querySelector(".lb"),o=l.textContent;b.classList.add("loading");l.textContent=txt;setTimeout(()=>{b.classList.remove("loading");l.textContent=o;cb&&cb()},ms)}
+document.addEventListener("pointerdown",e=>{const b=e.target.closest(".btn");if(!b)return;const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)/4,d=document.createElement("span");d.className="rip";d.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;b.appendChild(d);setTimeout(()=>d.remove(),600)});
+function tween(el,to){const f=+el.dataset.v||0;el.dataset.v=to;const t0=performance.now();(function g(n){const p=Math.min(1,(n-t0)/350);el.textContent=fmt(Math.round(f+(to-f)*p));if(p<1)requestAnimationFrame(g)})(t0);el.classList.remove("pop");void el.offsetWidth;el.classList.add("pop")}
+// home demo loop
+let dv=200;setInterval(()=>{dv+=20;if(dv>1400)dv=200;const t=T[Math.floor(Math.random()*T.length)];$("#dbid").textContent=fmt(dv);const c=$("#dch");c.style.setProperty("--tc",t.col);c.lastChild.textContent=t.c},1300);
+const S={own:{},me:null,name:"You"};
+$("#mk").onclick=e=>load(e.currentTarget,"Creating room…",1100,()=>{S.name=$("#nm").value.trim()||"You";lobby()});
+$("#jn").onclick=e=>load(e.currentTarget,"Finding room…",1100,()=>{S.name=$("#nm").value.trim()||"You";$("#rc").textContent=($("#cd").value||"K7Q2X").toUpperCase();lobby()});
+$("#rc").onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText($("#rc").textContent).catch(()=>{});$("#lst").textContent="Room code copied"};
+function lobby(){S.own={};S.me=null;$("#go").disabled=true;V("lobby");drawTeams();["Aarav","Meera","Kabir","Isha"].forEach((f,i)=>setTimeout(()=>{const o=T.filter(t=>!S.own[t.c]);const t=o[Math.floor(Math.random()*o.length)];S.own[t.c]=f;drawTeams(t.c);ls()},1200+i*1500))}
+function ls(){const n=Object.keys(S.own).length;$("#lst").textContent=S.me?`${n} of 10 teams claimed`:"Waiting for you to pick a team"}
+function drawTeams(pop){$("#teams").innerHTML=T.map(t=>{const o=S.own[t.c],m=S.me===t.c;return`<button class="team ${m?"mine":""} ${o&&!m?"taken":""} ${pop===t.c?"pop":""}" data-c="${t.c}" style="--tc:${t.col};--tx:${t.tx||"#fff"}"><div class="lg">${t.c}</div><strong>${t.n}</strong><small>${m?S.name+" (you)":o||"Open"}</small></button>`}).join("");document.querySelectorAll(".team").forEach(b=>b.onclick=()=>{const c=b.dataset.c;if(S.own[c]&&S.me!==c){b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake");return}if(S.me)delete S.own[S.me];S.me=c;S.own[c]=S.name;$("#go").disabled=false;drawTeams(c);ls()})}
+$("#go").onclick=e=>{const b=e.currentTarget,l=b.querySelector(".lb");b.classList.add("loading");l.textContent="Filling empty teams…";let p=0;const iv=setInterval(()=>{p+=6;b.style.setProperty("--p",p+"%");if(p>=100){clearInterval(iv);b.classList.remove("loading");b.style.setProperty("--p","0%");l.textContent="Start auction";auction()}},90)};
+// auction
+const A={i:0,bid:0,lead:null,t:10,live:false,purse:{},sq:{},max:{},iv:null};
+function auction(){T.forEach(t=>{A.purse[t.c]=12000;A.sq[t.c]=[]});A.i=0;V("auction");next()}
+function pl(){$("#pl").innerHTML=T.map(t=>`<div class="pr ${A.lead===t.c?"lead":""} ${S.me===t.c?"me":""}" style="--tc:${t.col}"><i></i>${t.c}<span>${fmt(A.purse[t.c])}</span></div>`).join("")}
+function next(){clearInterval(A.iv);$("#sp").classList.remove("on");if(A.i>=P.length)return done();const p=P[A.i];$("#pc").classList.add("sk");$("#bid").disabled=true;A.live=false;pl();
+ setTimeout(()=>{$("#pc").classList.remove("sk");$("#av").textContent=p.n.split(" ").map(w=>w[0]).join("").slice(0,2);$("#pn").textContent=p.n;$("#pm").innerHTML=`<span>${p.r}</span><span>${p.c}</span>${p.c!=="India"?"<span>Overseas</span>":""}`;$("#pb").textContent=fmt(p.base);$("#pq").textContent=`Player ${A.i+1} of ${P.length} · Marquee set`;
+ A.bid=p.base;A.lead=null;A.t=10;A.max={};T.forEach(t=>A.max[t.c]=p.base*(1.5+Math.random()*9));$("#cur").dataset.v=0;tween($("#cur"),p.base);$("#hs").innerHTML="";$("#ld").innerHTML='<span style="color:var(--mut)">Opening bid. Be the first to bid.</span>';A.live=true;ub();pl();A.iv=setInterval(tick,100)},900)}
+function ub(){const b=$("#bid"),n=A.lead?A.bid+inc(A.bid):A.bid,ok=A.live&&A.lead!==S.me&&A.purse[S.me]>=n;b.disabled=!ok;b.querySelector(".lb").textContent=A.lead===S.me?"You lead the bid":"Bid "+fmt(n)}
+function place(c,amt){A.bid=amt;A.lead=c;A.t=10;const t=tc(c);tween($("#cur"),amt);$("#ld").innerHTML=`<span class="chip" style="--tc:${t.col}"><i></i>${t.n}</span>`;const h=document.createElement("div");h.innerHTML=`<span>${t.c}${c===S.me?" (you)":""}</span><b>${fmt(amt)}</b>`;$("#hs").prepend(h);ub();pl()}
+function tick(){if(!A.live)return;A.t=Math.max(0,A.t-.1);$("#tm").textContent=Math.ceil(A.t);$("#rf").style.strokeDashoffset=327*(1-A.t/10);$("#stage").classList.toggle("low",A.t<3.1);
+ if(Math.random()<.1){const n=A.lead?A.bid+inc(A.bid):A.bid,e=T.filter(t=>t.c!==S.me&&t.c!==A.lead&&A.max[t.c]>=n&&A.purse[t.c]>=n);if(e.length&&(A.lead||A.t<8.5))place(e[Math.floor(Math.random()*e.length)].c,n)}
+ if(A.t<=0)sold()}
+$("#bid").onclick=e=>{const b=e.currentTarget,n=A.lead?A.bid+inc(A.bid):A.bid;load(b,"Placing bid…",420,()=>{const m=A.lead?A.bid+inc(A.bid):A.bid;if(A.live&&A.lead!==S.me&&A.purse[S.me]>=m)place(S.me,m);else ub()})};
+function sold(){A.live=false;clearInterval(A.iv);$("#bid").disabled=true;$("#stage").classList.remove("low");const p=P[A.i],s=$("#sp"),st=$("#st");
+ if(A.lead){const t=tc(A.lead);A.purse[A.lead]-=A.bid;A.sq[A.lead].push([p.n,A.bid]);s.style.setProperty("--tc",t.col);st.innerHTML=`SOLD<small>${t.n} · ${fmt(A.bid)}</small>`;if(A.lead===S.me)confetti(t.col)}
+ else{s.style.setProperty("--tc","#8a87a8");st.innerHTML="UNSOLD"}
+ s.classList.add("on");pl();A.i++;setTimeout(next,2400)}
+function confetti(col){const cs=[col,"#ff4d8d","#ffd84d","#5b3df5","#12b76a"];for(let i=0;i<44;i++){const d=document.createElement("i");d.className="cf";d.style.cssText=`left:${Math.random()*100}vw;background:${cs[i%5]};--dx:${(Math.random()-.5)*240}px;animation-delay:${Math.random()*.4}s;animation-duration:${1.6+Math.random()}s`;document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}}
+function done(){const q=A.sq[S.me],sum=q.reduce((a,b)=>a+b[1],0);$("#rsub").textContent=`${tc(S.me).n}: ${q.length} players for ${fmt(sum)}`;$("#rl").innerHTML=q.length?q.map(x=>`<li><span>${x[0]}</span><b>${fmt(x[1])}</b></li>`).join(""):"<li>No players won this time.</li>";$("#rs").classList.add("on")}
+$("#again").onclick=e=>load(e.currentTarget,"Resetting…",700,()=>{$("#rs").classList.remove("on");lobby()});
+</script>
+</body>
+</html>

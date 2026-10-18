@@ -1,0 +1,381 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { AuctionEngine } from './engine.js';
+import { db } from './db.js';
+import {
+  CreateRoomSchema,
+  JoinRoomSchema,
+  ClaimTeamSchema,
+  LeaveTeamSchema,
+  PlaceBidSchema,
+  HostControlSchema
+} from './schema.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Load Teams & Players data
+const TEAMS_PATH = path.resolve(__dirname, '../data/teams.json');
+const PLAYERS_PATH = path.resolve(__dirname, '../data/players.json');
+
+const teamsData = JSON.parse(fs.readFileSync(TEAMS_PATH, 'utf8'));
+const playersData = JSON.parse(fs.readFileSync(PLAYERS_PATH, 'utf8'));
+
+// Characters for clean 5-letter room codes (avoiding confusing I, 1, O, 0)
+const CODE_CHARS = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+
+function generateRoomCode() {
+  let code = '';
+  for (let i = 0; i < 5; i++) {
+    code += CODE_CHARS.charAt(Math.floor(Math.random() * CODE_CHARS.length));
+  }
+  return code;
+}
+
+export class RoomManager {
+  constructor(io = null) {
+    this.io = io;
+    this.activeRooms = new Map(); // roomCode -> AuctionEngine
+  }
+
+  setIO(io) {
+    this.io = io;
+  }
+
+  createRoom({ hostName, userToken, config = {} }) {
+    let roomCode = generateRoomCode();
+    while (this.activeRooms.has(roomCode)) {
+      roomCode = generateRoomCode();
+    }
+
+    const hostToken = userToken || crypto.randomUUID();
+
+    const engine = new AuctionEngine({
+      roomCode,
+      hostToken,
+      hostName,
+      config,
+      teamsData,
+      playersData,
+      emit: (event, payload) => {
+        if (this.io) {
+          this.io.to(roomCode).emit(event, payload);
+        }
+      },
+      db
+    });
+
+    this.activeRooms.set(roomCode, engine);
+    engine.persist();
+
+    return {
+      roomCode,
+      hostToken,
+      hostName,
+      state: engine.getStateSnapshot()
+    };
+  }
+
+  getRoom(code) {
+    if (!code) return null;
+    const cleanCode = code.trim().toUpperCase();
+    if (this.activeRooms.has(cleanCode)) {
+      return this.activeRooms.get(cleanCode);
+    }
+
+    // Attempt to restore from SQLite DB (Server Restart recovery!)
+    const savedRoom = db.getRoom(cleanCode);
+    if (!savedRoom) return null;
+
+    const savedTeams = db.getRoomTeams(cleanCode);
+    const savedResults = db.getResults(cleanCode);
+
+    const engine = new AuctionEngine({
+      roomCode: cleanCode,
+      hostToken: savedRoom.hostToken,
+      hostName: savedRoom.hostName,
+      config: savedRoom.config,
+      teamsData,
+      playersData,
+      emit: (event, payload) => {
+        if (this.io) {
+          this.io.to(cleanCode).emit(event, payload);
+        }
+      },
+      db
+    });
+
+    engine.status = savedRoom.status;
+    engine.currentPlayerIndex = savedRoom.currentPlayerIndex;
+    engine.isAcceleratedRound = savedRoom.isAcceleratedRound;
+    engine.results = savedResults;
+
+    // Restore claimed teams and purses
+    for (const t of savedTeams) {
+      const liveTeam = engine.teams.get(t.code);
+      if (liveTeam) {
+        liveTeam.userToken = t.userToken;
+        liveTeam.userName = t.userName;
+        liveTeam.purse = t.purse;
+        liveTeam.isBot = t.isBot;
+      }
+    }
+
+    // Reconstruct squads from results
+    for (const res of savedResults) {
+      if (res.status === 'sold' && res.teamCode) {
+        const team = engine.teams.get(res.teamCode);
+        const p = playersData.find(x => x.id === res.playerId);
+        if (team && p) {
+          team.squad.push({ ...p, soldPrice: res.amount });
+          if (p.isOverseas) team.overseasCount++;
+        }
+      }
+    }
+
+    this.activeRooms.set(cleanCode, engine);
+    return engine;
+  }
+
+  setupSocketEvents(socket) {
+    // 1. Join room
+    socket.on('join_room', (raw, callback = () => {}) => {
+      const parsed = JoinRoomSchema.safeParse(raw);
+      if (!parsed.success) {
+        const issue = parsed.error.issues?.[0]?.message || 'Invalid input';
+        return callback({ success: false, error: `Invalid input: ${issue}` });
+      }
+
+      const { roomCode, userName, userToken, hostToken } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) {
+        return callback({ success: false, error: 'Room not found. Check code and try again.' });
+      }
+
+      socket.join(roomCode);
+      socket.data.roomCode = roomCode;
+      socket.data.userName = userName;
+      socket.data.userToken = userToken || socket.id;
+
+      // Check if user already owned a team in this room (reconnection!)
+      let reconnectedTeam = null;
+      for (const team of engine.teams.values()) {
+        const matchesToken = team.userToken && team.userToken === socket.data.userToken;
+        const matchesName = team.userName && userName && team.userName.trim().toLowerCase() === userName.trim().toLowerCase();
+        if (matchesToken || matchesName) {
+          reconnectedTeam = team.code;
+          // Re-bind to current socket token so reconnected manager controls the team!
+          team.userToken = socket.data.userToken;
+          team.userName = userName;
+          if (engine.db) {
+            engine.db.saveTeam(engine.roomCode, team);
+          }
+          break;
+        }
+      }
+
+      const isHost = Boolean(
+        socket.data.userToken === engine.hostToken ||
+        (hostToken && hostToken === engine.hostToken) ||
+        (engine.hostName && userName && engine.hostName.trim().toLowerCase() === userName.trim().toLowerCase())
+      );
+
+      socket.data.isHost = isHost;
+
+      callback({
+        success: true,
+        isHost,
+        reconnectedTeam,
+        state: engine.getStateSnapshot()
+      });
+
+      this.io.to(roomCode).emit('user_joined', {
+        userName,
+        reconnectedTeam
+      });
+    });
+
+    // 2. Claim Team
+    socket.on('claim_team', (raw, callback = () => {}) => {
+      const parsed = ClaimTeamSchema.safeParse(raw);
+      if (!parsed.success) {
+        return callback({ success: false, error: 'Invalid claim data' });
+      }
+
+      const { roomCode, teamCode, userToken, userName } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.claimTeam(teamCode, { userToken, userName });
+      if (!res.success) {
+        return callback({ success: false, error: res.reason });
+      }
+
+      callback({ success: true, team: res.team });
+    });
+
+    // 3. Leave Team
+    socket.on('leave_team', (raw, callback = () => {}) => {
+      const parsed = LeaveTeamSchema.safeParse(raw);
+      if (!parsed.success) return callback({ success: false, error: 'Invalid leave data' });
+
+      const { roomCode, teamCode, userToken } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.leaveTeam(teamCode, { userToken });
+      callback(res);
+    });
+
+    // 4. Place Bid
+    socket.on('place_bid', (raw, callback = () => {}) => {
+      const parsed = PlaceBidSchema.safeParse(raw);
+      if (!parsed.success) return callback({ success: false, error: 'Invalid bid data' });
+
+      const { roomCode, teamCode, userToken } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.placeBid({
+        teamCode,
+        userToken,
+        userName: socket.data.userName
+      });
+
+      if (!res.success) {
+        return callback({ success: false, error: res.reason });
+      }
+
+      callback({ success: true, amount: res.amount });
+    });
+
+    // 5. Host Controls
+    socket.on('host_control', (raw, callback = () => {}) => {
+      const parsed = HostControlSchema.safeParse(raw);
+      if (!parsed.success) {
+        return callback({
+          success: false,
+          error: 'Invalid host control data: ' + (parsed.error.issues?.[0]?.message || 'validation failed')
+        });
+      }
+
+      const { roomCode, hostToken, userToken, action, configUpdate } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const isAuthorized = Boolean(
+        socket.data.isHost === true ||
+        (hostToken && engine.hostToken === hostToken) ||
+        (userToken && engine.hostToken === userToken) ||
+        socket.data.userToken === engine.hostToken
+      );
+
+      if (!isAuthorized) {
+        return callback({ success: false, error: 'Unauthorized: only the room host can perform this action' });
+      }
+
+      let res = { success: true };
+      switch (action) {
+        case 'start':
+          res = engine.startAuction();
+          break;
+        case 'pause':
+          res = engine.pauseAuction();
+          break;
+        case 'resume':
+          res = engine.resumeAuction();
+          break;
+        case 'skip':
+        case 'unsold':
+          res = engine.skipPlayer();
+          break;
+        case 'undo':
+          res = engine.undoLastBid();
+          break;
+        case 'sell_now':
+          res = engine.sellNow();
+          break;
+        case 'next_player':
+          res = engine.nextPlayer();
+          break;
+        case 'fill_bots':
+          engine.updateConfig({ botsEnabled: true });
+          engine.fillBots();
+          break;
+        case 'clear_bots':
+          engine.updateConfig({ botsEnabled: false });
+          engine.clearBots();
+          break;
+        case 'toggle_bots':
+          const willEnable = !engine.config.botsEnabled;
+          engine.updateConfig({ botsEnabled: willEnable });
+          if (willEnable) {
+            engine.fillBots();
+          } else {
+            engine.clearBots();
+          }
+          break;
+        case 'update_config':
+          if (configUpdate) {
+            res = engine.updateConfig(configUpdate);
+          }
+          break;
+        case 'close_room':
+          this.io.to(roomCode).emit('room_closed', {
+            reason: 'The host has ended this auction room.'
+          });
+          engine.destroy();
+          this.activeRooms.delete(roomCode);
+          if (db) {
+            db.deleteRoom(roomCode);
+          }
+          res = { success: true };
+          break;
+        case 'release_team':
+          if (parsed.data.teamCode) {
+            const team = engine.teams.get(parsed.data.teamCode);
+            if (team) {
+              team.userToken = null;
+              team.userName = null;
+              team.isBot = false;
+              if (engine.db) {
+                engine.db.saveTeam(roomCode, team);
+              }
+              engine.persist();
+              engine.emit('team_updated', { team: engine.sanitizeTeam(team) });
+              engine.emit('state_sync', engine.getStateSnapshot());
+            }
+          }
+          res = { success: true };
+          break;
+        default:
+          res = { success: false, error: 'Unknown action' };
+      }
+
+      if (!res.success) {
+        return callback({ success: false, error: res.reason || res.error });
+      }
+
+      callback({ success: true, state: engine.getStateSnapshot() });
+    });
+
+    // 6. Leave Room
+    socket.on('leave_room', ({ roomCode, userName } = {}) => {
+      if (roomCode) {
+        socket.leave(roomCode);
+        this.io.to(roomCode).emit('user_left', { userName });
+      }
+    });
+
+    // 7. Request Full State Sync (e.g. after tab blur / network reconnect)
+    socket.on('request_sync', ({ roomCode }, callback = () => {}) => {
+      if (!roomCode) return callback({ success: false });
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+      callback({ success: true, state: engine.getStateSnapshot() });
+    });
+  }
+}
+
+export const roomManager = new RoomManager();

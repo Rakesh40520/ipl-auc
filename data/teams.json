@@ -1,0 +1,102 @@
+[
+  {
+    "code": "CSK",
+    "name": "Chennai Super Kings",
+    "city": "Chennai",
+    "primaryColor": "#F4C20D",
+    "secondaryColor": "#1C3C6D",
+    "accentColor": "#FFE14D",
+    "textColor": "#1A1500",
+    "titles": 5
+  },
+  {
+    "code": "MI",
+    "name": "Mumbai Indians",
+    "city": "Mumbai",
+    "primaryColor": "#0B8EC9",
+    "secondaryColor": "#004BA0",
+    "accentColor": "#D1AB3E",
+    "textColor": "#FFFFFF",
+    "titles": 5
+  },
+  {
+    "code": "RCB",
+    "name": "Royal Challengers Bengaluru",
+    "city": "Bengaluru",
+    "primaryColor": "#D1121B",
+    "secondaryColor": "#1C1C1C",
+    "accentColor": "#E0A922",
+    "textColor": "#FFFFFF",
+    "titles": 0
+  },
+  {
+    "code": "KKR",
+    "name": "Kolkata Knight Riders",
+    "city": "Kolkata",
+    "primaryColor": "#6A3FA0",
+    "secondaryColor": "#3A225D",
+    "accentColor": "#F3C836",
+    "textColor": "#FFFFFF",
+    "titles": 3
+  },
+  {
+    "code": "SRH",
+    "name": "Sunrisers Hyderabad",
+    "city": "Hyderabad",
+    "primaryColor": "#F26B1D",
+    "secondaryColor": "#111111",
+    "accentColor": "#FF8F3D",
+    "textColor": "#FFFFFF",
+    "titles": 1
+  },
+  {
+    "code": "DC",
+    "name": "Delhi Capitals",
+    "city": "Delhi",
+    "primaryColor": "#3B5BDB",
+    "secondaryColor": "#D71920",
+    "accentColor": "#4DABF7",
+    "textColor": "#FFFFFF",
+    "titles": 0
+  },
+  {
+    "code": "RR",
+    "name": "Rajasthan Royals",
+    "city": "Jaipur",
+    "primaryColor": "#E83E8C",
+    "secondaryColor": "#0D2B66",
+    "accentColor": "#F783AC",
+    "textColor": "#FFFFFF",
+    "titles": 1
+  },
+  {
+    "code": "PBKS",
+    "name": "Punjab Kings",
+    "city": "Mohali",
+    "primaryColor": "#F25C54",
+    "secondaryColor": "#A31621",
+    "accentColor": "#D1AB3E",
+    "textColor": "#FFFFFF",
+    "titles": 0
+  },
+  {
+    "code": "LSG",
+    "name": "Lucknow Super Giants",
+    "city": "Lucknow",
+    "primaryColor": "#1FA6B5",
+    "secondaryColor": "#0F525A",
+    "accentColor": "#FF5E3A",
+    "textColor": "#FFFFFF",
+    "titles": 0
+  },
+  {
+    "code": "GT",
+    "name": "Gujarat Titans",
+    "city": "Ahmedabad",
+    "primaryColor": "#1C2B47",
+    "secondaryColor": "#0B1320",
+    "accentColor": "#D1AB3E",
+    "textColor": "#FFFFFF",
+    "titles": 1
+  }
+]

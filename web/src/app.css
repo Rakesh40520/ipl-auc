@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+@theme {
+  --font-heading: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+}
+
+:root {
+  --bg: #0c0b1d;
+  --sf: #15142e;
+  --sf-card: #181635;
+  --ink: #f1efff;
+  --mut: #9a97c4;
+  --line: #272552;
+  --acc: #8b73ff;
+  --acc2: #ff4d8d;
+  --gold: #f4c20d;
+  --bad: #e5484d;
+  --ok: #12b76a;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, .font-heading {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+
+/* Background animated aurora */
+.aurora {
+  position: fixed;
+  inset: -20% -10% auto;
+  height: 70vh;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(80px);
+  opacity: 0.35;
+  background: radial-gradient(40% 50% at 25% 40%, var(--acc), transparent),
+              radial-gradient(35% 45% at 75% 30%, var(--acc2), transparent);
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  to {
+    transform: translate(4%, 6%) scale(1.1);
+  }
+}
+
+/* Modal Dialog Guidance Compliance */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background-color: rgba(10, 8, 30, 0.75);
+  backdrop-filter: blur(8px);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(21, 20, 46, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--acc);
+}
+
+/* SOLD / UNSOLD Stamp Animation */
+@keyframes stampIn {
+  from {
+    transform: rotate(-24deg) scale(2.5);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(-8deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-stamp {
+  animation: stampIn 0.45s cubic-bezier(0.2, 1.5, 0.4, 1) forwards;
+}
+
+/* Pulse beat when timer is low (< 3s) */
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.animate-heartbeat {
+  animation: heartBeat 0.6s infinite ease-in-out;
+}
+
+/* Price pop animation */
+@keyframes pricePop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.12); color: #ffe14d; }
+  100% { transform: scale(1); }
+}
+
+.animate-price-pop {
+  animation: pricePop 0.35s ease-out;
+}
