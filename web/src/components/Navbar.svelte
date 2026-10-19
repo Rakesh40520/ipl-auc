@@ -2,7 +2,7 @@
   import { store } from '../lib/store.svelte.js';
   import { getFranchise } from '../lib/utils.js';
   import { toggleSound, isSoundEnabled } from '../lib/audio.js';
-  import { Volume2, VolumeX, Copy, Check, Users, Trophy, Gavel, LogOut, Swords, Calendar } from 'lucide-svelte';
+  import { Volume2, VolumeX, Copy, Check, Users, Trophy, Gavel, LogOut, Swords, Calendar, Square } from 'lucide-svelte';
 
   let copied = $state(false);
   let soundOn = $state(true);
@@ -122,6 +122,29 @@
         <VolumeX size={16} />
       {/if}
     </button>
+
+    <!-- Host Status Badge -->
+    {#if store.isHost}
+      <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-extrabold uppercase tracking-wider">
+        HOST
+      </span>
+    {/if}
+
+    <!-- Host End Auction Quick Button (Available directly in Header Navbar) -->
+    {#if store.isHost && (store.roomState.status === 'active' || store.roomState.status === 'paused')}
+      <button
+        onclick={() => {
+          if (confirm('Are you sure you want to END the Auction now?\n\nThis will lock all rosters and advance all players to the Playing XI Builder and Tournament Fixtures.')) {
+            store.hostControl('end_auction');
+          }
+        }}
+        title="Host Action: End auction and advance to Playing XI & Fixtures"
+        class="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white rounded-full text-xs font-extrabold transition cursor-pointer shadow-md shadow-red-950/50 border border-red-400/40 animate-pulse"
+      >
+        <Square size={11} class="fill-white" />
+        <span>End Auction</span>
+      </button>
+    {/if}
 
     <!-- Exit Room Button -->
     {#if store.roomCode && store.view !== 'home'}

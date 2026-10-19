@@ -118,7 +118,7 @@
       </span>
     </div>
 
-    <!-- Status / Round Indicator -->
+    <!-- Status / Round Indicator & Host Controls -->
     <div class="flex items-center gap-2">
       {#if store.roomState.status === 'paused'}
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 text-xs font-bold">
@@ -130,6 +130,21 @@
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           <span>LIVE AUCTION</span>
         </span>
+      {/if}
+
+      {#if store.isHost}
+        <button
+          onclick={() => {
+            if (confirm('Are you sure you want to END the Auction now?\n\nThis will lock all rosters and advance all players to the Playing XI Builder and Tournament Fixtures.')) {
+              store.hostControl('end_auction');
+            }
+          }}
+          class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold text-xs flex items-center gap-1.5 transition shadow-lg shadow-red-950/40 border border-red-500/40 cursor-pointer"
+          title="Host Action: End the auction and proceed to Playing XI selection and Fixtures"
+        >
+          <Square size={12} class="fill-white" />
+          <span>End Auction</span>
+        </button>
       {/if}
     </div>
   </div>
@@ -505,14 +520,14 @@
 
           <button
             onclick={() => {
-              if (confirm('Are you sure you want to END the Auction now?\n\nThis will lock all rosters and advance all players to the Playing XI Builder and Head-to-Head 1-on-1 Battle Arena.')) {
+              if (confirm('Are you sure you want to END the Auction now?\n\nThis will lock all rosters and advance all players to the Playing XI Builder and Tournament Fixtures.')) {
                 store.hostControl('end_auction');
               }
             }}
-            class="px-3.5 py-1.5 rounded-lg bg-red-600/30 hover:bg-red-600/50 border border-red-500/60 text-red-200 font-bold flex items-center gap-1.5 transition cursor-pointer shadow-md"
+            class="px-4 py-1.5 rounded-lg bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 border border-red-400 text-white font-extrabold flex items-center gap-1.5 transition cursor-pointer shadow-lg shadow-red-950/60"
             title="End auction and proceed to Playing XI selection and Team Battles"
           >
-            <Square size={13} class="text-red-300 fill-red-400" />
+            <Square size={13} class="fill-white" />
             <span>End Auction</span>
           </button>
 
