@@ -43,6 +43,7 @@ export class AuctionEngine {
         titles: t.titles || 0,
         purse: this.config.defaultPurse,
         squad: [],
+        playingXI: [],
         overseasCount: 0,
         userToken: null,
         userName: null,
@@ -77,6 +78,9 @@ export class AuctionEngine {
     // Transition & Animation guards
     this.transitionTimeout = null;
     this.isTransitioning = false;
+
+    // Post-Auction Head-to-Head 1-on-1 Battle Arena
+    this.activeBattle = null;
   }
 
   // --- LOBBY METHODS ---
@@ -186,6 +190,209 @@ export class AuctionEngine {
     return { success: true };
   }
 
+  endAuction() {
+    this.stopTimer();
+    this.clearTransition();
+    this.status = 'completed';
+
+    // Auto-generate default Playing XI for any franchises that don't have one set yet
+    for (const team of this.teams.values()) {
+      if (!team.playingXI || team.playingXI.length === 0) {
+        team.playingXI = this.generateDefaultPlayingXI(team);
+      }
+    }
+
+    this.emit('auction_status_changed', { status: this.status });
+    this.emit('auction_completed', {
+      results: this.results,
+      teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t)),
+      activeBattle: this.activeBattle
+    });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return { success: true };
+  }
+
+  // Generate a balanced 11 (Max 4 overseas, at least 1 WK, balanced roles)
+  generateDefaultPlayingXI(team) {
+    const squad = team.squad || [];
+    if (squad.length === 0) return [];
+    if (squad.length <= 11) return [...squad];
+
+    const selected = [];
+    let overseasCount = 0;
+
+    const canPick = (p) => {
+      if (selected.some(s => s.id === p.id)) return false;
+      if (p.isOverseas && overseasCount >= 4) return false;
+      return true;
+    };
+
+    const addPlayer = (p) => {
+      selected.push(p);
+      if (p.isOverseas) overseasCount++;
+    };
+
+    // 1. Mandatory Wicketkeeper
+    const wks = squad.filter(p => (p.category === 'wicketkeeper' || p.role === 'WK-Batter') && canPick(p));
+    if (wks.length > 0) addPlayer(wks[0]);
+
+    // 2. Pure Batters (up to 4)
+    const batters = squad.filter(p => (p.category === 'batter' || p.role === 'Batter') && canPick(p));
+    for (const b of batters.slice(0, 4)) {
+      if (canPick(b) && selected.length < 11) addPlayer(b);
+    }
+
+    // 3. All-Rounders (up to 2)
+    const allrounders = squad.filter(p => (p.category === 'allrounder' || p.role === 'All-Rounder') && canPick(p));
+    for (const ar of allrounders.slice(0, 2)) {
+      if (canPick(ar) && selected.length < 11) addPlayer(ar);
+    }
+
+    // 4. Fast Bowlers / Pacers (up to 2)
+    const pacers = squad.filter(p => (p.category === 'pacer' || p.bowlingType === 'Pace') && canPick(p));
+    for (const pac of pacers.slice(0, 2)) {
+      if (canPick(pac) && selected.length < 11) addPlayer(pac);
+    }
+
+    // 5. Spinners (up to 2)
+    const spinners = squad.filter(p => (p.category === 'spinner' || p.bowlingType === 'Spin') && canPick(p));
+    for (const spin of spinners.slice(0, 2)) {
+      if (canPick(spin) && selected.length < 11) addPlayer(spin);
+    }
+
+    // 6. Fill remaining slots from rest of squad respecting overseas <= 4
+    for (const p of squad) {
+      if (selected.length >= 11) break;
+      if (canPick(p)) addPlayer(p);
+    }
+
+    // 7. Safety fallback if overseas cap left empty slots
+    if (selected.length < 11) {
+      for (const p of squad) {
+        if (selected.length >= 11) break;
+        if (!selected.some(s => s.id === p.id)) selected.push(p);
+      }
+    }
+
+    return selected;
+  }
+
+  setPlayingXI(teamCode, { userToken, playingXI }) {
+    const team = this.teams.get(teamCode);
+    if (!team) return { success: false, reason: 'Invalid team' };
+
+    // Auth check: user controls team or host
+    if (team.userToken && team.userToken !== userToken && this.hostToken !== userToken) {
+      return { success: false, reason: 'Unauthorized: you do not manage this franchise' };
+    }
+
+    if (!Array.isArray(playingXI)) {
+      return { success: false, reason: 'Invalid playing XI list' };
+    }
+
+    team.playingXI = playingXI;
+    this.persist();
+    this.emit('team_updated', { team: this.sanitizeTeam(team) });
+    this.emit('playing_xi_updated', {
+      teamCode,
+      playingXI,
+      team: this.sanitizeTeam(team)
+    });
+    this.emit('state_sync', this.getStateSnapshot());
+    return { success: true, playingXI: team.playingXI };
+  }
+
+  // --- HEAD-TO-HEAD BATTLE ARENA & POSITION-BY-POSITION VOTING ---
+
+  initiateBattle({ teamA, teamB, userToken }) {
+    if (!teamA || !teamB || teamA === teamB) {
+      return { success: false, reason: 'Please select two different franchises for comparison' };
+    }
+
+    const tA = this.teams.get(teamA);
+    const tB = this.teams.get(teamB);
+    if (!tA || !tB) {
+      return { success: false, reason: 'One or both franchises do not exist' };
+    }
+
+    // Ensure both teams have a Playing XI
+    if (!tA.playingXI || tA.playingXI.length === 0) {
+      tA.playingXI = this.generateDefaultPlayingXI(tA);
+    }
+    if (!tB.playingXI || tB.playingXI.length === 0) {
+      tB.playingXI = this.generateDefaultPlayingXI(tB);
+    }
+
+    this.activeBattle = {
+      id: `battle-${Date.now()}`,
+      teamA,
+      teamB,
+      currentSlot: 0,
+      votes: {}, // { [slotIndex]: { [voterUserToken]: { voteTeamCode, voterTeamCode } } }
+      initiatedBy: userToken,
+      timestamp: Date.now()
+    };
+
+    this.persist();
+    this.emit('battle_updated', { battle: this.activeBattle });
+    this.emit('state_sync', this.getStateSnapshot());
+    return { success: true, battle: this.activeBattle };
+  }
+
+  castBattleVote({ slotIndex, voteTeamCode, userToken, voterTeamCode }) {
+    if (!this.activeBattle) {
+      return { success: false, reason: 'No active team battle' };
+    }
+
+    const { teamA, teamB } = this.activeBattle;
+    if (voteTeamCode !== teamA && voteTeamCode !== teamB) {
+      return { success: false, reason: 'Vote must be for one of the competing franchises' };
+    }
+
+    // If voter belongs to one of the competing teams, prompt requested remaining teams to vote!
+    const activeHumanTeams = Array.from(this.teams.values()).filter(t => t.userToken && !t.isBot);
+    if (activeHumanTeams.length > 2 && (voterTeamCode === teamA || voterTeamCode === teamB)) {
+      return {
+        success: false,
+        reason: 'As a competing franchise manager, you cannot vote. Only remaining neutral franchises can vote!'
+      };
+    }
+
+    const slotKey = String(slotIndex);
+    if (!this.activeBattle.votes[slotKey]) {
+      this.activeBattle.votes[slotKey] = {};
+    }
+
+    this.activeBattle.votes[slotKey][userToken] = {
+      voteTeamCode,
+      voterTeamCode: voterTeamCode || null,
+      timestamp: Date.now()
+    };
+
+    this.persist();
+    this.emit('battle_updated', { battle: this.activeBattle });
+    this.emit('state_sync', this.getStateSnapshot());
+    return { success: true, battle: this.activeBattle };
+  }
+
+  advanceBattleSlot({ slotIndex }) {
+    if (!this.activeBattle) return { success: false, reason: 'No active battle' };
+    this.activeBattle.currentSlot = Math.max(0, Math.min(10, slotIndex));
+    this.persist();
+    this.emit('battle_updated', { battle: this.activeBattle });
+    this.emit('state_sync', this.getStateSnapshot());
+    return { success: true, battle: this.activeBattle };
+  }
+
+  resetBattle() {
+    this.activeBattle = null;
+    this.persist();
+    this.emit('battle_updated', { battle: null });
+    this.emit('state_sync', this.getStateSnapshot());
+    return { success: true };
+  }
+
   updateConfig(newConfig) {
     this.config = { ...this.config, ...newConfig };
     if (newConfig.botsEnabled === false) {
@@ -222,10 +429,17 @@ export class AuctionEngine {
 
       // Entire auction complete!
       this.status = 'completed';
+      for (const team of this.teams.values()) {
+        if (!team.playingXI || team.playingXI.length === 0) {
+          team.playingXI = this.generateDefaultPlayingXI(team);
+        }
+      }
       this.emit('auction_completed', {
         results: this.results,
-        teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t))
+        teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t)),
+        activeBattle: this.activeBattle
       });
+      this.emit('state_sync', this.getStateSnapshot());
       this.persist();
       return;
     }
@@ -705,6 +919,7 @@ export class AuctionEngine {
       squadCount: team.squad.length,
       overseasCount: team.overseasCount,
       squad: team.squad,
+      playingXI: team.playingXI || [],
       userToken: team.userToken,
       userName: team.userName,
       isBot: team.isBot,
@@ -732,7 +947,8 @@ export class AuctionEngine {
       bidHistory: this.bidHistory,
       teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t)),
       results: this.results,
-      canUndo: Boolean(this.lastBidSnapshot)
+      canUndo: Boolean(this.lastBidSnapshot),
+      activeBattle: this.activeBattle
     };
   }
 

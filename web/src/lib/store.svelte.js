@@ -312,8 +312,23 @@ export class AuctionStore {
       if (payload.teams) {
         this.roomState.teams = payload.teams;
       }
+      if (payload.activeBattle !== undefined) {
+        this.roomState.activeBattle = payload.activeBattle;
+      }
       this.view = 'results';
       triggerConfetti('#f4c20d');
+    });
+
+    this.socket.on('playing_xi_updated', ({ teamCode, playingXI, team }) => {
+      const idx = this.roomState.teams.findIndex(t => t.code === teamCode);
+      if (idx !== -1) {
+        this.roomState.teams[idx].playingXI = playingXI;
+        if (team) this.roomState.teams[idx] = team;
+      }
+    });
+
+    this.socket.on('battle_updated', ({ battle }) => {
+      this.roomState.activeBattle = battle;
     });
 
     this.socket.on('room_closed', ({ reason } = {}) => {
@@ -565,8 +580,81 @@ export class AuctionStore {
       bidHistory: [],
       teams: [],
       results: [],
-      canUndo: false
+      canUndo: false,
+      activeBattle: null
     };
+  }
+
+  setPlayingXI(teamCode, playingXI) {
+    return new Promise((resolve) => {
+      this.socket.emit('set_playing_xi', {
+        roomCode: this.roomCode,
+        teamCode,
+        userToken: this.userToken,
+        playingXI
+      }, (res) => {
+        if (!res.success) {
+          this.notify(res.error || 'Failed to update Playing XI');
+        } else {
+          this.notify('Playing XI saved successfully!');
+        }
+        resolve(res);
+      });
+    });
+  }
+
+  initiateBattle(teamA, teamB) {
+    return new Promise((resolve) => {
+      this.socket.emit('initiate_battle', {
+        roomCode: this.roomCode,
+        teamA,
+        teamB,
+        userToken: this.userToken
+      }, (res) => {
+        if (!res.success) {
+          this.notify(res.error || 'Failed to start battle');
+        } else {
+          this.notify(`Battle Clash: ${teamA} vs ${teamB} initiated!`);
+        }
+        resolve(res);
+      });
+    });
+  }
+
+  castBattleVote(slotIndex, voteTeamCode) {
+    return new Promise((resolve) => {
+      this.socket.emit('cast_battle_vote', {
+        roomCode: this.roomCode,
+        slotIndex,
+        voteTeamCode,
+        userToken: this.userToken,
+        voterTeamCode: this.myTeamCode
+      }, (res) => {
+        if (!res.success) {
+          this.notify(res.error || 'Vote rejected');
+        }
+        resolve(res);
+      });
+    });
+  }
+
+  advanceBattleSlot(slotIndex) {
+    return new Promise((resolve) => {
+      this.socket.emit('advance_battle_slot', {
+        roomCode: this.roomCode,
+        slotIndex,
+        userToken: this.userToken
+      }, resolve);
+    });
+  }
+
+  resetBattle() {
+    return new Promise((resolve) => {
+      this.socket.emit('reset_battle', {
+        roomCode: this.roomCode,
+        userToken: this.userToken
+      }, resolve);
+    });
   }
 
   requestSync() {

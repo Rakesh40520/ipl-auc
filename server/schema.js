@@ -48,6 +48,39 @@ export const HostControlSchema = z.object({
   hostToken: z.string().optional().nullable(),
   userToken: z.string().optional().nullable(),
   teamCode: z.string().optional().nullable(),
-  action: z.enum(['start', 'pause', 'resume', 'skip', 'unsold', 'undo', 'sell_now', 'next_player', 'update_config', 'fill_bots', 'clear_bots', 'toggle_bots', 'close_room', 'release_team']),
+  action: z.enum(['start', 'pause', 'resume', 'skip', 'unsold', 'undo', 'sell_now', 'next_player', 'end', 'end_auction', 'update_config', 'fill_bots', 'clear_bots', 'toggle_bots', 'close_room', 'release_team']),
   configUpdate: RoomConfigSchema.partial().optional().nullable()
+});
+
+export const SetPlayingXISchema = z.object({
+  roomCode: z.string().trim().toUpperCase(),
+  teamCode: z.string().trim().toUpperCase(),
+  userToken: z.string().min(1),
+  playingXI: z.array(z.any())
+});
+
+export const InitiateBattleSchema = z.object({
+  roomCode: z.string().trim().toUpperCase(),
+  teamA: z.string().trim().toUpperCase(),
+  teamB: z.string().trim().toUpperCase(),
+  userToken: z.string().min(1)
+});
+
+export const CastBattleVoteSchema = z.object({
+  roomCode: z.string().trim().toUpperCase(),
+  slotIndex: z.number().int().min(0).max(10),
+  voteTeamCode: z.string().trim().toUpperCase(),
+  userToken: z.string().min(1),
+  voterTeamCode: z.string().optional().nullable()
+});
+
+export const AdvanceBattleSlotSchema = z.object({
+  roomCode: z.string().trim().toUpperCase(),
+  slotIndex: z.number().int().min(0).max(10),
+  userToken: z.string().min(1)
+});
+
+export const ResetBattleSchema = z.object({
+  roomCode: z.string().trim().toUpperCase(),
+  userToken: z.string().min(1)
 });

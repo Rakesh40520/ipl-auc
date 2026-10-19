@@ -18,6 +18,7 @@
     Bot,
     SkipForward,
     XCircle,
+    Square,
     LogOut
   } from 'lucide-svelte';
 
@@ -499,6 +500,19 @@
           >
             <XCircle size={14} class="text-red-400" />
             <span>Unsold</span>
+          </button>
+
+          <button
+            onclick={() => {
+              if (confirm('Are you sure you want to END the Auction now?\n\nThis will lock all rosters and advance all players to the Playing XI Builder and Head-to-Head 1-on-1 Battle Arena.')) {
+                store.hostControl('end_auction');
+              }
+            }}
+            class="px-3.5 py-1.5 rounded-lg bg-red-600/30 hover:bg-red-600/50 border border-red-500/60 text-red-200 font-bold flex items-center gap-1.5 transition cursor-pointer shadow-md"
+            title="End auction and proceed to Playing XI selection and Team Battles"
+          >
+            <Square size={13} class="text-red-300 fill-red-400" />
+            <span>End Auction</span>
           </button>
 
           <button

@@ -10,7 +10,12 @@ import {
   ClaimTeamSchema,
   LeaveTeamSchema,
   PlaceBidSchema,
-  HostControlSchema
+  HostControlSchema,
+  SetPlayingXISchema,
+  InitiateBattleSchema,
+  CastBattleVoteSchema,
+  AdvanceBattleSlotSchema,
+  ResetBattleSchema
 } from './schema.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -299,6 +304,10 @@ export class RoomManager {
         case 'next_player':
           res = engine.nextPlayer();
           break;
+        case 'end':
+        case 'end_auction':
+          res = engine.endAuction();
+          break;
         case 'fill_bots':
           engine.updateConfig({ botsEnabled: true });
           engine.fillBots();
@@ -360,7 +369,73 @@ export class RoomManager {
       callback({ success: true, state: engine.getStateSnapshot() });
     });
 
-    // 6. Leave Room
+    // 6. Set Playing XI for Franchise
+    socket.on('set_playing_xi', (raw, callback = () => {}) => {
+      const parsed = SetPlayingXISchema.safeParse(raw);
+      if (!parsed.success) {
+        return callback({ success: false, error: 'Invalid playing XI payload' });
+      }
+      const { roomCode, teamCode, userToken, playingXI } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.setPlayingXI(teamCode, { userToken, playingXI });
+      callback(res);
+    });
+
+    // 7. Initiate 1-on-1 Head-to-Head Team Battle
+    socket.on('initiate_battle', (raw, callback = () => {}) => {
+      const parsed = InitiateBattleSchema.safeParse(raw);
+      if (!parsed.success) {
+        return callback({ success: false, error: 'Invalid battle parameters' });
+      }
+      const { roomCode, teamA, teamB, userToken } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.initiateBattle({ teamA, teamB, userToken });
+      callback(res);
+    });
+
+    // 8. Cast Position Vote in Team Battle
+    socket.on('cast_battle_vote', (raw, callback = () => {}) => {
+      const parsed = CastBattleVoteSchema.safeParse(raw);
+      if (!parsed.success) {
+        return callback({ success: false, error: 'Invalid vote data' });
+      }
+      const { roomCode, slotIndex, voteTeamCode, userToken, voterTeamCode } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.castBattleVote({ slotIndex, voteTeamCode, userToken, voterTeamCode });
+      callback(res);
+    });
+
+    // 9. Advance Battle Slot (1 through 11)
+    socket.on('advance_battle_slot', (raw, callback = () => {}) => {
+      const parsed = AdvanceBattleSlotSchema.safeParse(raw);
+      if (!parsed.success) return callback({ success: false, error: 'Invalid slot' });
+      const { roomCode, slotIndex } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.advanceBattleSlot({ slotIndex });
+      callback(res);
+    });
+
+    // 10. Reset Battle
+    socket.on('reset_battle', (raw, callback = () => {}) => {
+      const parsed = ResetBattleSchema.safeParse(raw);
+      if (!parsed.success) return callback({ success: false, error: 'Invalid reset payload' });
+      const { roomCode } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.resetBattle();
+      callback(res);
+    });
+
+    // 11. Leave Room
     socket.on('leave_room', ({ roomCode, userName } = {}) => {
       if (roomCode) {
         socket.leave(roomCode);
@@ -368,7 +443,7 @@ export class RoomManager {
       }
     });
 
-    // 7. Request Full State Sync (e.g. after tab blur / network reconnect)
+    // 12. Request Full State Sync (e.g. after tab blur / network reconnect)
     socket.on('request_sync', ({ roomCode }, callback = () => {}) => {
       if (!roomCode) return callback({ success: false });
       const engine = this.getRoom(roomCode);

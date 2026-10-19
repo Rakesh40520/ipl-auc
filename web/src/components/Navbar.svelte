@@ -2,7 +2,7 @@
   import { store } from '../lib/store.svelte.js';
   import { getFranchise } from '../lib/utils.js';
   import { toggleSound, isSoundEnabled } from '../lib/audio.js';
-  import { Volume2, VolumeX, Copy, Check, Users, Trophy, Gavel, LogOut } from 'lucide-svelte';
+  import { Volume2, VolumeX, Copy, Check, Users, Trophy, Gavel, LogOut, Swords } from 'lucide-svelte';
 
   let copied = $state(false);
   let soundOn = $state(true);
@@ -74,8 +74,8 @@
           onclick={() => store.view = 'results'}
           class="flex items-center gap-1.5 px-3 py-1 text-xs sm:text-sm font-medium rounded-lg transition {store.view === 'results' ? 'bg-[#272552] text-white shadow-sm' : 'text-[#9a97c4] hover:text-white'}"
         >
-          <Trophy size={14} />
-          <span>Results</span>
+          <Swords size={14} class="text-rose-400" />
+          <span>Battle & XI</span>
         </button>
       {/if}
     </nav>

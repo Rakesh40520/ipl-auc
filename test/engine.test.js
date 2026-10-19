@@ -197,4 +197,70 @@ describe('AuctionEngine State Machine Tests', () => {
 
     engine.destroy();
   });
+
+  test('endAuction completes auction, populates Playing XI, and handles Battle Arena voting', () => {
+    const queue = [
+      { id: 'p-1', name: 'Player One', role: 'Batter', category: 'batter', basePrice: 100 },
+      { id: 'p-2', name: 'Player Two', role: 'Bowler', category: 'pacer', basePrice: 100 }
+    ];
+
+    const engine = new AuctionEngine({
+      roomCode: 'TEST-BATTLE',
+      hostToken: 'host-1',
+      hostName: 'Host',
+      config: { timerDuration: 10, botsEnabled: false },
+      teamsData: mockTeams,
+      playersData: queue,
+      emit: () => {}
+    });
+
+    engine.claimTeam('CSK', { userToken: 'user-csk', userName: 'CSK Manager' });
+    engine.claimTeam('MI', { userToken: 'user-mi', userName: 'MI Manager' });
+    engine.claimTeam('RCB', { userToken: 'user-rcb', userName: 'RCB Manager' });
+
+    engine.startAuction();
+    assert.equal(engine.status, 'active');
+
+    // Host calls endAuction
+    const endRes = engine.endAuction();
+    assert.equal(endRes.success, true);
+    assert.equal(engine.status, 'completed');
+
+    // Playing XI should be auto-initialized
+    const cskTeam = engine.teams.get('CSK');
+    assert.ok(Array.isArray(cskTeam.playingXI));
+
+    // Custom setPlayingXI
+    const customXI = [{ id: 'p-1', name: 'Player One', role: 'Batter' }];
+    const setRes = engine.setPlayingXI('CSK', { userToken: 'user-csk', playingXI: customXI });
+    assert.equal(setRes.success, true);
+    assert.equal(cskTeam.playingXI.length, 1);
+
+    // Initiate Battle CSK vs MI
+    const battleRes = engine.initiateBattle({ teamA: 'CSK', teamB: 'MI', userToken: 'host-1' });
+    assert.equal(battleRes.success, true);
+    assert.equal(engine.activeBattle.teamA, 'CSK');
+    assert.equal(engine.activeBattle.teamB, 'MI');
+
+    // Competing manager (CSK) tries to vote -> rejected (neutral remaining teams vote)
+    const selfVoteRes = engine.castBattleVote({
+      slotIndex: 0,
+      voteTeamCode: 'CSK',
+      userToken: 'user-csk',
+      voterTeamCode: 'CSK'
+    });
+    assert.equal(selfVoteRes.success, false);
+
+    // Neutral manager (RCB) votes for CSK in Slot 0 -> accepted
+    const neutralVoteRes = engine.castBattleVote({
+      slotIndex: 0,
+      voteTeamCode: 'CSK',
+      userToken: 'user-rcb',
+      voterTeamCode: 'RCB'
+    });
+    assert.equal(neutralVoteRes.success, true);
+    assert.equal(engine.activeBattle.votes['0']['user-rcb'].voteTeamCode, 'CSK');
+
+    engine.destroy();
+  });
 });
