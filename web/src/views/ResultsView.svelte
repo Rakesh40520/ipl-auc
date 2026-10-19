@@ -2,6 +2,7 @@
   import { store } from '../lib/store.svelte.js';
   import { formatLakhs, getFranchise } from '../lib/utils.js';
   import { calculateT20Rating, calculateDuelProbability, calculatePreMatchWinProbability } from '../lib/rating.js';
+  import IplTrophyModal from '../components/IplTrophyModal.svelte';
   import {
     Trophy,
     Share2,
@@ -43,6 +44,10 @@
   let fixturesSubTab = $state('fixtures'); // 'fixtures' | 'standings'
   let roundFilter = $state('all');
   let copied = $state(false);
+
+  // IPL Cup Trophy Presentation Ceremony State
+  let showTrophyModal = $state(false);
+  let hasAutoTriggeredTrophy = $state(false);
 
   // Scorecard modal state for AI Math Simulation
   let selectedScorecardFixture = $state(null);
@@ -409,6 +414,20 @@
   });
 
   const nextScheduledFixture = $derived(fixtures.find(f => f.status === 'scheduled'));
+  const isTournamentComplete = $derived(
+    fixtures.length > 0 && completedFixturesCount === fixtures.length
+  );
+  const champion = $derived(standings.length > 0 ? standings[0] : null);
+  const runnerUp = $derived(standings.length > 1 ? standings[1] : null);
+
+  $effect(() => {
+    if (isTournamentComplete && !hasAutoTriggeredTrophy) {
+      hasAutoTriggeredTrophy = true;
+      setTimeout(() => {
+        showTrophyModal = true;
+      }, 700);
+    }
+  });
 
   async function handleStartFixture(fixture) {
     const res = await store.startFixtureBattle(fixture.id);
@@ -418,6 +437,7 @@
   }
 
   async function handlePlanFixtures() {
+    hasAutoTriggeredTrophy = false;
     await store.planFixtures();
   }
 
@@ -425,6 +445,11 @@
     await store.concludeBattle();
     activeTab = 'fixtures';
     fixturesSubTab = 'standings';
+    if (fixtures.length > 0 && fixtures.every(f => f.status === 'completed')) {
+      setTimeout(() => {
+        showTrophyModal = true;
+      }, 600);
+    }
   }
 
   async function handleSetMatchMode(mode) {
@@ -441,10 +466,18 @@
       selectedScorecardFixture = res.fixture;
       scorecardInningsTab = 'inn1';
     }
+    if (fixtures.length > 0 && fixtures.every(f => f.status === 'completed' || f.id === fixtureId)) {
+      setTimeout(() => {
+        showTrophyModal = true;
+      }, 800);
+    }
   }
 
   async function handleSimulateAll() {
     await store.simulateAllFixtures();
+    setTimeout(() => {
+      showTrophyModal = true;
+    }, 400);
   }
 
   function openScorecard(fixture) {
@@ -811,6 +844,17 @@
               <span class="block text-[10px] text-[#9a97c4] font-bold uppercase">Leader</span>
               <strong class="text-amber-300 text-sm">{standings[0].code} ({standings[0].points} pts)</strong>
             </div>
+          {/if}
+
+          {#if isTournamentComplete}
+            <button
+              onclick={() => showTrophyModal = true}
+              class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:opacity-95 text-purple-950 font-black text-xs transition cursor-pointer shadow-lg shadow-amber-950/50 flex items-center gap-1.5 animate-bounce"
+              title="Declare IPL Cup Champion & View Trophy Presentation Ceremony"
+            >
+              <Trophy size={14} class="fill-purple-950" />
+              <span>IPL Cup Ceremony 🏆</span>
+            </button>
           {/if}
 
           {#if store.isHost && matchMode === 'ai_simulation' && nextScheduledFixture}
@@ -1203,6 +1247,43 @@
                 Top 4 Playoff Zone
               </span>
             </div>
+
+            <!-- If Tournament Completed: Grand Champion Trophy Banner -->
+            {#if isTournamentComplete && champion}
+              <div
+                class="p-4 sm:p-5 rounded-2xl border-2 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4"
+                style="background: linear-gradient(135deg, {champion.primaryColor || '#ffb703'}33 0%, #171538 80%); border-color: {champion.primaryColor || '#ffb703'}80;"
+              >
+                <div class="flex items-center gap-3.5">
+                  <div
+                    class="w-12 h-12 rounded-xl grid place-items-center font-heading font-black text-white text-lg shadow-md border border-white/20"
+                    style="background: {champion.primaryColor || '#6366f1'};"
+                  >
+                    {champion.code}
+                  </div>
+                  <div>
+                    <span class="text-[11px] font-black uppercase text-amber-300 flex items-center gap-1">
+                      <Crown size={12} class="fill-amber-400 text-amber-400" />
+                      <span>OFFICIAL IPL 2026 CHAMPIONS</span>
+                    </span>
+                    <h3 class="text-xl font-black font-heading text-white">
+                      {champion.name}
+                    </h3>
+                    <p class="text-[11px] text-[#9a97c4]">
+                      {champion.won} Wins • {champion.points} Points • Manager: {champion.userName}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onclick={() => showTrophyModal = true}
+                  class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-purple-950 font-black text-xs transition cursor-pointer shadow-md flex items-center gap-1.5 hover:scale-105 active:scale-95"
+                >
+                  <Trophy size={14} class="fill-purple-950" />
+                  <span>Open IPL Cup Ceremony 🏆</span>
+                </button>
+              </div>
+            {/if}
 
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs sm:text-sm">
@@ -2608,4 +2689,14 @@
       </div>
     </div>
   {/if}
+
+  <!-- IPL Cup Championship Ceremony & Trophy Presentation Modal -->
+  <IplTrophyModal
+    isOpen={showTrophyModal}
+    {champion}
+    {runnerUp}
+    {standings}
+    {fixtures}
+    onClose={() => showTrophyModal = false}
+  />
 </div>

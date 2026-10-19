@@ -137,3 +137,50 @@ export function playSoldChime() {
     osc.stop(now + 0.4);
   });
 }
+
+// 5. Championship Grand Trophy Fanfare & Victory Chorus
+export function playTrophyCelebration() {
+  if (!soundEnabled) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  const now = ctx.currentTime;
+
+  // Ascending majestic fanfare arpeggio (C4, G4, C5, E5, G5, C6)
+  const fanfareNotes = [261.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+  fanfareNotes.forEach((freq, idx) => {
+    const noteTime = now + idx * 0.11;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, noteTime);
+
+    gain.gain.setValueAtTime(0.35, noteTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.5);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(noteTime);
+    osc.stop(noteTime + 0.55);
+  });
+
+  // Sustained triumphant harmonic power chord at the climax
+  const chordNotes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+  const chordTime = now + 0.72;
+  chordNotes.forEach((freq) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, chordTime);
+
+    gain.gain.setValueAtTime(0.28, chordTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, chordTime + 1.8);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(chordTime);
+    osc.stop(chordTime + 1.9);
+  });
+}
