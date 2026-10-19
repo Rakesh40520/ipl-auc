@@ -95,6 +95,9 @@ export class AuctionEngine {
     this.config.xiSelectionTime = this.config.xiSelectionTime ?? 90;
     this.xiTimer = this.config.xiSelectionTime;
     this.xiTimerInterval = null;
+
+    this.spectatorCount = 0;
+    this.connectedUsersCount = 0;
   }
 
   // --- LOBBY METHODS ---
@@ -531,15 +534,31 @@ export class AuctionEngine {
         .map(t => this.sanitizeTeam(t));
     }
 
-    // Rule: required players more than 3
-    if (participatingTeams.length <= 3) {
+    // Rule:
+    // - For AI Judging, 2 teams is the minimum (matches decided based on stats & math)
+    // - For Community Jury Voting, 3 participants is the minimum (2 clashing teams + 1 spectator minimum for neutral voting)
+    if (participatingTeams.length < 2) {
       this.fixtures = [];
-      const reason = `More than 3 players/teams are required to plan tournament match fixtures (currently ${participatingTeams.length} teams). Minimum 4 teams required.`;
+      const reason = `At least 2 teams are required to plan tournament match fixtures (currently ${participatingTeams.length} team).`;
       this.emit('fixtures_updated', {
         fixtures: [],
         error: reason
       });
       return { success: false, reason };
+    }
+
+    const mode = this.matchMode;
+    const spectatorCount = this.spectatorCount || 0;
+    const totalVotingParticipants = participatingTeams.length + (this.config.spectatorsCanVote ? spectatorCount : 0);
+
+    if (mode === 'voting' && participatingTeams.length === 2 && totalVotingParticipants < 3) {
+      this.fixtures = [];
+      const reason = `For Jury Voting, at least 3 participants are required (2 clashing teams + 1 spectator minimum for neutral judging). For AI Judging, 2 teams is the minimum. Switch to AI Judging mode or invite a spectator!`;
+      this.emit('fixtures_updated', {
+        fixtures: [],
+        error: reason
+      });
+      return { success: false, reason, requiresAIOrSpectator: true };
     }
 
     const teamsList = [...participatingTeams];
@@ -689,6 +708,12 @@ export class AuctionEngine {
       return { success: false, reason: 'Invalid match mode. Must be "voting" or "ai_simulation"' };
     }
     this.config.matchMode = mode;
+
+    // When switching to AI simulation, if fixtures are not planned yet, attempt to generate them
+    if (mode === 'ai_simulation' && (!this.fixtures || this.fixtures.length === 0)) {
+      this.generateFixtures();
+    }
+
     this.emit('config_updated', { config: this.config });
     this.emit('match_mode_changed', { matchMode: mode });
     this.emit('state_sync', this.getStateSnapshot());
@@ -1543,6 +1568,8 @@ export class AuctionEngine {
       timerPrecise: parseFloat(this.timer.toFixed(1)),
       xiTimer: Math.ceil(this.xiTimer || 0),
       spectatorsCanVote: this.config.spectatorsCanVote ?? true,
+      spectatorCount: this.spectatorCount || 0,
+      connectedUsersCount: this.connectedUsersCount || 0,
       allTeamsXIConfirmed: this.areAllTeamsXIConfirmed(),
       bidHistory: this.bidHistory,
       teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t)),

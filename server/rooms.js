@@ -149,6 +149,15 @@ export class RoomManager {
     return engine;
   }
 
+  updateRoomPresence(roomCode, engine) {
+    if (!this.io || !engine) return;
+    const roomSockets = this.io.sockets.adapter.rooms.get(roomCode);
+    const connectedCount = roomSockets ? roomSockets.size : 1;
+    const claimedCount = Array.from(engine.teams.values()).filter(t => t.userToken && !t.isBot).length;
+    engine.connectedUsersCount = connectedCount;
+    engine.spectatorCount = Math.max(0, connectedCount - claimedCount);
+  }
+
   setupSocketEvents(socket) {
     // 1. Join room
     socket.on('join_room', (raw, callback = () => {}) => {
@@ -168,6 +177,9 @@ export class RoomManager {
       socket.data.roomCode = roomCode;
       socket.data.userName = userName;
       socket.data.userToken = userToken || socket.id;
+
+      // Update room presence & spectators count
+      this.updateRoomPresence(roomCode, engine);
 
       // Check if user already owned a team in this room (reconnection!)
       let reconnectedTeam = null;
@@ -193,6 +205,7 @@ export class RoomManager {
       );
 
       socket.data.isHost = isHost;
+      this.updateRoomPresence(roomCode, engine);
 
       callback({
         success: true,
@@ -223,6 +236,7 @@ export class RoomManager {
         return callback({ success: false, error: res.reason });
       }
 
+      this.updateRoomPresence(roomCode, engine);
       callback({ success: true, team: res.team });
     });
 
@@ -236,6 +250,7 @@ export class RoomManager {
       if (!engine) return callback({ success: false, error: 'Room not found' });
 
       const res = engine.leaveTeam(teamCode, { userToken });
+      this.updateRoomPresence(roomCode, engine);
       callback(res);
     });
 
@@ -552,7 +567,18 @@ export class RoomManager {
     socket.on('leave_room', ({ roomCode, userName } = {}) => {
       if (roomCode) {
         socket.leave(roomCode);
+        const engine = this.getRoom(roomCode);
+        if (engine) this.updateRoomPresence(roomCode, engine);
         this.io.to(roomCode).emit('user_left', { userName });
+      }
+    });
+
+    // 18. Socket Disconnect
+    socket.on('disconnect', () => {
+      const roomCode = socket.data?.roomCode;
+      if (roomCode) {
+        const engine = this.getRoom(roomCode);
+        if (engine) this.updateRoomPresence(roomCode, engine);
       }
     });
 
