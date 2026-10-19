@@ -1,6 +1,7 @@
 <script>
   import { store } from '../lib/store.svelte.js';
   import { formatLakhs, getFranchise } from '../lib/utils.js';
+  import { calculateT20Rating, calculateDuelProbability, calculatePreMatchWinProbability } from '../lib/rating.js';
   import {
     Trophy,
     Share2,
@@ -394,6 +395,8 @@
     return fixtures.filter(f => f.round === rNum);
   });
 
+  const nextScheduledFixture = $derived(fixtures.find(f => f.status === 'scheduled'));
+
   async function handleStartFixture(fixture) {
     const res = await store.startFixtureBattle(fixture.id);
     if (res.success) {
@@ -784,14 +787,25 @@
             </div>
           {/if}
 
+          {#if store.isHost && matchMode === 'ai_simulation' && nextScheduledFixture}
+            <button
+              onclick={() => handleSimulateFixture(nextScheduledFixture.id)}
+              class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90 text-white text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-lg shadow-amber-950/40"
+              title="Simulate Match #{nextScheduledFixture.matchNumber}: {nextScheduledFixture.teamA} vs {nextScheduledFixture.teamB} (Fixture by Fixture)"
+            >
+              <Zap size={14} class="fill-white" />
+              <span>Simulate Match #{nextScheduledFixture.matchNumber} ({nextScheduledFixture.teamA} vs {nextScheduledFixture.teamB})</span>
+            </button>
+          {/if}
+
           {#if store.isHost && matchMode === 'ai_simulation' && completedFixturesCount < fixtures.length}
             <button
               onclick={handleSimulateAll}
-              class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md"
-              title="Simulate all remaining fixtures in this tournament"
+              class="px-3.5 py-2 rounded-xl bg-[#0c0b1d] hover:bg-[#1a1738] border border-emerald-500/50 text-emerald-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md"
+              title="Simulate all remaining fixtures in this tournament in one go"
             >
               <Zap size={13} />
-              <span>Simulate All Matches (AI)</span>
+              <span>Simulate All ({fixtures.length - completedFixturesCount})</span>
             </button>
           {/if}
 
@@ -920,7 +934,7 @@
               {@const isMyMatch = Boolean(store.myTeamCode && (fixture.teamA === store.myTeamCode || fixture.teamB === store.myTeamCode))}
 
               <div class="relative overflow-hidden p-5 rounded-3xl bg-[#15142e] border transition-all duration-300
-                {fixture.status === 'live' ? 'border-rose-500 ring-2 ring-rose-500/40 shadow-xl' : 'border-[#272552] hover:border-[#3d3a77]'}
+                {fixture.status === 'live' ? 'border-rose-500 ring-2 ring-rose-500/40 shadow-xl' : fixture.id === nextScheduledFixture?.id ? 'border-emerald-500/70 ring-1 ring-emerald-500/30 shadow-[0_0_24px_rgba(16,185,129,0.15)] bg-gradient-to-b from-[#15142e] to-[#0f172a]' : 'border-[#272552] hover:border-[#3d3a77]'}
                 {isMyMatch ? 'bg-[#171536]' : ''}">
 
                 <!-- Match Top Pill: Match # and Status -->
@@ -945,6 +959,11 @@
                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold">
                       <Check size={11} class="text-emerald-400" />
                       <span>Completed</span>
+                    </span>
+                  {:else if fixture.id === nextScheduledFixture?.id}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-extrabold uppercase animate-pulse shadow-[0_0_12px_rgba(16,185,129,0.3)]">
+                      <Zap size={11} class="text-emerald-400 fill-emerald-400" />
+                      <span>Next Up</span>
                     </span>
                   {:else}
                     <span class="px-2.5 py-0.5 rounded-full bg-[#0c0b1d] text-[#6b6891] border border-[#272552] text-[11px] font-semibold">
@@ -1097,12 +1116,13 @@
                         <button
                           onclick={() => handleSimulateFixture(fixture.id)}
                           class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold text-xs transition flex items-center gap-1.5 cursor-pointer shadow-md"
+                          title="Simulate Match #{fixture.matchNumber} ({fixture.teamA} vs {fixture.teamB}) using realistic ball-by-ball probability calculation"
                         >
-                          <Zap size={13} />
-                          <span>Simulate Match (AI)</span>
+                          <Zap size={13} class="fill-white" />
+                          <span>Simulate Match #{fixture.matchNumber}</span>
                         </button>
                       {:else}
-                        <span class="text-xs text-[#9a97c4] font-medium italic">Pending AI Sim</span>
+                        <span class="text-xs text-[#9a97c4] font-medium italic">Pending Host Sim</span>
                       {/if}
                     {:else}
                       <button
@@ -1654,6 +1674,44 @@
                 </div>
               </div>
 
+              <!-- Super Over Head-to-Head Win Probability Bar -->
+              {#if activeBattle.superOverA && activeBattle.superOverB}
+                {@const soDuel = calculateDuelProbability(activeBattle.superOverA, activeBattle.superOverB)}
+                <div class="p-3.5 rounded-2xl bg-[#0c0b1d] border border-amber-500/40 space-y-2">
+                  <div class="flex items-center justify-between text-xs font-bold">
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-mono font-extrabold text-[11px] border border-amber-500/30">
+                        ⭐ {soDuel.ratingA}/100
+                      </span>
+                      <span class="text-white font-heading">{activeBattle.superOverA.name}</span>
+                      <span class="text-amber-400 font-mono font-extrabold text-sm">{soDuel.percentA}%</span>
+                    </div>
+
+                    <span class="text-[10px] uppercase tracking-wider text-amber-400 font-extrabold hidden sm:inline">
+                      AI Win Probability (Math Engine)
+                    </span>
+
+                    <div class="flex items-center gap-1.5 justify-end">
+                      <span class="text-sky-400 font-mono font-extrabold text-sm">{soDuel.percentB}%</span>
+                      <span class="text-white font-heading">{activeBattle.superOverB.name}</span>
+                      <span class="px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 font-mono font-extrabold text-[11px] border border-sky-500/30">
+                        ⭐ {soDuel.ratingB}/100
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="w-full h-2 rounded-full bg-[#18153b] overflow-hidden flex border border-[#272552]">
+                    <div style="width: {soDuel.percentA}%; background: {teamAObj?.primaryColor || '#f59e0b'};" class="h-full transition-all duration-500"></div>
+                    <div style="width: {soDuel.percentB}%; background: {teamBObj?.primaryColor || '#0284c7'};" class="h-full transition-all duration-500"></div>
+                  </div>
+
+                  <div class="text-[10px] text-[#9a97c4] flex items-center justify-between">
+                    <span>Probability advantage: <strong class="text-amber-300">{soDuel.diff > 0 ? `+${soDuel.diff}` : soDuel.diff} pts</strong></span>
+                    <span class="italic text-purple-300">Based on strike rate, bowling economy &amp; clutch index</span>
+                  </div>
+                </div>
+              {/if}
+
               <!-- Side-by-Side Super Over MVP Showdown -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Team A MVP -->
@@ -1763,6 +1821,9 @@
             {#each positionLabels as pos, idx (pos.num)}
               {@const playerA = teamAObj?.playingXI?.[idx]}
               {@const playerB = teamBObj?.playingXI?.[idx]}
+              {@const duel = calculateDuelProbability(playerA, playerB)}
+              {@const ratingA = duel.ratingObjA}
+              {@const ratingB = duel.ratingObjB}
               {@const duelWinner = battleScores.slotWinners[idx]}
               {@const aVoted = hasVotedForSlot(idx, activeBattle.teamA)}
               {@const bVoted = hasVotedForSlot(idx, activeBattle.teamB)}
@@ -1792,6 +1853,58 @@
                   {/if}
                 </div>
 
+                <!-- Mathematical AI Duel Rating & Head-to-Head Win Probability Bar -->
+                <div class="p-3 rounded-2xl bg-[#0c0b1d] border border-purple-500/30 space-y-2">
+                  <div class="flex items-center justify-between text-xs font-bold">
+                    <!-- Left: Player A Rating & Win Prob -->
+                    <div class="flex items-center gap-1.5 min-w-0">
+                      <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-mono font-black text-xs border border-amber-500/30 whitespace-nowrap">
+                        ⭐ {duel.ratingA}/100
+                      </span>
+                      <span class="text-white font-heading truncate">{playerA?.name || teamAObj?.code}</span>
+                      <span class="text-amber-400 font-mono font-extrabold text-sm ml-1">{duel.percentA}%</span>
+                    </div>
+
+                    <div class="text-[10px] text-[#9a97c4] uppercase font-bold tracking-wider px-2 hidden sm:block whitespace-nowrap">
+                      AI Win Probability
+                    </div>
+
+                    <!-- Right: Player B Rating & Win Prob -->
+                    <div class="flex items-center gap-1.5 min-w-0 justify-end">
+                      <span class="text-sky-400 font-mono font-extrabold text-sm mr-1">{duel.percentB}%</span>
+                      <span class="text-white font-heading truncate">{playerB?.name || teamBObj?.code}</span>
+                      <span class="px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 font-mono font-black text-xs border border-sky-500/30 whitespace-nowrap">
+                        ⭐ {duel.ratingB}/100
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Visual Progress Probability Bar -->
+                  <div class="w-full h-2 rounded-full bg-[#18153b] overflow-hidden flex border border-[#272552]">
+                    <div
+                      class="h-full transition-all duration-500"
+                      style="width: {duel.percentA}%; background: {teamAObj?.primaryColor || '#f59e0b'};"
+                      title="{playerA?.name}: {duel.percentA}% win probability"
+                    ></div>
+                    <div
+                      class="h-full transition-all duration-500"
+                      style="width: {duel.percentB}%; background: {teamBObj?.primaryColor || '#0284c7'};"
+                      title="{playerB?.name}: {duel.percentB}% win probability"
+                    ></div>
+                  </div>
+
+                  <!-- Mathematical Prediction Sub-line -->
+                  <div class="flex items-center justify-between text-[10px] text-[#9a97c4] pt-0.5">
+                    <span>
+                      Math Delta: <strong class="{duel.diff > 0 ? 'text-amber-300' : duel.diff < 0 ? 'text-sky-300' : 'text-purple-300'}">{duel.diff > 0 ? `+${duel.diff}` : duel.diff} pts</strong>
+                      ({duel.favorite === 'A' ? `${playerA?.name?.split(' ')[0] || 'Team A'} favored` : duel.favorite === 'B' ? `${playerB?.name?.split(' ')[0] || 'Team B'} favored` : 'Evenly matched'})
+                    </span>
+                    <span class="italic text-[10px] text-purple-300 hidden sm:inline">
+                      Calculated from T20 strike rates, bowling economies &amp; clutch index
+                    </span>
+                  </div>
+                </div>
+
                 <!-- Side-by-Side 1-on-1 Player Duel Comparison -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <!-- Team A Player Card -->
@@ -1816,6 +1929,31 @@
                       </div>
 
                       {#if playerA}
+                        <!-- Mathematical Rating Breakdown -->
+                        <div class="p-2 rounded-xl bg-[#141233] border border-purple-500/30 space-y-1">
+                          <div class="flex items-center justify-between text-[11px]">
+                            <span class="font-bold text-amber-300 flex items-center gap-1">
+                              <Star size={11} class="text-amber-400 fill-amber-400" />
+                              <span>{ratingA.label}</span>
+                            </span>
+                            <span class="font-mono font-black text-amber-300 text-xs">{ratingA.overall}/100</span>
+                          </div>
+                          <div class="grid grid-cols-3 gap-1 text-[9px] text-center font-mono">
+                            <div class="bg-[#0c0b1d] p-0.5 rounded border border-[#272552]">
+                              <span class="text-[#6b6891] block text-[8px]">Batting</span>
+                              <strong class="text-white">{ratingA.battingScore}</strong>
+                            </div>
+                            <div class="bg-[#0c0b1d] p-0.5 rounded border border-[#272552]">
+                              <span class="text-[#6b6891] block text-[8px]">Bowling</span>
+                              <strong class="text-white">{ratingA.bowlingScore}</strong>
+                            </div>
+                            <div class="bg-[#0c0b1d] p-0.5 rounded border border-[#272552]">
+                              <span class="text-[#6b6891] block text-[8px]">Clutch</span>
+                              <strong class="text-amber-300">{ratingA.clutchScore}</strong>
+                            </div>
+                          </div>
+                        </div>
+
                         <div class="p-2 rounded-xl bg-[#15142e] text-xs text-[#9a97c4] space-y-1">
                           <div class="flex items-center justify-between">
                             <span>🏏 {playerA.battingStyle || 'RHB'}</span>
@@ -1885,6 +2023,31 @@
                       </div>
 
                       {#if playerB}
+                        <!-- Mathematical Rating Breakdown -->
+                        <div class="p-2 rounded-xl bg-[#141233] border border-purple-500/30 space-y-1">
+                          <div class="flex items-center justify-between text-[11px]">
+                            <span class="font-bold text-sky-300 flex items-center gap-1">
+                              <Star size={11} class="text-sky-400 fill-sky-400" />
+                              <span>{ratingB.label}</span>
+                            </span>
+                            <span class="font-mono font-black text-sky-300 text-xs">{ratingB.overall}/100</span>
+                          </div>
+                          <div class="grid grid-cols-3 gap-1 text-[9px] text-center font-mono">
+                            <div class="bg-[#0c0b1d] p-0.5 rounded border border-[#272552]">
+                              <span class="text-[#6b6891] block text-[8px]">Batting</span>
+                              <strong class="text-white">{ratingB.battingScore}</strong>
+                            </div>
+                            <div class="bg-[#0c0b1d] p-0.5 rounded border border-[#272552]">
+                              <span class="text-[#6b6891] block text-[8px]">Bowling</span>
+                              <strong class="text-white">{ratingB.bowlingScore}</strong>
+                            </div>
+                            <div class="bg-[#0c0b1d] p-0.5 rounded border border-[#272552]">
+                              <span class="text-[#6b6891] block text-[8px]">Clutch</span>
+                              <strong class="text-sky-300">{ratingB.clutchScore}</strong>
+                            </div>
+                          </div>
+                        </div>
+
                         <div class="p-2 rounded-xl bg-[#15142e] text-xs text-[#9a97c4] space-y-1">
                           <div class="flex items-center justify-between">
                             <span>🏏 {playerB.battingStyle || 'RHB'}</span>
@@ -2148,6 +2311,41 @@
             </div>
           </div>
 
+          <!-- Mathematical Pre-Match Probability & XI Rating Strip -->
+          {#if sc.preMatchProbability}
+            <div class="p-3.5 rounded-2xl bg-[#0c0b1d]/90 border border-purple-500/30 space-y-2 text-xs shadow-inner">
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-1.5 font-bold text-white">
+                  <Cpu size={14} class="text-purple-400" />
+                  <span>Pre-Match Win Probability &amp; XI Strength</span>
+                </span>
+                <span class="text-[11px] text-[#9a97c4]">
+                  XI Overall Strength: <strong class="text-amber-300">{sc.innings1.teamCode} {sc.preMatchProbability.teamRatingA}</strong> vs <strong class="text-sky-300">{sc.innings2.teamCode} {sc.preMatchProbability.teamRatingB}</strong>
+                </span>
+              </div>
+
+              <!-- Probability Bar -->
+              <div class="w-full h-2 rounded-full bg-[#18153b] overflow-hidden flex border border-[#272552]">
+                <div
+                  class="h-full transition-all duration-500"
+                  style="width: {sc.preMatchProbability.percentA}%; background: {sc.innings1.primaryColor || '#a855f7'};"
+                  title="{sc.innings1.teamCode}: {sc.preMatchProbability.percentA}% Win Chance"
+                ></div>
+                <div
+                  class="h-full transition-all duration-500"
+                  style="width: {sc.preMatchProbability.percentB}%; background: {sc.innings2.primaryColor || '#ff4d8d'};"
+                  title="{sc.innings2.teamCode}: {sc.preMatchProbability.percentB}% Win Chance"
+                ></div>
+              </div>
+
+              <div class="flex items-center justify-between text-[11px] font-mono">
+                <span class="font-bold text-amber-300">{sc.innings1.teamCode} {sc.preMatchProbability.percentA}% Win Chance</span>
+                <span class="text-[10px] text-[#9a97c4] italic hidden sm:inline">Calculated ball-by-ball from T20 strike rates &amp; bowling economy</span>
+                <span class="font-bold text-sky-300">{sc.innings2.teamCode} {sc.preMatchProbability.percentB}% Win Chance</span>
+              </div>
+            </div>
+          {/if}
+
           <!-- Margin Banner & Toss -->
           <div class="flex flex-col sm:flex-row items-center justify-between gap-2 pt-3 border-t border-[#272552]/80 text-xs">
             <div class="flex items-center gap-2">
@@ -2247,10 +2445,17 @@
                   {#each activeInn.batting as b}
                     <tr class="hover:bg-[#151433] transition">
                       <td class="py-2.5 px-3 font-bold text-white whitespace-nowrap">
-                        {b.name}
-                        {#if b.notOut}
-                          <span class="text-emerald-400 font-extrabold">*</span>
-                        {/if}
+                        <div class="flex items-center gap-1.5">
+                          <span>{b.name}</span>
+                          {#if b.rating}
+                            <span class="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-mono font-bold" title="T20 Math Impact Rating: {b.rating}/100">
+                              {b.rating}
+                            </span>
+                          {/if}
+                          {#if b.notOut}
+                            <span class="text-emerald-400 font-extrabold">*</span>
+                          {/if}
+                        </div>
                       </td>
                       <td class="py-2.5 px-3 text-[11px] text-[#9a97c4]">
                         {#if b.notOut}
@@ -2303,7 +2508,16 @@
                 <tbody class="divide-y divide-[#272552]/40">
                   {#each activeInn.bowling as bowl}
                     <tr class="hover:bg-[#151433] transition">
-                      <td class="py-2.5 px-3 font-bold text-white whitespace-nowrap">{bowl.name}</td>
+                      <td class="py-2.5 px-3 font-bold text-white whitespace-nowrap">
+                        <div class="flex items-center gap-1.5">
+                          <span>{bowl.name}</span>
+                          {#if bowl.rating}
+                            <span class="px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-mono font-bold" title="T20 Math Impact Rating: {bowl.rating}/100">
+                              {bowl.rating}
+                            </span>
+                          {/if}
+                        </div>
+                      </td>
                       <td class="py-2.5 px-3 text-right text-[#9a97c4] font-mono">{bowl.overs}</td>
                       <td class="py-2.5 px-3 text-right text-[#9a97c4] font-mono">{bowl.maidens}</td>
                       <td class="py-2.5 px-3 text-right text-white font-mono">{bowl.runs}</td>
