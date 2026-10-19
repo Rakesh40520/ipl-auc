@@ -79,8 +79,9 @@ export class AuctionEngine {
     this.transitionTimeout = null;
     this.isTransitioning = false;
 
-    // Post-Auction Head-to-Head 1-on-1 Battle Arena
+    // Post-Auction Head-to-Head 1-on-1 Battle Arena & Tournament Fixtures
     this.activeBattle = null;
+    this.fixtures = [];
   }
 
   // --- LOBBY METHODS ---
@@ -202,11 +203,16 @@ export class AuctionEngine {
       }
     }
 
+    // Auto-plan tournament fixtures if participating teams > 3
+    this.generateFixtures();
+
     this.emit('auction_status_changed', { status: this.status });
     this.emit('auction_completed', {
       results: this.results,
       teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t)),
-      activeBattle: this.activeBattle
+      activeBattle: this.activeBattle,
+      fixtures: this.fixtures,
+      standings: this.getTournamentStandings()
     });
     this.emit('state_sync', this.getStateSnapshot());
     this.persist();
@@ -305,7 +311,7 @@ export class AuctionEngine {
 
   // --- HEAD-TO-HEAD BATTLE ARENA & POSITION-BY-POSITION VOTING ---
 
-  initiateBattle({ teamA, teamB, userToken }) {
+  initiateBattle({ teamA, teamB, userToken, fixtureId = null }) {
     if (!teamA || !teamB || teamA === teamB) {
       return { success: false, reason: 'Please select two different franchises for comparison' };
     }
@@ -326,6 +332,7 @@ export class AuctionEngine {
 
     this.activeBattle = {
       id: `battle-${Date.now()}`,
+      fixtureId: fixtureId || null,
       teamA,
       teamB,
       currentSlot: 0,
@@ -391,6 +398,287 @@ export class AuctionEngine {
     this.emit('battle_updated', { battle: null });
     this.emit('state_sync', this.getStateSnapshot());
     return { success: true };
+  }
+
+  // --- TOURNAMENT FIXTURES & STANDINGS ---
+
+  generateFixtures() {
+    // Participating franchises:
+    // If AI bots enabled, all 10 franchises participate.
+    // Otherwise, all franchises that have a manager or have acquired squad players.
+    let participatingTeams = [];
+    if (this.config.botsEnabled) {
+      participatingTeams = Array.from(this.teams.values()).map(t => this.sanitizeTeam(t));
+    } else {
+      participatingTeams = Array.from(this.teams.values())
+        .filter(t => t.userToken || (t.squad && t.squad.length > 0))
+        .map(t => this.sanitizeTeam(t));
+    }
+
+    // Rule: required players more than 3
+    if (participatingTeams.length <= 3) {
+      this.fixtures = [];
+      const reason = `More than 3 players/teams are required to plan tournament match fixtures (currently ${participatingTeams.length} teams). Minimum 4 teams required.`;
+      this.emit('fixtures_updated', {
+        fixtures: [],
+        error: reason
+      });
+      return { success: false, reason };
+    }
+
+    const teamsList = [...participatingTeams];
+    const isOdd = teamsList.length % 2 !== 0;
+    if (isOdd) {
+      teamsList.push({ code: 'BYE', name: 'BYE' });
+    }
+
+    const n = teamsList.length;
+    const rounds = n - 1;
+    const half = n / 2;
+    const fixtures = [];
+    let matchNumber = 1;
+
+    let rotating = [...teamsList];
+    for (let r = 0; r < rounds; r++) {
+      for (let i = 0; i < half; i++) {
+        const team1 = rotating[i];
+        const team2 = rotating[n - 1 - i];
+
+        if (team1.code !== 'BYE' && team2.code !== 'BYE') {
+          fixtures.push({
+            id: `fixture-${matchNumber}`,
+            matchNumber: matchNumber++,
+            round: r + 1,
+            teamA: team1.code,
+            teamB: team2.code,
+            status: 'scheduled', // 'scheduled' | 'live' | 'completed'
+            scoreA: null,
+            scoreB: null,
+            winner: null,
+            battleId: null,
+            completedAt: null
+          });
+        }
+      }
+
+      // Rotate round robin (keep first fixed, rotate remaining)
+      const fixed = rotating[0];
+      const rest = rotating.slice(1);
+      const last = rest.pop();
+      rest.unshift(last);
+      rotating = [fixed, ...rest];
+    }
+
+    this.fixtures = fixtures;
+    this.emit('fixtures_updated', { fixtures: this.fixtures });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return { success: true, fixtures: this.fixtures };
+  }
+
+  startFixtureBattle({ fixtureId, userToken }) {
+    if (!this.fixtures || this.fixtures.length === 0) {
+      return { success: false, reason: 'No fixtures planned yet' };
+    }
+
+    const fixture = this.fixtures.find(f => f.id === fixtureId);
+    if (!fixture) {
+      return { success: false, reason: 'Fixture not found' };
+    }
+
+    // Reset any previously live fixtures back to scheduled
+    for (const f of this.fixtures) {
+      if (f.status === 'live' && f.id !== fixtureId) {
+        f.status = 'scheduled';
+      }
+    }
+
+    fixture.status = 'live';
+
+    const battleRes = this.initiateBattle({
+      teamA: fixture.teamA,
+      teamB: fixture.teamB,
+      userToken,
+      fixtureId: fixture.id
+    });
+
+    if (!battleRes.success) {
+      fixture.status = 'scheduled';
+      return battleRes;
+    }
+
+    fixture.battleId = this.activeBattle.id;
+    this.emit('fixtures_updated', { fixtures: this.fixtures });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return { success: true, fixture, battle: this.activeBattle };
+  }
+
+  recordFixtureResult({ fixtureId, scoreA, scoreB, winner, userToken }) {
+    const fixture = this.fixtures.find(f => f.id === fixtureId);
+    if (!fixture) {
+      return { success: false, reason: 'Fixture not found' };
+    }
+
+    fixture.scoreA = typeof scoreA === 'number' ? scoreA : 0;
+    fixture.scoreB = typeof scoreB === 'number' ? scoreB : 0;
+    fixture.winner = winner || (fixture.scoreA > fixture.scoreB ? fixture.teamA : (fixture.scoreB > fixture.scoreA ? fixture.teamB : 'TIE'));
+    fixture.status = 'completed';
+    fixture.completedAt = Date.now();
+
+    if (this.activeBattle && this.activeBattle.fixtureId === fixtureId) {
+      this.activeBattle = null;
+      this.emit('battle_updated', { battle: null });
+    }
+
+    this.emit('fixtures_updated', { fixtures: this.fixtures });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return { success: true, fixture };
+  }
+
+  concludeActiveBattle({ userToken } = {}) {
+    if (!this.activeBattle) {
+      return { success: false, reason: 'No active battle to conclude' };
+    }
+
+    const { teamA, teamB, fixtureId } = this.activeBattle;
+    let scoreA = 0;
+    let scoreB = 0;
+
+    for (let i = 0; i < 11; i++) {
+      const slotVotes = this.activeBattle.votes?.[String(i)] || {};
+      let aVotes = 0;
+      let bVotes = 0;
+      for (const voter in slotVotes) {
+        const v = slotVotes[voter];
+        if (v.voteTeamCode === teamA) aVotes++;
+        if (v.voteTeamCode === teamB) bVotes++;
+      }
+
+      if (aVotes > bVotes) {
+        scoreA++;
+      } else if (bVotes > aVotes) {
+        scoreB++;
+      } else {
+        // Tie-breaker based on player ratings
+        const pA = this.teams.get(teamA)?.playingXI?.[i];
+        const pB = this.teams.get(teamB)?.playingXI?.[i];
+        const rA = pA?.rating ?? 80;
+        const rB = pB?.rating ?? 80;
+        if (rA > rB) scoreA++;
+        else if (rB > rA) scoreB++;
+      }
+    }
+
+    const winner = scoreA > scoreB ? teamA : (scoreB > scoreA ? teamB : 'TIE');
+
+    if (fixtureId) {
+      return this.recordFixtureResult({
+        fixtureId,
+        scoreA,
+        scoreB,
+        winner,
+        userToken
+      });
+    }
+
+    // Non-fixture standalone battle
+    const res = { teamA, teamB, scoreA, scoreB, winner };
+    this.activeBattle = null;
+    this.emit('battle_updated', { battle: null });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return { success: true, result: res };
+  }
+
+  getTournamentStandings() {
+    const standingsMap = new Map();
+
+    const teamCodes = new Set();
+    for (const f of this.fixtures) {
+      teamCodes.add(f.teamA);
+      teamCodes.add(f.teamB);
+    }
+
+    if (teamCodes.size === 0) {
+      for (const t of this.teams.values()) {
+        if (t.userToken || (t.squad && t.squad.length > 0)) {
+          teamCodes.add(t.code);
+        }
+      }
+    }
+
+    for (const code of teamCodes) {
+      const team = this.teams.get(code);
+      standingsMap.set(code, {
+        code,
+        name: team?.name || code,
+        primaryColor: team?.primaryColor || '#6366f1',
+        userName: team?.userName || (team?.isBot ? 'AI Bot' : 'Open'),
+        played: 0,
+        won: 0,
+        lost: 0,
+        tied: 0,
+        points: 0,
+        slotsWon: 0,
+        slotsLost: 0,
+        diff: 0,
+        form: []
+      });
+    }
+
+    for (const f of this.fixtures) {
+      if (f.status !== 'completed' || !f.winner) continue;
+
+      const tA = standingsMap.get(f.teamA);
+      const tB = standingsMap.get(f.teamB);
+      if (!tA || !tB) continue;
+
+      tA.played += 1;
+      tB.played += 1;
+
+      const sA = f.scoreA ?? 0;
+      const sB = f.scoreB ?? 0;
+      tA.slotsWon += sA;
+      tA.slotsLost += sB;
+      tB.slotsWon += sB;
+      tB.slotsLost += sA;
+
+      if (f.winner === f.teamA) {
+        tA.won += 1;
+        tA.points += 2;
+        tA.form.push('W');
+
+        tB.lost += 1;
+        tB.form.push('L');
+      } else if (f.winner === f.teamB) {
+        tB.won += 1;
+        tB.points += 2;
+        tB.form.push('W');
+
+        tA.lost += 1;
+        tA.form.push('L');
+      } else {
+        tA.tied += 1;
+        tA.points += 1;
+        tA.form.push('T');
+
+        tB.tied += 1;
+        tB.points += 1;
+        tB.form.push('T');
+      }
+    }
+
+    for (const item of standingsMap.values()) {
+      item.diff = item.slotsWon - item.slotsLost;
+    }
+
+    return Array.from(standingsMap.values()).sort((a, b) => {
+      if (b.points !== a.points) return b.points - a.points;
+      if (b.diff !== a.diff) return b.diff - a.diff;
+      return b.slotsWon - a.slotsWon;
+    });
   }
 
   updateConfig(newConfig) {
@@ -948,7 +1236,9 @@ export class AuctionEngine {
       teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t)),
       results: this.results,
       canUndo: Boolean(this.lastBidSnapshot),
-      activeBattle: this.activeBattle
+      activeBattle: this.activeBattle,
+      fixtures: this.fixtures || [],
+      standings: this.getTournamentStandings()
     };
   }
 

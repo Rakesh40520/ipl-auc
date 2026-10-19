@@ -15,7 +15,11 @@ import {
   InitiateBattleSchema,
   CastBattleVoteSchema,
   AdvanceBattleSlotSchema,
-  ResetBattleSchema
+  ResetBattleSchema,
+  PlanFixturesSchema,
+  StartFixtureBattleSchema,
+  RecordFixtureResultSchema,
+  ConcludeBattleSchema
 } from './schema.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -308,6 +312,19 @@ export class RoomManager {
         case 'end_auction':
           res = engine.endAuction();
           break;
+        case 'plan_fixtures':
+          res = engine.generateFixtures();
+          break;
+        case 'conclude_battle':
+          res = engine.concludeActiveBattle({ userToken });
+          break;
+        case 'reset_fixtures':
+          engine.fixtures = [];
+          engine.emit('fixtures_updated', { fixtures: [] });
+          engine.emit('state_sync', engine.getStateSnapshot());
+          engine.persist();
+          res = { success: true };
+          break;
         case 'fill_bots':
           engine.updateConfig({ botsEnabled: true });
           engine.fillBots();
@@ -435,7 +452,55 @@ export class RoomManager {
       callback(res);
     });
 
-    // 11. Leave Room
+    // 11. Plan Tournament Fixtures
+    socket.on('plan_fixtures', (raw, callback = () => {}) => {
+      const parsed = PlanFixturesSchema.safeParse(raw);
+      if (!parsed.success) return callback({ success: false, error: 'Invalid plan fixtures payload' });
+      const { roomCode } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.generateFixtures();
+      callback(res);
+    });
+
+    // 12. Start Fixture in Battle Arena
+    socket.on('start_fixture_battle', (raw, callback = () => {}) => {
+      const parsed = StartFixtureBattleSchema.safeParse(raw);
+      if (!parsed.success) return callback({ success: false, error: 'Invalid fixture battle parameters' });
+      const { roomCode, fixtureId, userToken } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.startFixtureBattle({ fixtureId, userToken });
+      callback(res);
+    });
+
+    // 13. Record Fixture Result
+    socket.on('record_fixture_result', (raw, callback = () => {}) => {
+      const parsed = RecordFixtureResultSchema.safeParse(raw);
+      if (!parsed.success) return callback({ success: false, error: 'Invalid result payload' });
+      const { roomCode, fixtureId, scoreA, scoreB, winner, userToken } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.recordFixtureResult({ fixtureId, scoreA, scoreB, winner, userToken });
+      callback(res);
+    });
+
+    // 14. Conclude Active Battle & Update Points Table
+    socket.on('conclude_battle', (raw, callback = () => {}) => {
+      const parsed = ConcludeBattleSchema.safeParse(raw);
+      if (!parsed.success) return callback({ success: false, error: 'Invalid conclude payload' });
+      const { roomCode, userToken } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.concludeActiveBattle({ userToken });
+      callback(res);
+    });
+
+    // 15. Leave Room
     socket.on('leave_room', ({ roomCode, userName } = {}) => {
       if (roomCode) {
         socket.leave(roomCode);

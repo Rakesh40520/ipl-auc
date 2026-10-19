@@ -40,6 +40,14 @@
 
   const isHost = $derived(store.isHost);
 
+  const claimedCount = $derived(
+    store.roomState.teams?.filter(t => t.isClaimed)?.length || 0
+  );
+
+  const meetsPlayerRequirement = $derived(
+    store.roomState.config?.botsEnabled || claimedCount > 3
+  );
+
   async function handleStart() {
     if (!store.myTeamCode) {
       // If host hasn't selected a team yet, automatically claim the first open franchise
@@ -48,14 +56,16 @@
         await store.claimTeam(firstOpen.code);
       }
     }
+
+    if (!store.roomState.config?.botsEnabled && claimedCount <= 3) {
+      store.notify(`Tournament requirement: More than 3 players (>3) are required to plan match fixtures. Currently ${claimedCount} claimed. Please invite more managers or switch AI Bots ON.`);
+      return;
+    }
+
     starting = true;
     await store.hostControl('start');
     starting = false;
   }
-
-  const claimedCount = $derived(
-    store.roomState.teams?.filter(t => t.isClaimed)?.length || 0
-  );
 </script>
 
 <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-8">
@@ -174,17 +184,24 @@
             You control {store.myTeamCode}. {claimedCount} of 10 franchises claimed.
           {/if}
         </span>
-        <p class="text-xs text-[#9a97c4]">
+        <div class="mt-1 flex flex-wrap items-center gap-2 text-xs">
           {#if isHost}
             {#if store.roomState.config?.botsEnabled}
-              AI Bots: <span class="text-purple-300 font-semibold">Enabled</span> (Unclaimed teams will bid automatically).
+              <span class="text-purple-300 font-semibold">AI Bots Enabled: All 10 franchises will participate in match fixtures.</span>
             {:else}
-              AI Bots: <span class="text-emerald-400 font-semibold">Disabled</span> (Only claimed human teams will bid).
+              <span class={claimedCount > 3 ? 'text-emerald-400 font-semibold' : 'text-amber-400 font-semibold'}>
+                Fixtures Requirement: {claimedCount} / 4 minimum claimed ({claimedCount > 3 ? 'Ready for tournament' : 'More than 3 players required'})
+              </span>
             {/if}
           {:else}
-            Waiting for host ({store.roomState.hostName || 'Host'}) to start the auction.
+            <span class="text-[#9a97c4]">
+              Waiting for host ({store.roomState.hostName || 'Host'}) to start.
+              {#if !store.roomState.config?.botsEnabled && claimedCount <= 3}
+                <span class="text-amber-400 block sm:inline"> Need &gt; 3 players to plan match fixtures ({claimedCount}/4).</span>
+              {/if}
+            </span>
           {/if}
-        </p>
+        </div>
       </div>
     </div>
 
@@ -206,12 +223,13 @@
           title="Toggle AI bots for open franchises"
         >
           <Bot size={15} class={store.roomState.config?.botsEnabled ? 'text-purple-300' : 'text-[#6b6891]'} />
-          <span>{store.roomState.config?.botsEnabled ? 'Bots: ON (Fill Open)' : 'Bots: OFF (Humans Only)'}</span>
+          <span>{store.roomState.config?.botsEnabled ? 'Bots: ON (All 10 in Fixtures)' : 'Bots: OFF (Humans Only)'}</span>
         </button>
 
         <button
           onclick={handleStart}
           disabled={starting}
+          title={!meetsPlayerRequirement ? "More than 3 players (>3) required to plan match fixtures. Switch Bots ON or invite players." : "Start Tournament Auction"}
           class="flex-1 sm:flex-initial px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#8b73ff] to-[#ff4d8d] hover:opacity-90 text-white text-sm font-bold shadow-lg shadow-purple-900/30 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40"
         >
           {#if starting}

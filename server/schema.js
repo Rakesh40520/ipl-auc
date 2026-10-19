@@ -48,7 +48,12 @@ export const HostControlSchema = z.object({
   hostToken: z.string().optional().nullable(),
   userToken: z.string().optional().nullable(),
   teamCode: z.string().optional().nullable(),
-  action: z.enum(['start', 'pause', 'resume', 'skip', 'unsold', 'undo', 'sell_now', 'next_player', 'end', 'end_auction', 'update_config', 'fill_bots', 'clear_bots', 'toggle_bots', 'close_room', 'release_team']),
+  action: z.enum([
+    'start', 'pause', 'resume', 'skip', 'unsold', 'undo', 'sell_now',
+    'next_player', 'end', 'end_auction', 'update_config', 'fill_bots',
+    'clear_bots', 'toggle_bots', 'close_room', 'release_team',
+    'plan_fixtures', 'conclude_battle', 'reset_fixtures'
+  ]),
   configUpdate: RoomConfigSchema.partial().optional().nullable()
 });
 
@@ -63,7 +68,8 @@ export const InitiateBattleSchema = z.object({
   roomCode: z.string().trim().toUpperCase(),
   teamA: z.string().trim().toUpperCase(),
   teamB: z.string().trim().toUpperCase(),
-  userToken: z.string().min(1)
+  userToken: z.string().min(1),
+  fixtureId: z.string().optional().nullable()
 });
 
 export const CastBattleVoteSchema = z.object({
@@ -84,3 +90,29 @@ export const ResetBattleSchema = z.object({
   roomCode: z.string().trim().toUpperCase(),
   userToken: z.string().min(1)
 });
+
+export const PlanFixturesSchema = z.object({
+  roomCode: z.string().trim().toUpperCase(),
+  userToken: z.string().min(1)
+});
+
+export const StartFixtureBattleSchema = z.object({
+  roomCode: z.string().trim().toUpperCase(),
+  fixtureId: z.string().min(1),
+  userToken: z.string().min(1)
+});
+
+export const RecordFixtureResultSchema = z.object({
+  roomCode: z.string().trim().toUpperCase(),
+  fixtureId: z.string().min(1),
+  scoreA: z.number().int().min(0).max(11).optional(),
+  scoreB: z.number().int().min(0).max(11).optional(),
+  winner: z.string().trim().optional(),
+  userToken: z.string().min(1)
+});
+
+export const ConcludeBattleSchema = z.object({
+  roomCode: z.string().trim().toUpperCase(),
+  userToken: z.string().min(1)
+});
+

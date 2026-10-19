@@ -92,7 +92,10 @@ export class AuctionStore {
     bidHistory: [],
     teams: [],
     results: [],
-    canUndo: false
+    canUndo: false,
+    activeBattle: null,
+    fixtures: [],
+    standings: []
   });
 
   // Sold/Unsold Celebration overlay state
@@ -315,6 +318,12 @@ export class AuctionStore {
       if (payload.activeBattle !== undefined) {
         this.roomState.activeBattle = payload.activeBattle;
       }
+      if (payload.fixtures) {
+        this.roomState.fixtures = payload.fixtures;
+      }
+      if (payload.standings) {
+        this.roomState.standings = payload.standings;
+      }
       this.view = 'results';
       triggerConfetti('#f4c20d');
     });
@@ -329,6 +338,15 @@ export class AuctionStore {
 
     this.socket.on('battle_updated', ({ battle }) => {
       this.roomState.activeBattle = battle;
+    });
+
+    this.socket.on('fixtures_updated', ({ fixtures, error }) => {
+      if (fixtures) {
+        this.roomState.fixtures = fixtures;
+      }
+      if (error) {
+        this.notify(error);
+      }
     });
 
     this.socket.on('room_closed', ({ reason } = {}) => {
@@ -654,6 +672,75 @@ export class AuctionStore {
         roomCode: this.roomCode,
         userToken: this.userToken
       }, resolve);
+    });
+  }
+
+  planFixtures() {
+    return new Promise((resolve) => {
+      this.socket.emit('plan_fixtures', {
+        roomCode: this.roomCode,
+        userToken: this.userToken
+      }, (res) => {
+        if (!res.success) {
+          this.notify(res.reason || res.error || 'Failed to plan fixtures');
+        } else {
+          this.notify(`Successfully planned ${res.fixtures?.length || 0} match fixtures!`);
+        }
+        resolve(res);
+      });
+    });
+  }
+
+  startFixtureBattle(fixtureId) {
+    return new Promise((resolve) => {
+      this.socket.emit('start_fixture_battle', {
+        roomCode: this.roomCode,
+        fixtureId,
+        userToken: this.userToken
+      }, (res) => {
+        if (!res.success) {
+          this.notify(res.reason || res.error || 'Failed to start fixture battle');
+        } else {
+          this.notify(`Match #${res.fixture?.matchNumber}: ${res.fixture?.teamA} vs ${res.fixture?.teamB} started in Arena!`);
+        }
+        resolve(res);
+      });
+    });
+  }
+
+  recordFixtureResult(fixtureId, scoreA, scoreB, winner) {
+    return new Promise((resolve) => {
+      this.socket.emit('record_fixture_result', {
+        roomCode: this.roomCode,
+        fixtureId,
+        scoreA,
+        scoreB,
+        winner,
+        userToken: this.userToken
+      }, (res) => {
+        if (!res.success) {
+          this.notify(res.reason || res.error || 'Failed to record result');
+        } else {
+          this.notify(`Match result recorded! Standings updated.`);
+        }
+        resolve(res);
+      });
+    });
+  }
+
+  concludeBattle() {
+    return new Promise((resolve) => {
+      this.socket.emit('conclude_battle', {
+        roomCode: this.roomCode,
+        userToken: this.userToken
+      }, (res) => {
+        if (!res.success) {
+          this.notify(res.reason || res.error || 'Failed to conclude battle');
+        } else {
+          this.notify('Battle concluded and points recorded in tournament standings!');
+        }
+        resolve(res);
+      });
     });
   }
 

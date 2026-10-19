@@ -263,4 +263,79 @@ describe('AuctionEngine State Machine Tests', () => {
 
     engine.destroy();
   });
+
+  test('Tournament fixtures planning requires > 3 players, generates round-robin schedule, and updates standings', () => {
+    const engine = new AuctionEngine({
+      roomCode: 'TEST-FIXTURES',
+      hostToken: 'host-1',
+      hostName: 'Host',
+      config: { timerDuration: 10, botsEnabled: false },
+      teamsData: [...mockTeams, { code: 'KKR', name: 'Kolkata Knight Riders', primaryColor: '#3A225D' }],
+      playersData: mockPlayers,
+      emit: () => {}
+    });
+
+    engine.claimTeam('CSK', { userToken: 'user-csk', userName: 'CSK Manager' });
+    engine.claimTeam('MI', { userToken: 'user-mi', userName: 'MI Manager' });
+    engine.claimTeam('RCB', { userToken: 'user-rcb', userName: 'RCB Manager' });
+
+    // 1. With only 3 teams, generating fixtures must fail (requires > 3 players)
+    const failRes = engine.generateFixtures();
+    assert.equal(failRes.success, false);
+    assert.match(failRes.reason, /More than 3 players\/teams are required/i);
+    assert.equal(engine.fixtures.length, 0);
+
+    // 2. Add 4th team -> Now 4 teams (> 3)
+    engine.claimTeam('KKR', { userToken: 'user-kkr', userName: 'KKR Manager' });
+    const successRes = engine.generateFixtures();
+    assert.equal(successRes.success, true);
+    // 4 teams round-robin = 4 * 3 / 2 = 6 matches across 3 rounds
+    assert.equal(engine.fixtures.length, 6);
+    assert.equal(engine.fixtures[0].status, 'scheduled');
+    assert.equal(engine.fixtures[0].matchNumber, 1);
+
+    // 3. Start Fixture 1 in Battle Arena
+    const startRes = engine.startFixtureBattle({ fixtureId: 'fixture-1', userToken: 'host-1' });
+    assert.equal(startRes.success, true);
+    assert.equal(engine.fixtures[0].status, 'live');
+    assert.equal(engine.activeBattle.fixtureId, 'fixture-1');
+
+    // 4. Record result for Fixture 1
+    const f1 = engine.fixtures[0];
+    const recordRes = engine.recordFixtureResult({
+      fixtureId: f1.id,
+      scoreA: 7,
+      scoreB: 4,
+      winner: f1.teamA,
+      userToken: 'host-1'
+    });
+    assert.equal(recordRes.success, true);
+    assert.equal(f1.status, 'completed');
+    assert.equal(f1.scoreA, 7);
+    assert.equal(f1.scoreB, 4);
+    assert.equal(f1.winner, f1.teamA);
+
+    // 5. Verify Tournament Standings
+    const standings = engine.getTournamentStandings();
+    assert.ok(standings.length >= 4);
+    // Leader should be winner team (teamA) with 2 points and +3 diff
+    const winnerStanding = standings.find(s => s.code === f1.teamA);
+    const loserStanding = standings.find(s => s.code === f1.teamB);
+    assert.equal(winnerStanding.played, 1);
+    assert.equal(winnerStanding.won, 1);
+    assert.equal(winnerStanding.points, 2);
+    assert.equal(winnerStanding.diff, 3);
+    assert.equal(winnerStanding.form[0], 'W');
+
+    assert.equal(loserStanding.played, 1);
+    assert.equal(loserStanding.lost, 1);
+    assert.equal(loserStanding.points, 0);
+    assert.equal(loserStanding.diff, -3);
+    assert.equal(loserStanding.form[0], 'L');
+
+    // Winner team should be ranked #1
+    assert.equal(standings[0].code, f1.teamA);
+
+    engine.destroy();
+  });
 });
