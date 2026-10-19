@@ -342,6 +342,12 @@ export class RoomManager {
             engine.clearBots();
           }
           break;
+        case 'advance_to_fixtures':
+          res = engine.advanceToFixtures();
+          break;
+        case 'toggle_spectator_voting':
+          res = engine.toggleSpectatorVoting();
+          break;
         case 'update_config':
           if (configUpdate) {
             res = engine.updateConfig(configUpdate);
@@ -392,11 +398,11 @@ export class RoomManager {
       if (!parsed.success) {
         return callback({ success: false, error: 'Invalid playing XI payload' });
       }
-      const { roomCode, teamCode, userToken, playingXI } = parsed.data;
+      const { roomCode, teamCode, userToken, playingXI, confirm } = parsed.data;
       const engine = this.getRoom(roomCode);
       if (!engine) return callback({ success: false, error: 'Room not found' });
 
-      const res = engine.setPlayingXI(teamCode, { userToken, playingXI });
+      const res = engine.setPlayingXI(teamCode, { userToken, playingXI, confirm });
       callback(res);
     });
 
@@ -420,11 +426,11 @@ export class RoomManager {
       if (!parsed.success) {
         return callback({ success: false, error: 'Invalid vote data' });
       }
-      const { roomCode, slotIndex, voteTeamCode, userToken, voterTeamCode } = parsed.data;
+      const { roomCode, slotIndex, voteTeamCode, userToken, voterTeamCode, isSuperOver } = parsed.data;
       const engine = this.getRoom(roomCode);
       if (!engine) return callback({ success: false, error: 'Room not found' });
 
-      const res = engine.castBattleVote({ slotIndex, voteTeamCode, userToken, voterTeamCode });
+      const res = engine.castBattleVote({ slotIndex, voteTeamCode, userToken, voterTeamCode, isSuperOver });
       callback(res);
     });
 

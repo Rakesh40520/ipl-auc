@@ -48,7 +48,8 @@ export class AuctionEngine {
         userToken: null,
         userName: null,
         isBot: false,
-        locked: false
+        locked: false,
+        isXIConfirmed: false
       });
     }
 
@@ -82,6 +83,12 @@ export class AuctionEngine {
     // Post-Auction Head-to-Head 1-on-1 Battle Arena & Tournament Fixtures
     this.activeBattle = null;
     this.fixtures = [];
+
+    // Spectator voting & Playing XI selection window
+    this.config.spectatorsCanVote = this.config.spectatorsCanVote ?? true;
+    this.config.xiSelectionTime = this.config.xiSelectionTime ?? 90;
+    this.xiTimer = this.config.xiSelectionTime;
+    this.xiTimerInterval = null;
   }
 
   // --- LOBBY METHODS ---
@@ -194,17 +201,75 @@ export class AuctionEngine {
   endAuction() {
     this.stopTimer();
     this.clearTransition();
-    this.status = 'completed';
+    this.status = 'playing_xi_selection';
 
     // Auto-generate default Playing XI for any franchises that don't have one set yet
     for (const team of this.teams.values()) {
       if (!team.playingXI || team.playingXI.length === 0) {
         team.playingXI = this.generateDefaultPlayingXI(team);
       }
+      team.isXIConfirmed = team.isBot;
     }
 
     // Auto-plan tournament fixtures if participating teams > 3
     this.generateFixtures();
+
+    // Start XI selection countdown timer (default 90s)
+    this.startXITimer();
+
+    this.emit('auction_status_changed', { status: this.status });
+    this.emit('xi_selection_started', {
+      status: this.status,
+      timer: this.xiTimer,
+      teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t)),
+      fixtures: this.fixtures
+    });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return { success: true, status: this.status, timer: this.xiTimer };
+  }
+
+  startXITimer() {
+    this.stopXITimer();
+    this.xiTimer = this.config.xiSelectionTime || 90;
+    this.xiTimerInterval = setInterval(() => {
+      this.xiTimer -= 1;
+      this.emit('xi_timer_tick', { timer: this.xiTimer });
+      if (this.xiTimer <= 0) {
+        this.stopXITimer();
+        this.advanceToFixtures();
+      }
+    }, 1000);
+  }
+
+  stopXITimer() {
+    if (this.xiTimerInterval) {
+      clearInterval(this.xiTimerInterval);
+      this.xiTimerInterval = null;
+    }
+  }
+
+  areAllTeamsXIConfirmed() {
+    const activeHumanTeams = Array.from(this.teams.values()).filter(t => t.userToken && !t.isBot);
+    if (activeHumanTeams.length === 0) return true;
+    return activeHumanTeams.every(t => t.isXIConfirmed);
+  }
+
+  advanceToFixtures() {
+    this.stopXITimer();
+    this.status = 'completed';
+
+    // Auto-confirm any unconfirmed squads
+    for (const team of this.teams.values()) {
+      if (!team.playingXI || team.playingXI.length === 0) {
+        team.playingXI = this.generateDefaultPlayingXI(team);
+      }
+      team.isXIConfirmed = true;
+    }
+
+    if (!this.fixtures || this.fixtures.length === 0) {
+      this.generateFixtures();
+    }
 
     this.emit('auction_status_changed', { status: this.status });
     this.emit('auction_completed', {
@@ -284,7 +349,7 @@ export class AuctionEngine {
     return selected;
   }
 
-  setPlayingXI(teamCode, { userToken, playingXI }) {
+  setPlayingXI(teamCode, { userToken, playingXI, confirm = false }) {
     const team = this.teams.get(teamCode);
     if (!team) return { success: false, reason: 'Invalid team' };
 
@@ -298,15 +363,28 @@ export class AuctionEngine {
     }
 
     team.playingXI = playingXI;
+    if (confirm) {
+      team.isXIConfirmed = true;
+    }
+
+    const allConfirmed = this.areAllTeamsXIConfirmed();
+
     this.persist();
     this.emit('team_updated', { team: this.sanitizeTeam(team) });
     this.emit('playing_xi_updated', {
       teamCode,
       playingXI,
-      team: this.sanitizeTeam(team)
+      team: this.sanitizeTeam(team),
+      isConfirmed: team.isXIConfirmed,
+      allConfirmed
     });
+
+    if (allConfirmed) {
+      this.emit('all_teams_ready', { ready: true });
+    }
+
     this.emit('state_sync', this.getStateSnapshot());
-    return { success: true, playingXI: team.playingXI };
+    return { success: true, playingXI: team.playingXI, isConfirmed: team.isXIConfirmed, allConfirmed };
   }
 
   // --- HEAD-TO-HEAD BATTLE ARENA & POSITION-BY-POSITION VOTING ---
@@ -347,7 +425,7 @@ export class AuctionEngine {
     return { success: true, battle: this.activeBattle };
   }
 
-  castBattleVote({ slotIndex, voteTeamCode, userToken, voterTeamCode }) {
+  castBattleVote({ slotIndex = 0, voteTeamCode, userToken, voterTeamCode, isSuperOver = false }) {
     if (!this.activeBattle) {
       return { success: false, reason: 'No active team battle' };
     }
@@ -357,30 +435,62 @@ export class AuctionEngine {
       return { success: false, reason: 'Vote must be for one of the competing franchises' };
     }
 
-    // If voter belongs to one of the competing teams, prompt requested remaining teams to vote!
-    const activeHumanTeams = Array.from(this.teams.values()).filter(t => t.userToken && !t.isBot);
-    if (activeHumanTeams.length > 2 && (voterTeamCode === teamA || voterTeamCode === teamB)) {
-      return {
-        success: false,
-        reason: 'As a competing franchise manager, you cannot vote. Only remaining neutral franchises can vote!'
+    // Check spectator
+    const isSpectator = !voterTeamCode || !this.teams.has(voterTeamCode);
+    if (isSpectator) {
+      if (this.config.spectatorsCanVote === false) {
+        return {
+          success: false,
+          reason: 'Spectator voting is disabled in this room. Only neutral franchise managers can vote.'
+        };
+      }
+    } else {
+      // If voter belongs to one of the competing teams, prompt requested remaining teams to vote!
+      const activeHumanTeams = Array.from(this.teams.values()).filter(t => t.userToken && !t.isBot);
+      if (activeHumanTeams.length > 2 && (voterTeamCode === teamA || voterTeamCode === teamB)) {
+        return {
+          success: false,
+          reason: 'As a competing franchise manager, you cannot vote. Only remaining neutral franchises and spectators can vote!'
+        };
+      }
+    }
+
+    if (isSuperOver || this.activeBattle.isSuperOver) {
+      if (!this.activeBattle.superOverVotes) {
+        this.activeBattle.superOverVotes = {};
+      }
+      this.activeBattle.superOverVotes[userToken] = {
+        voteTeamCode,
+        voterTeamCode: isSpectator ? null : voterTeamCode,
+        isSpectator,
+        timestamp: Date.now()
+      };
+    } else {
+      const slotKey = String(slotIndex);
+      if (!this.activeBattle.votes[slotKey]) {
+        this.activeBattle.votes[slotKey] = {};
+      }
+
+      this.activeBattle.votes[slotKey][userToken] = {
+        voteTeamCode,
+        voterTeamCode: isSpectator ? null : voterTeamCode,
+        isSpectator,
+        timestamp: Date.now()
       };
     }
-
-    const slotKey = String(slotIndex);
-    if (!this.activeBattle.votes[slotKey]) {
-      this.activeBattle.votes[slotKey] = {};
-    }
-
-    this.activeBattle.votes[slotKey][userToken] = {
-      voteTeamCode,
-      voterTeamCode: voterTeamCode || null,
-      timestamp: Date.now()
-    };
 
     this.persist();
     this.emit('battle_updated', { battle: this.activeBattle });
     this.emit('state_sync', this.getStateSnapshot());
     return { success: true, battle: this.activeBattle };
+  }
+
+  toggleSpectatorVoting() {
+    this.config.spectatorsCanVote = !this.config.spectatorsCanVote;
+    this.persist();
+    this.emit('config_updated', { config: this.config });
+    this.emit('state_sync', this.getStateSnapshot());
+    return { success: true, spectatorsCanVote: this.config.spectatorsCanVote };
   }
 
   advanceBattleSlot({ slotIndex }) {
@@ -514,7 +624,7 @@ export class AuctionEngine {
     return { success: true, fixture, battle: this.activeBattle };
   }
 
-  recordFixtureResult({ fixtureId, scoreA, scoreB, winner, userToken }) {
+  recordFixtureResult({ fixtureId, scoreA, scoreB, winner, isSuperOver = false, superOverScoreA = 0, superOverScoreB = 0, userToken }) {
     const fixture = this.fixtures.find(f => f.id === fixtureId);
     if (!fixture) {
       return { success: false, reason: 'Fixture not found' };
@@ -523,6 +633,9 @@ export class AuctionEngine {
     fixture.scoreA = typeof scoreA === 'number' ? scoreA : 0;
     fixture.scoreB = typeof scoreB === 'number' ? scoreB : 0;
     fixture.winner = winner || (fixture.scoreA > fixture.scoreB ? fixture.teamA : (fixture.scoreB > fixture.scoreA ? fixture.teamB : 'TIE'));
+    fixture.isSuperOver = Boolean(isSuperOver);
+    fixture.superOverScoreA = superOverScoreA;
+    fixture.superOverScoreB = superOverScoreB;
     fixture.status = 'completed';
     fixture.completedAt = Date.now();
 
@@ -543,6 +656,54 @@ export class AuctionEngine {
     }
 
     const { teamA, teamB, fixtureId } = this.activeBattle;
+
+    // 1. If currently in a Super Over, finalize the Super Over showdown
+    if (this.activeBattle.isSuperOver) {
+      let soVotesA = 0;
+      let soVotesB = 0;
+      const soVotes = this.activeBattle.superOverVotes || {};
+      for (const voter in soVotes) {
+        const v = soVotes[voter];
+        if (v.voteTeamCode === teamA) soVotesA++;
+        if (v.voteTeamCode === teamB) soVotesB++;
+      }
+
+      let winner = teamA;
+      if (soVotesA > soVotesB) {
+        winner = teamA;
+      } else if (soVotesB > soVotesA) {
+        winner = teamB;
+      } else {
+        const rA = this.activeBattle.superOverA?.rating ?? 95;
+        const rB = this.activeBattle.superOverB?.rating ?? 95;
+        winner = rA >= rB ? teamA : teamB;
+      }
+
+      const scoreA = this.activeBattle.regularScoreA ?? 5;
+      const scoreB = this.activeBattle.regularScoreB ?? 5;
+
+      if (fixtureId) {
+        return this.recordFixtureResult({
+          fixtureId,
+          scoreA,
+          scoreB,
+          winner,
+          isSuperOver: true,
+          superOverScoreA: soVotesA,
+          superOverScoreB: soVotesB,
+          userToken
+        });
+      }
+
+      const res = { teamA, teamB, scoreA, scoreB, winner, isSuperOver: true, superOverScoreA: soVotesA, superOverScoreB: soVotesB };
+      this.activeBattle = null;
+      this.emit('battle_updated', { battle: null });
+      this.emit('state_sync', this.getStateSnapshot());
+      this.persist();
+      return { success: true, result: res };
+    }
+
+    // 2. Regular 11 position duels tally
     let scoreA = 0;
     let scoreB = 0;
 
@@ -561,7 +722,7 @@ export class AuctionEngine {
       } else if (bVotes > aVotes) {
         scoreB++;
       } else {
-        // Tie-breaker based on player ratings
+        // Slot Tie-breaker based on player ratings
         const pA = this.teams.get(teamA)?.playingXI?.[i];
         const pB = this.teams.get(teamB)?.playingXI?.[i];
         const rA = pA?.rating ?? 80;
@@ -571,7 +732,24 @@ export class AuctionEngine {
       }
     }
 
-    const winner = scoreA > scoreB ? teamA : (scoreB > scoreA ? teamB : 'TIE');
+    // 3. Check for a DRAW: If draw occurs, initiate Super Over as requested ("if draw you plan according")
+    if (scoreA === scoreB) {
+      this.activeBattle.isSuperOver = true;
+      this.activeBattle.superOverVotes = {};
+      const tA = this.teams.get(teamA);
+      const tB = this.teams.get(teamB);
+      this.activeBattle.superOverA = tA?.playingXI?.[0] || { name: `${teamA} Captain`, rating: 95 };
+      this.activeBattle.superOverB = tB?.playingXI?.[0] || { name: `${teamB} Captain`, rating: 95 };
+      this.activeBattle.regularScoreA = scoreA;
+      this.activeBattle.regularScoreB = scoreB;
+      this.persist();
+      this.emit('super_over_started', { battle: this.activeBattle });
+      this.emit('battle_updated', { battle: this.activeBattle });
+      this.emit('state_sync', this.getStateSnapshot());
+      return { success: true, draw: true, isSuperOver: true, battle: this.activeBattle };
+    }
+
+    const winner = scoreA > scoreB ? teamA : teamB;
 
     if (fixtureId) {
       return this.recordFixtureResult({
@@ -1211,7 +1389,8 @@ export class AuctionEngine {
       userToken: team.userToken,
       userName: team.userName,
       isBot: team.isBot,
-      isClaimed: Boolean(team.userToken)
+      isClaimed: Boolean(team.userToken),
+      isXIConfirmed: Boolean(team.isXIConfirmed)
     };
   }
 
@@ -1232,6 +1411,9 @@ export class AuctionEngine {
       leadTeamDetails: this.leadTeam ? this.sanitizeTeam(this.teams.get(this.leadTeam)) : null,
       timer: Math.ceil(this.timer),
       timerPrecise: parseFloat(this.timer.toFixed(1)),
+      xiTimer: Math.ceil(this.xiTimer || 0),
+      spectatorsCanVote: this.config.spectatorsCanVote ?? true,
+      allTeamsXIConfirmed: this.areAllTeamsXIConfirmed(),
       bidHistory: this.bidHistory,
       teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t)),
       results: this.results,
@@ -1257,6 +1439,7 @@ export class AuctionEngine {
 
   destroy() {
     this.stopTimer();
+    this.stopXITimer();
     this.clearTransition();
   }
 }

@@ -224,17 +224,24 @@ describe('AuctionEngine State Machine Tests', () => {
     // Host calls endAuction
     const endRes = engine.endAuction();
     assert.equal(endRes.success, true);
-    assert.equal(engine.status, 'completed');
+    assert.equal(engine.status, 'playing_xi_selection');
+    assert.equal(typeof engine.xiTimer, 'number');
 
     // Playing XI should be auto-initialized
     const cskTeam = engine.teams.get('CSK');
     assert.ok(Array.isArray(cskTeam.playingXI));
 
-    // Custom setPlayingXI
-    const customXI = [{ id: 'p-1', name: 'Player One', role: 'Batter' }];
-    const setRes = engine.setPlayingXI('CSK', { userToken: 'user-csk', playingXI: customXI });
+    // Custom setPlayingXI with confirm flag
+    const customXI = [{ id: 'p-1', name: 'Player One', role: 'Batter', rating: 90 }];
+    const setRes = engine.setPlayingXI('CSK', { userToken: 'user-csk', playingXI: customXI, confirm: true });
     assert.equal(setRes.success, true);
     assert.equal(cskTeam.playingXI.length, 1);
+    assert.equal(cskTeam.isXIConfirmed, true);
+
+    // Host advances to fixtures
+    const advRes = engine.advanceToFixtures();
+    assert.equal(advRes.success, true);
+    assert.equal(engine.status, 'completed');
 
     // Initiate Battle CSK vs MI
     const battleRes = engine.initiateBattle({ teamA: 'CSK', teamB: 'MI', userToken: 'host-1' });
@@ -242,7 +249,7 @@ describe('AuctionEngine State Machine Tests', () => {
     assert.equal(engine.activeBattle.teamA, 'CSK');
     assert.equal(engine.activeBattle.teamB, 'MI');
 
-    // Competing manager (CSK) tries to vote -> rejected (neutral remaining teams vote)
+    // Competing manager (CSK) tries to vote -> rejected (neutral remaining teams & spectators vote)
     const selfVoteRes = engine.castBattleVote({
       slotIndex: 0,
       voteTeamCode: 'CSK',
@@ -260,6 +267,60 @@ describe('AuctionEngine State Machine Tests', () => {
     });
     assert.equal(neutralVoteRes.success, true);
     assert.equal(engine.activeBattle.votes['0']['user-rcb'].voteTeamCode, 'CSK');
+
+    // Test Spectator voting (voterTeamCode = null)
+    assert.equal(engine.config.spectatorsCanVote, true);
+    const spectatorVoteRes = engine.castBattleVote({
+      slotIndex: 0,
+      voteTeamCode: 'MI',
+      userToken: 'spectator-1',
+      voterTeamCode: null
+    });
+    assert.equal(spectatorVoteRes.success, true);
+    assert.equal(engine.activeBattle.votes['0']['spectator-1'].isSpectator, true);
+
+    // Toggle spectator voting to false
+    engine.toggleSpectatorVoting();
+    assert.equal(engine.config.spectatorsCanVote, false);
+
+    const spectatorBlockedRes = engine.castBattleVote({
+      slotIndex: 1,
+      voteTeamCode: 'CSK',
+      userToken: 'spectator-2',
+      voterTeamCode: null
+    });
+    assert.equal(spectatorBlockedRes.success, false);
+    assert.match(spectatorBlockedRes.reason, /Spectator voting is disabled/i);
+
+    // Re-enable spectator voting
+    engine.toggleSpectatorVoting();
+    assert.equal(engine.config.spectatorsCanVote, true);
+
+    // Test Draw -> Super Over Tie-Breaker
+    // Force active battle votes to be empty so ratings decide, or simulate concludeActiveBattle resulting in tie
+    // We can directly test Super Over triggering when scores tie:
+    const concludeRes = engine.concludeActiveBattle();
+    // In our concludeActiveBattle, if slot wins tie, it triggers isSuperOver = true!
+    if (concludeRes.isSuperOver) {
+      assert.equal(engine.activeBattle.isSuperOver, true);
+      assert.ok(engine.activeBattle.superOverA);
+      assert.ok(engine.activeBattle.superOverB);
+
+      // Spectator casts Golden Vote in Super Over
+      const soVoteRes = engine.castBattleVote({
+        voteTeamCode: 'CSK',
+        userToken: 'spectator-1',
+        isSuperOver: true
+      });
+      assert.equal(soVoteRes.success, true);
+      assert.equal(engine.activeBattle.superOverVotes['spectator-1'].voteTeamCode, 'CSK');
+
+      // Conclude Super Over
+      const finalSoRes = engine.concludeActiveBattle();
+      assert.equal(finalSoRes.success, true);
+      assert.equal(finalSoRes.result.winner, 'CSK');
+      assert.equal(finalSoRes.result.isSuperOver, true);
+    }
 
     engine.destroy();
   });

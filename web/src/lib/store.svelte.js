@@ -89,6 +89,9 @@ export class AuctionStore {
     leadTeamDetails: null,
     timer: 10,
     timerPrecise: 10.0,
+    xiTimer: 90,
+    spectatorsCanVote: true,
+    allTeamsXIConfirmed: false,
     bidHistory: [],
     teams: [],
     results: [],
@@ -307,6 +310,37 @@ export class AuctionStore {
       this.notify('Accelerated Round starting for unsold players!');
     });
 
+    this.socket.on('xi_selection_started', (payload) => {
+      this.roomState.status = payload.status || 'playing_xi_selection';
+      this.roomState.xiTimer = payload.timer || 90;
+      if (payload.teams) this.roomState.teams = payload.teams;
+      if (payload.fixtures) this.roomState.fixtures = payload.fixtures;
+      this.view = 'results';
+      this.notify('Auction ended! Select and lock in your franchise Playing XI!');
+    });
+
+    this.socket.on('xi_timer_tick', ({ timer }) => {
+      this.roomState.xiTimer = timer;
+    });
+
+    this.socket.on('all_teams_ready', () => {
+      this.roomState.allTeamsXIConfirmed = true;
+      this.notify('All franchises have locked in their Playing XI! Host can start the matches.');
+    });
+
+    this.socket.on('super_over_started', ({ battle }) => {
+      this.roomState.activeBattle = battle;
+      this.notify('MATCH TIED! Super Over sudden-death tie-breaker initiated!');
+      playGavel();
+    });
+
+    this.socket.on('config_updated', ({ config }) => {
+      this.roomState.config = config;
+      if (config.spectatorsCanVote !== undefined) {
+        this.roomState.spectatorsCanVote = config.spectatorsCanVote;
+      }
+    });
+
     this.socket.on('auction_completed', (payload) => {
       this.roomState.status = 'completed';
       if (payload.results) {
@@ -328,11 +362,17 @@ export class AuctionStore {
       triggerConfetti('#f4c20d');
     });
 
-    this.socket.on('playing_xi_updated', ({ teamCode, playingXI, team }) => {
+    this.socket.on('playing_xi_updated', ({ teamCode, playingXI, team, isConfirmed, allConfirmed }) => {
       const idx = this.roomState.teams.findIndex(t => t.code === teamCode);
       if (idx !== -1) {
         this.roomState.teams[idx].playingXI = playingXI;
+        if (isConfirmed !== undefined) {
+          this.roomState.teams[idx].isXIConfirmed = isConfirmed;
+        }
         if (team) this.roomState.teams[idx] = team;
+      }
+      if (allConfirmed !== undefined) {
+        this.roomState.allTeamsXIConfirmed = allConfirmed;
       }
     });
 
@@ -364,7 +404,7 @@ export class AuctionStore {
 
   updateViewBasedOnState() {
     if (this.view === 'home') return;
-    if (this.roomState.status === 'completed') {
+    if (this.roomState.status === 'completed' || this.roomState.status === 'playing_xi_selection') {
       this.view = 'results';
     } else if (this.roomState.status === 'lobby') {
       this.view = 'lobby';
@@ -603,22 +643,31 @@ export class AuctionStore {
     };
   }
 
-  setPlayingXI(teamCode, playingXI) {
+  setPlayingXI(teamCode, playingXI, confirm = false) {
     return new Promise((resolve) => {
       this.socket.emit('set_playing_xi', {
         roomCode: this.roomCode,
         teamCode,
         userToken: this.userToken,
-        playingXI
+        playingXI,
+        confirm
       }, (res) => {
         if (!res.success) {
           this.notify(res.error || 'Failed to update Playing XI');
         } else {
-          this.notify('Playing XI saved successfully!');
+          this.notify(confirm ? 'Playing XI locked in & confirmed!' : 'Playing XI saved successfully!');
         }
         resolve(res);
       });
     });
+  }
+
+  advanceToFixtures() {
+    return this.hostControl('advance_to_fixtures');
+  }
+
+  toggleSpectatorVoting() {
+    return this.hostControl('toggle_spectator_voting');
   }
 
   initiateBattle(teamA, teamB) {
@@ -639,14 +688,15 @@ export class AuctionStore {
     });
   }
 
-  castBattleVote(slotIndex, voteTeamCode) {
+  castBattleVote(slotIndex, voteTeamCode, isSuperOver = false) {
     return new Promise((resolve) => {
       this.socket.emit('cast_battle_vote', {
         roomCode: this.roomCode,
         slotIndex,
         voteTeamCode,
         userToken: this.userToken,
-        voterTeamCode: this.myTeamCode
+        voterTeamCode: this.myTeamCode,
+        isSuperOver
       }, (res) => {
         if (!res.success) {
           this.notify(res.error || 'Vote rejected');

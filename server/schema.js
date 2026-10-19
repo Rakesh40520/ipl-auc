@@ -8,7 +8,9 @@ export const RoomConfigSchema = z.object({
   minPlayerBasePrice: z.number().min(10).max(100).default(30),
   timerDuration: z.number().min(5).max(30).default(10),
   botsEnabled: z.boolean().default(false),
-  rtmEnabled: z.boolean().default(false)
+  rtmEnabled: z.boolean().default(false),
+  spectatorsCanVote: z.boolean().default(true),
+  xiSelectionTime: z.number().min(30).max(300).default(90)
 });
 
 export const CreateRoomSchema = z.object({
@@ -52,7 +54,8 @@ export const HostControlSchema = z.object({
     'start', 'pause', 'resume', 'skip', 'unsold', 'undo', 'sell_now',
     'next_player', 'end', 'end_auction', 'update_config', 'fill_bots',
     'clear_bots', 'toggle_bots', 'close_room', 'release_team',
-    'plan_fixtures', 'conclude_battle', 'reset_fixtures'
+    'plan_fixtures', 'conclude_battle', 'reset_fixtures',
+    'toggle_spectator_voting', 'advance_to_fixtures', 'start_super_over'
   ]),
   configUpdate: RoomConfigSchema.partial().optional().nullable()
 });
@@ -61,7 +64,8 @@ export const SetPlayingXISchema = z.object({
   roomCode: z.string().trim().toUpperCase(),
   teamCode: z.string().trim().toUpperCase(),
   userToken: z.string().min(1),
-  playingXI: z.array(z.any())
+  playingXI: z.array(z.any()),
+  confirm: z.boolean().optional()
 });
 
 export const InitiateBattleSchema = z.object({
@@ -74,10 +78,11 @@ export const InitiateBattleSchema = z.object({
 
 export const CastBattleVoteSchema = z.object({
   roomCode: z.string().trim().toUpperCase(),
-  slotIndex: z.number().int().min(0).max(10),
+  slotIndex: z.number().int().min(-1).max(10).optional().default(0),
   voteTeamCode: z.string().trim().toUpperCase(),
   userToken: z.string().min(1),
-  voterTeamCode: z.string().optional().nullable()
+  voterTeamCode: z.string().optional().nullable(),
+  isSuperOver: z.boolean().optional()
 });
 
 export const AdvanceBattleSlotSchema = z.object({

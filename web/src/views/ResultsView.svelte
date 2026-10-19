@@ -22,14 +22,42 @@
     Calendar,
     TableProperties,
     Play,
-    Radio
+    Radio,
+    Timer,
+    Lock,
+    Eye,
+    EyeOff,
+    Crown
   } from 'lucide-svelte';
 
   // Sub-navigation tab: 'fixtures' | 'battle' | 'xi' | 'overview'
-  let activeTab = $state('fixtures');
+  let activeTab = $state(
+    store.roomState.status === 'playing_xi_selection' ? 'xi' : 'fixtures'
+  );
   let fixturesSubTab = $state('fixtures'); // 'fixtures' | 'standings'
   let roundFilter = $state('all');
   let copied = $state(false);
+
+  // Spectator identification & permissions
+  const isSpectator = $derived(!store.myTeamCode);
+  const spectatorsCanVote = $derived(store.roomState.spectatorsCanVote ?? true);
+
+  // Playing XI Phase status & readiness
+  const isXISelectionPhase = $derived(store.roomState.status === 'playing_xi_selection');
+  const xiTimer = $derived(store.roomState.xiTimer ?? 90);
+
+  const humanTeams = $derived(
+    store.roomState.teams?.filter(t => t.userToken && !t.isBot) || []
+  );
+
+  const confirmedHumanTeams = $derived(
+    humanTeams.filter(t => t.isXIConfirmed)
+  );
+
+  const allTeamsConfirmed = $derived(
+    store.roomState.allTeamsXIConfirmed ||
+    (humanTeams.length > 0 && confirmedHumanTeams.length === humanTeams.length)
+  );
 
   // --- PLAYING XI STATE ---
   let selectedTeamCode = $state(
@@ -38,6 +66,10 @@
 
   const selectedTeam = $derived(
     store.roomState.teams?.find(t => t.code === selectedTeamCode) || store.roomState.teams?.[0]
+  );
+
+  const isCurrentTeamConfirmed = $derived(
+    Boolean(selectedTeam?.isXIConfirmed)
   );
 
   const isMyTeamOrHost = $derived(
@@ -160,7 +192,25 @@
 
   async function savePlayingXI() {
     if (!selectedTeam) return;
-    await store.setPlayingXI(selectedTeam.code, localXI);
+    await store.setPlayingXI(selectedTeam.code, localXI, false);
+  }
+
+  async function lockInPlayingXI() {
+    if (!selectedTeam) return;
+    if (localXI.length < 11) {
+      store.notify(`Please select 11 players before locking in (currently ${localXI.length}/11).`);
+      return;
+    }
+    await store.setPlayingXI(selectedTeam.code, localXI, true);
+  }
+
+  async function handleAdvanceToFixtures() {
+    await store.advanceToFixtures();
+    activeTab = 'fixtures';
+  }
+
+  async function handleToggleSpectators() {
+    await store.toggleSpectatorVoting();
   }
 
   // --- BATTLE ARENA STATE ---
@@ -179,7 +229,9 @@
   // Determine whether current user is permitted to vote
   const canVote = $derived.by(() => {
     if (!activeBattle) return false;
-    const humanTeams = store.roomState.teams?.filter(t => t.userToken && !t.isBot) || [];
+    if (isSpectator) {
+      return spectatorsCanVote;
+    }
     // If more than 2 human franchises, contenders cannot vote (neutral remaining teams vote)
     if (humanTeams.length > 2) {
       return store.myTeamCode !== activeBattle.teamA && store.myTeamCode !== activeBattle.teamB;
@@ -250,6 +302,27 @@
   function castVote(slotIdx, teamCode) {
     store.castBattleVote(slotIdx, teamCode);
   }
+
+  function hasVotedForSuperOver(teamCode) {
+    if (!activeBattle || !activeBattle.superOverVotes) return false;
+    return activeBattle.superOverVotes[store.userToken]?.voteTeamCode === teamCode;
+  }
+
+  function castSuperOverVote(teamCode) {
+    store.castBattleVote(0, teamCode, true);
+  }
+
+  const superOverScores = $derived.by(() => {
+    if (!activeBattle || !activeBattle.superOverVotes) return { aVotes: 0, bVotes: 0, total: 0 };
+    let aVotes = 0;
+    let bVotes = 0;
+    for (const token in activeBattle.superOverVotes) {
+      const v = activeBattle.superOverVotes[token];
+      if (v.voteTeamCode === activeBattle.teamA) aVotes++;
+      if (v.voteTeamCode === activeBattle.teamB) bVotes++;
+    }
+    return { aVotes, bVotes, total: aVotes + bVotes };
+  });
 
   // --- OVERVIEW / TOP BUYS STATE ---
   const soldPlayers = $derived(
@@ -387,6 +460,137 @@
       </div>
     </div>
   </div>
+
+  <!-- Playing XI Selection Stage Countdown & Control Banner -->
+  {#if isXISelectionPhase}
+    <div class="bg-gradient-to-r from-purple-950/40 via-[#181638] to-indigo-950/40 border-2 border-purple-500/50 rounded-3xl p-5 sm:p-6 shadow-2xl relative overflow-hidden">
+      <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5 relative z-10">
+        <!-- Stage Info & Timer -->
+        <div class="flex items-start sm:items-center gap-4">
+          <!-- Countdown Clock -->
+          <div class="relative flex-shrink-0">
+            <div class="w-16 h-16 rounded-2xl bg-[#0c0b1d] border-2 border-purple-500/60 grid place-items-center shadow-lg">
+              <span class="font-heading font-extrabold text-2xl text-purple-300 font-mono">
+                {xiTimer}s
+              </span>
+            </div>
+            <span class="absolute -bottom-1 -right-1 flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+            </span>
+          </div>
+
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Timer size={12} />
+                <span>Playing XI Selection Phase</span>
+              </span>
+              {#if allTeamsConfirmed}
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center gap-1">
+                  <CheckCircle2 size={12} />
+                  <span>All Franchises Ready!</span>
+                </span>
+              {:else}
+                <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold">
+                  {confirmedHumanTeams.length} / {humanTeams.length || store.roomState.teams.length} Franchises Locked In
+                </span>
+              {/if}
+            </div>
+
+            <h3 class="text-xl sm:text-2xl font-extrabold text-white font-heading">
+              Lock In Your 11 Before Match Fixtures Begin
+            </h3>
+            <p class="text-xs text-[#9a97c4] max-w-xl">
+              Select your balanced 11 (Max 4 overseas, at least 1 keeper). Once all teams confirm (or countdown finishes), the tournament fixtures begin!
+            </p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto justify-start lg:justify-end">
+          {#if store.myTeamCode}
+            {@const myFranchise = store.roomState.teams?.find(t => t.code === store.myTeamCode)}
+            {#if myFranchise?.isXIConfirmed}
+              <div class="px-4 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold text-xs flex items-center gap-1.5">
+                <CheckCircle2 size={14} />
+                <span>Your Playing XI is Locked In!</span>
+              </div>
+            {:else}
+              <button
+                onclick={() => {
+                  activeTab = 'xi';
+                  selectedTeamCode = store.myTeamCode;
+                  lockInPlayingXI();
+                }}
+                class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-lg shadow-emerald-950/40"
+              >
+                <Lock size={14} />
+                <span>Lock In {store.myTeamCode} XI</span>
+              </button>
+            {/if}
+          {/if}
+
+          {#if store.isHost}
+            <button
+              onclick={handleToggleSpectators}
+              class="px-3.5 py-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition cursor-pointer {spectatorsCanVote ? 'bg-indigo-600/30 border-indigo-500/50 text-indigo-200 hover:bg-indigo-600/50' : 'bg-[#0c0b1d] border-[#272552] text-[#9a97c4] hover:text-white'}"
+              title="Toggle whether non-franchise spectators are allowed to cast jury votes"
+            >
+              {#if spectatorsCanVote}
+                <Eye size={14} class="text-indigo-400" />
+                <span>Spectator Voting: ON</span>
+              {:else}
+                <EyeOff size={14} class="text-[#9a97c4]" />
+                <span>Spectator Voting: OFF</span>
+              {/if}
+            </button>
+
+            <button
+              onclick={handleAdvanceToFixtures}
+              class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90 text-white font-extrabold text-xs sm:text-sm flex items-center gap-2 transition cursor-pointer shadow-xl shadow-amber-950/40"
+              title="Start tournament match fixtures immediately"
+            >
+              <Crown size={15} />
+              <span>Start Matches Now</span>
+            </button>
+          {/if}
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Spectator Identification Pill Banner -->
+  {#if isSpectator}
+    <div class="p-3.5 rounded-2xl bg-[#15142e] border border-[#272552] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-md">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 grid place-items-center flex-shrink-0">
+          <Eye size={16} />
+        </div>
+        <div>
+          <strong class="text-white font-bold block">Spectator Mode Active</strong>
+          <span class="text-[#9a97c4] text-[11px]">
+            {#if spectatorsCanVote}
+              <span class="text-emerald-400 font-semibold">Voting Permitted:</span> You can cast jury votes in 1-on-1 position duels and Super Over tie-breakers!
+            {:else}
+              <span class="text-amber-400 font-semibold">View Only:</span> The room host has restricted voting to competing franchise managers.
+            {/if}
+          </span>
+        </div>
+      </div>
+
+      {#if store.isHost}
+        <button
+          onclick={handleToggleSpectators}
+          class="px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/40 text-indigo-200 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+        >
+          <span>Toggle Spectator Votes ({spectatorsCanVote ? 'Disable' : 'Enable'})</span>
+        </button>
+      {/if}
+    </div>
+  {/if}
 
   <!-- ========================================== -->
   <!-- TAB 0: MATCH FIXTURES & STANDINGS         -->
@@ -867,6 +1071,19 @@
                 <span>🧤 Keeper: <strong>{wksInXI >= 1 ? 'Ready' : 'Needed'}</strong></span>
               </div>
 
+              <!-- Confirmation Status Badge -->
+              {#if isCurrentTeamConfirmed}
+                <div class="px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 font-bold">
+                  <CheckCircle2 size={13} />
+                  <span>Locked In</span>
+                </div>
+              {:else}
+                <div class="px-3 py-1.5 rounded-xl bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-1.5 font-semibold">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                  <span>Drafting XI</span>
+                </div>
+              {/if}
+
               {#if isMyTeamOrHost}
                 <button
                   onclick={autoPickOptimalXI}
@@ -879,10 +1096,20 @@
 
                 <button
                   onclick={savePlayingXI}
-                  class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold flex items-center gap-1.5 transition cursor-pointer shadow-lg shadow-emerald-950/40"
+                  class="px-3.5 py-1.5 rounded-xl bg-[#0c0b1d] hover:bg-[#1a183d] border border-[#272552] text-white font-bold flex items-center gap-1.5 transition cursor-pointer"
+                  title="Save draft"
                 >
                   <Check size={14} />
-                  <span>Save Playing XI</span>
+                  <span>Save Draft</span>
+                </button>
+
+                <button
+                  onclick={lockInPlayingXI}
+                  class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold flex items-center gap-1.5 transition cursor-pointer shadow-lg shadow-emerald-950/40"
+                  title="Lock in Playing XI for tournament matches"
+                >
+                  <Lock size={14} />
+                  <span>{isCurrentTeamConfirmed ? 'Re-Lock & Confirm' : 'Lock In & Confirm XI'}</span>
                 </button>
               {/if}
             </div>
@@ -1106,9 +1333,28 @@
                   {#if canVote}
                     <strong class="text-emerald-400">You are a voting jury member!</strong> Cast your vote for each 1-on-1 player duel below.
                   {:else}
-                    <strong class="text-amber-400">Contenders in the Arena:</strong> Remaining neutral franchises are voting on your 1-to-1 player comparisons.
+                    <strong class="text-amber-400">Contenders in the Arena:</strong> Remaining neutral franchises and spectators are voting on your 1-to-1 player comparisons.
                   {/if}
                 </span>
+              </div>
+
+              <!-- Spectator Voting indicator pill -->
+              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl {spectatorsCanVote ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30' : 'bg-zinc-800/60 text-[#8a87a8] border border-zinc-700/50'} text-[11px] font-semibold">
+                {#if spectatorsCanVote}
+                  <Eye size={12} class="text-indigo-400" />
+                  <span>Spectators Voting</span>
+                {:else}
+                  <EyeOff size={12} class="text-[#8a87a8]" />
+                  <span>Spectators View-Only</span>
+                {/if}
+                {#if store.isHost}
+                  <button
+                    onclick={handleToggleSpectators}
+                    class="text-[10px] underline ml-1 hover:text-white cursor-pointer"
+                  >
+                    Change
+                  </button>
+                {/if}
               </div>
 
               <div class="flex items-center gap-2 flex-wrap text-[#9a97c4]">
@@ -1141,6 +1387,140 @@
               </div>
             </div>
           </div>
+
+          <!-- SUPER OVER SUDDEN-DEATH CARD (When draw occurs) -->
+          {#if activeBattle.isSuperOver}
+            {@const soVotesA = superOverScores.aVotes}
+            {@const soVotesB = superOverScores.bVotes}
+            {@const aSoVoted = hasVotedForSuperOver(activeBattle.teamA)}
+            {@const bSoVoted = hasVotedForSuperOver(activeBattle.teamB)}
+
+            <div class="p-6 rounded-3xl bg-gradient-to-r from-red-950/60 via-[#1e1533] to-amber-950/60 border-2 border-amber-500 shadow-2xl relative overflow-hidden space-y-5">
+              <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-amber-500/40 pb-4">
+                <div class="space-y-1">
+                  <div class="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold uppercase tracking-wider">
+                    <Zap size={14} class="text-amber-400 fill-amber-400 animate-bounce" />
+                    <span>Super Over Sudden-Death Tie-Breaker</span>
+                  </div>
+                  <h3 class="text-xl sm:text-2xl font-extrabold text-white font-heading">
+                    Match Tied! Golden MVP Clash Decides Winner
+                  </h3>
+                  <p class="text-xs text-amber-200/80">
+                    Regular 11-slot position duels concluded in a tie ({activeBattle.regularScoreA || 5} - {activeBattle.regularScoreB || 5})! Remaining franchises and spectators cast the decisive golden vote.
+                  </p>
+                </div>
+
+                <!-- Live Super Over Score Display -->
+                <div class="px-5 py-2.5 rounded-2xl bg-[#0c0b1d] border-2 border-amber-500/60 text-center flex-shrink-0">
+                  <span class="text-[10px] uppercase font-bold text-amber-400 tracking-wider block">Super Over Score</span>
+                  <div class="text-2xl sm:text-3xl font-heading font-extrabold text-white font-mono">
+                    <span class="text-amber-300">{soVotesA}</span>
+                    <span class="text-[#6b6891] px-1.5">:</span>
+                    <span class="text-sky-300">{soVotesB}</span>
+                  </div>
+                  <span class="text-[10px] text-[#9a97c4] block">{superOverScores.total} golden votes</span>
+                </div>
+              </div>
+
+              <!-- Side-by-Side Super Over MVP Showdown -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Team A MVP -->
+                <div class="p-4 rounded-2xl bg-[#0c0b1d] border border-amber-500/50 flex flex-col justify-between space-y-4 {soVotesA > soVotesB ? 'ring-2 ring-amber-400 shadow-lg shadow-amber-950/40' : ''}">
+                  <div class="space-y-2">
+                    <div class="flex items-start justify-between">
+                      <div>
+                        <span class="text-[10px] uppercase font-bold text-amber-400 block tracking-widest">{teamAObj?.name} Super Over MVP</span>
+                        <strong class="text-lg font-bold text-white block">{activeBattle.superOverA?.name || 'Team A MVP'}</strong>
+                        <span class="text-xs text-[#9a97c4]">{activeBattle.superOverA?.role || 'Top Icon'} · Rating: {activeBattle.superOverA?.rating || 95}/100</span>
+                      </div>
+                      <div class="w-10 h-10 rounded-xl grid place-items-center font-heading font-extrabold text-sm text-white shadow-md" style="background: {teamAObj?.primaryColor};">
+                        {teamAObj?.code}
+                      </div>
+                    </div>
+
+                    {#if activeBattle.superOverA?.stats}
+                      <div class="p-2.5 rounded-xl bg-[#15142e] text-xs text-[#9a97c4] grid grid-cols-3 gap-2 text-center">
+                        <div><span class="text-[10px] text-[#6b6891] block">Runs</span><strong class="text-amber-300">{activeBattle.superOverA.stats.runs ?? '-'}</strong></div>
+                        <div><span class="text-[10px] text-[#6b6891] block">SR</span><strong class="text-white">{activeBattle.superOverA.stats.sr ?? '-'}</strong></div>
+                        <div><span class="text-[10px] text-[#6b6891] block">Wkts</span><strong class="text-cyan-300">{activeBattle.superOverA.stats.wkts ?? '-'}</strong></div>
+                      </div>
+                    {/if}
+                  </div>
+
+                  <div class="pt-2 border-t border-[#272552] flex items-center justify-between">
+                    <span class="text-xs font-bold text-amber-300">{soVotesA} Golden Votes</span>
+                    {#if canVote}
+                      <button
+                        onclick={() => castSuperOverVote(activeBattle.teamA)}
+                        class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer {aSoVoted ? 'bg-amber-500 text-black shadow-lg font-extrabold' : 'bg-amber-500/20 hover:bg-amber-500/40 text-amber-200 border border-amber-500/40'}"
+                      >
+                        <Zap size={13} />
+                        <span>{aSoVoted ? `Voted ${teamAObj?.code}` : `Vote ${teamAObj?.code} MVP`}</span>
+                      </button>
+                    {/if}
+                  </div>
+                </div>
+
+                <!-- Team B MVP -->
+                <div class="p-4 rounded-2xl bg-[#0c0b1d] border border-amber-500/50 flex flex-col justify-between space-y-4 {soVotesB > soVotesA ? 'ring-2 ring-sky-400 shadow-lg shadow-sky-950/40' : ''}">
+                  <div class="space-y-2">
+                    <div class="flex items-start justify-between">
+                      <div>
+                        <span class="text-[10px] uppercase font-bold text-sky-400 block tracking-widest">{teamBObj?.name} Super Over MVP</span>
+                        <strong class="text-lg font-bold text-white block">{activeBattle.superOverB?.name || 'Team B MVP'}</strong>
+                        <span class="text-xs text-[#9a97c4]">{activeBattle.superOverB?.role || 'Top Icon'} · Rating: {activeBattle.superOverB?.rating || 95}/100</span>
+                      </div>
+                      <div class="w-10 h-10 rounded-xl grid place-items-center font-heading font-extrabold text-sm text-white shadow-md" style="background: {teamBObj?.primaryColor};">
+                        {teamBObj?.code}
+                      </div>
+                    </div>
+
+                    {#if activeBattle.superOverB?.stats}
+                      <div class="p-2.5 rounded-xl bg-[#15142e] text-xs text-[#9a97c4] grid grid-cols-3 gap-2 text-center">
+                        <div><span class="text-[10px] text-[#6b6891] block">Runs</span><strong class="text-amber-300">{activeBattle.superOverB.stats.runs ?? '-'}</strong></div>
+                        <div><span class="text-[10px] text-[#6b6891] block">SR</span><strong class="text-white">{activeBattle.superOverB.stats.sr ?? '-'}</strong></div>
+                        <div><span class="text-[10px] text-[#6b6891] block">Wkts</span><strong class="text-cyan-300">{activeBattle.superOverB.stats.wkts ?? '-'}</strong></div>
+                      </div>
+                    {/if}
+                  </div>
+
+                  <div class="pt-2 border-t border-[#272552] flex items-center justify-between">
+                    <span class="text-xs font-bold text-sky-300">{soVotesB} Golden Votes</span>
+                    {#if canVote}
+                      <button
+                        onclick={() => castSuperOverVote(activeBattle.teamB)}
+                        class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer {bSoVoted ? 'bg-sky-500 text-black shadow-lg font-extrabold' : 'bg-sky-500/20 hover:bg-sky-500/40 text-sky-200 border border-sky-500/40'}"
+                      >
+                        <Zap size={13} />
+                        <span>{bSoVoted ? `Voted ${teamBObj?.code}` : `Vote ${teamBObj?.code} MVP`}</span>
+                      </button>
+                    {/if}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conclude Super Over Host Button -->
+              <div class="pt-2 flex items-center justify-between flex-wrap gap-2">
+                <span class="text-xs text-[#9a97c4]">
+                  {#if soVotesA > soVotesB}
+                    <strong class="text-amber-300">{teamAObj?.name}</strong> leads the Super Over.
+                  {:else if soVotesB > soVotesA}
+                    <strong class="text-sky-300">{teamBObj?.name}</strong> leads the Super Over.
+                  {:else}
+                    Super Over is currently tied. Cast your decisive vote!
+                  {/if}
+                </span>
+
+                <button
+                  onclick={handleConcludeBattle}
+                  class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90 text-white font-extrabold text-xs flex items-center gap-1.5 cursor-pointer shadow-lg shadow-amber-950/40"
+                >
+                  <Trophy size={14} />
+                  <span>Award Victory & Conclude Super Over</span>
+                </button>
+              </div>
+            </div>
+          {/if}
 
           <!-- 11 Position-by-Position Comparison Cards -->
           <div class="space-y-4">
