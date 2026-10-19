@@ -188,7 +188,7 @@
     "stats": {
       "matches": 58,
       "runs": 515,
-      "sr": 151.0,
+      "sr": 151,
       "wkts": 63,
       "econ": 8.78
     }
@@ -2592,52 +2592,6 @@
     }
   },
   {
-    "id": "p-80",
-    "name": "Priyansh Arya",
-    "role": "Batter",
-    "category": "batter",
-    "battingStyle": "Left-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Left-hand Bat Specialist",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UBA1",
-    "setName": "Uncapped Batters Set 1",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 162,
-      "hs": "DPL 120"
-    }
-  },
-  {
-    "id": "p-81",
-    "name": "Swastik Chikara",
-    "role": "Batter",
-    "category": "batter",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Right-hand Bat Specialist",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UBA1",
-    "setName": "Uncapped Batters Set 1",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 155,
-      "hs": "UPT20 100"
-    }
-  },
-  {
     "id": "p-82",
     "name": "Ayush Badoni",
     "role": "Batter",
@@ -2799,52 +2753,6 @@
     }
   },
   {
-    "id": "p-89",
-    "name": "Arshin Kulkarni",
-    "role": "All-Rounder",
-    "category": "allrounder",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": "Right-arm Medium-Fast",
-    "bowlingType": "Pace",
-    "allrounderType": "Pace All-Rounder",
-    "specialization": "Pace All-Rounder (Right-arm Medium-Fast & RHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UAL1",
-    "setName": "Uncapped All-Rounders Set 1",
-    "stats": {
-      "matches": 2,
-      "runs": 9,
-      "sr": 75,
-      "wkts": 0
-    }
-  },
-  {
-    "id": "p-90",
-    "name": "Nishant Sindhu",
-    "role": "All-Rounder",
-    "category": "allrounder",
-    "battingStyle": "Left-hand Bat",
-    "bowlingStyle": "Slow Left-arm Orthodox",
-    "bowlingType": "Spin",
-    "allrounderType": "Spin All-Rounder",
-    "specialization": "Spin All-Rounder (Slow Left-arm Orthodox & LHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UAL1",
-    "setName": "Uncapped All-Rounders Set 1",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 130,
-      "wkts": 12
-    }
-  },
-  {
     "id": "p-91",
     "name": "Harpreet Brar",
     "role": "All-Rounder",
@@ -2888,29 +2796,6 @@
       "wkts": 7,
       "econ": 8.78,
       "runs": 45
-    }
-  },
-  {
-    "id": "p-93",
-    "name": "Raj Bawa",
-    "role": "All-Rounder",
-    "category": "allrounder",
-    "battingStyle": "Left-hand Bat",
-    "bowlingStyle": "Right-arm Fast-Medium",
-    "bowlingType": "Pace",
-    "allrounderType": "Pace All-Rounder",
-    "specialization": "Pace All-Rounder (Right-arm Fast-Medium & LHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UAL1",
-    "setName": "Uncapped All-Rounders Set 1",
-    "stats": {
-      "matches": 2,
-      "runs": 11,
-      "sr": 78.5,
-      "wkts": 0
     }
   },
   {
@@ -2960,121 +2845,6 @@
     }
   },
   {
-    "id": "p-96",
-    "name": "Vivrant Sharma",
-    "role": "All-Rounder",
-    "category": "allrounder",
-    "battingStyle": "Left-hand Bat",
-    "bowlingStyle": "Right-arm Legbreak",
-    "bowlingType": "Spin",
-    "allrounderType": "Spin All-Rounder",
-    "specialization": "Spin All-Rounder (Right-arm Legbreak & LHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UAL1",
-    "setName": "Uncapped All-Rounders Set 1",
-    "stats": {
-      "matches": 3,
-      "runs": 69,
-      "sr": 146.8,
-      "hs": "69"
-    }
-  },
-  {
-    "id": "p-97",
-    "name": "Kumar Kushagra",
-    "role": "WK-Batter",
-    "category": "wicketkeeper",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Wicket-Keeper Batter (Right-hand Bat)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UWK1",
-    "setName": "Uncapped Wicketkeepers Set 1",
-    "stats": {
-      "matches": 4,
-      "runs": 3,
-      "sr": 33.3,
-      "hs": "3"
-    }
-  },
-  {
-    "id": "p-98",
-    "name": "Robin Minz",
-    "role": "WK-Batter",
-    "category": "wicketkeeper",
-    "battingStyle": "Left-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Wicket-Keeper Batter (Left-hand Bat)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UWK1",
-    "setName": "Uncapped Wicketkeepers Set 1",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 155,
-      "hs": "Domestic"
-    }
-  },
-  {
-    "id": "p-99",
-    "name": "Urvil Patel",
-    "role": "WK-Batter",
-    "category": "wicketkeeper",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Wicket-Keeper Batter (Right-hand Bat)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UWK1",
-    "setName": "Uncapped Wicketkeepers Set 1",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 165,
-      "hs": "SMAT 100"
-    }
-  },
-  {
-    "id": "p-100",
-    "name": "Luvnith Sisodia",
-    "role": "WK-Batter",
-    "category": "wicketkeeper",
-    "battingStyle": "Left-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Wicket-Keeper Batter (Left-hand Bat)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UWK1",
-    "setName": "Uncapped Wicketkeepers Set 1",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 140,
-      "hs": "KPL"
-    }
-  },
-  {
     "id": "p-101",
     "name": "Vishnu Vinod",
     "role": "WK-Batter",
@@ -3095,121 +2865,6 @@
       "runs": 56,
       "sr": 124.4,
       "hs": "32"
-    }
-  },
-  {
-    "id": "p-102",
-    "name": "Upendra Yadav",
-    "role": "WK-Batter",
-    "category": "wicketkeeper",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Wicket-Keeper Batter (Right-hand Bat)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UWK1",
-    "setName": "Uncapped Wicketkeepers Set 1",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 128,
-      "hs": "Ranji"
-    }
-  },
-  {
-    "id": "p-103",
-    "name": "Aryan Juyal",
-    "role": "WK-Batter",
-    "category": "wicketkeeper",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Wicket-Keeper Batter (Right-hand Bat)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UWK1",
-    "setName": "Uncapped Wicketkeepers Set 1",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 135,
-      "hs": "SMAT"
-    }
-  },
-  {
-    "id": "p-104",
-    "name": "Bipin Saurabh",
-    "role": "WK-Batter",
-    "category": "wicketkeeper",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Wicket-Keeper Batter (Right-hand Bat)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UWK1",
-    "setName": "Uncapped Wicketkeepers Set 1",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 144,
-      "hs": "Domestic"
-    }
-  },
-  {
-    "id": "p-105",
-    "name": "Donovan Ferreira",
-    "role": "WK-Batter",
-    "category": "wicketkeeper",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Wicket-Keeper Batter (Right-hand Bat)",
-    "country": "South Africa",
-    "isOverseas": true,
-    "isCapped": false,
-    "basePrice": 50,
-    "set": "UWK1",
-    "setName": "Uncapped Wicketkeepers Set 1",
-    "stats": {
-      "matches": 2,
-      "runs": 8,
-      "sr": 160,
-      "hs": "7"
-    }
-  },
-  {
-    "id": "p-106",
-    "name": "Harvik Desai",
-    "role": "WK-Batter",
-    "category": "wicketkeeper",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Wicket-Keeper Batter (Right-hand Bat)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UWK1",
-    "setName": "Uncapped Wicketkeepers Set 1",
-    "stats": {
-      "matches": 2,
-      "runs": 18,
-      "sr": 90,
-      "hs": "18"
     }
   },
   {
@@ -3420,29 +3075,6 @@
     }
   },
   {
-    "id": "p-116",
-    "name": "Sushant Mishra",
-    "role": "Bowler",
-    "category": "pacer",
-    "battingStyle": "Left-hand Bat",
-    "bowlingStyle": "Left-arm Fast-Medium",
-    "bowlingType": "Pace",
-    "allrounderType": null,
-    "specialization": "Fast Bowler (Left-arm Fast-Medium & LHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UFA1",
-    "setName": "Uncapped Fast Bowlers Set 1",
-    "stats": {
-      "matches": 2,
-      "wkts": 1,
-      "econ": 12,
-      "bb": "1/44"
-    }
-  },
-  {
     "id": "p-117",
     "name": "Kuldeep Sen",
     "role": "Bowler",
@@ -3486,29 +3118,6 @@
       "wkts": 19,
       "econ": 9.38,
       "bb": "5/5"
-    }
-  },
-  {
-    "id": "p-119",
-    "name": "Manav Suthar",
-    "role": "Bowler",
-    "category": "spinner",
-    "battingStyle": "Left-hand Bat",
-    "bowlingStyle": "Slow Left-arm Orthodox Spin",
-    "bowlingType": "Spin",
-    "allrounderType": null,
-    "specialization": "Spin Bowler (Slow Left-arm Orthodox Spin & LHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "USP1",
-    "setName": "Uncapped Spinners Set 1",
-    "stats": {
-      "matches": 1,
-      "wkts": 0,
-      "econ": 8.67,
-      "bb": "0/26"
     }
   },
   {
@@ -3558,29 +3167,6 @@
     }
   },
   {
-    "id": "p-122",
-    "name": "M Siddharth",
-    "role": "Bowler",
-    "category": "spinner",
-    "battingStyle": "Left-hand Bat",
-    "bowlingStyle": "Slow Left-arm Orthodox Spin",
-    "bowlingType": "Spin",
-    "allrounderType": null,
-    "specialization": "Spin Bowler (Slow Left-arm Orthodox Spin & LHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "USP1",
-    "setName": "Uncapped Spinners Set 1",
-    "stats": {
-      "matches": 3,
-      "wkts": 3,
-      "econ": 7.92,
-      "bb": "1/21"
-    }
-  },
-  {
     "id": "p-123",
     "name": "Murugan Ashwin",
     "role": "Bowler",
@@ -3601,121 +3187,6 @@
       "wkts": 35,
       "econ": 7.98,
       "bb": "3/34"
-    }
-  },
-  {
-    "id": "p-124",
-    "name": "Tanush Kotian",
-    "role": "Bowler",
-    "category": "spinner",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": "Right-arm Offbreak",
-    "bowlingType": "Spin",
-    "allrounderType": null,
-    "specialization": "Spin Bowler (Right-arm Offbreak & RHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "USP1",
-    "setName": "Uncapped Spinners Set 1",
-    "stats": {
-      "matches": 1,
-      "wkts": 0,
-      "econ": 6,
-      "runs": 24
-    }
-  },
-  {
-    "id": "p-125",
-    "name": "Prince Choudhary",
-    "role": "Bowler",
-    "category": "spinner",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": "Right-arm Legbreak",
-    "bowlingType": "Spin",
-    "allrounderType": null,
-    "specialization": "Spin Bowler (Right-arm Legbreak & RHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "USP1",
-    "setName": "Uncapped Spinners Set 1",
-    "stats": {
-      "matches": 0,
-      "wkts": 0,
-      "econ": 7.5,
-      "bb": "Domestic"
-    }
-  },
-  {
-    "id": "p-126",
-    "name": "Jhathavedh Subramanyan",
-    "role": "Bowler",
-    "category": "spinner",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": "Right-arm Legbreak",
-    "bowlingType": "Spin",
-    "allrounderType": null,
-    "specialization": "Spin Bowler (Right-arm Legbreak & RHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "USP1",
-    "setName": "Uncapped Spinners Set 1",
-    "stats": {
-      "matches": 0,
-      "wkts": 0,
-      "econ": 7.2,
-      "bb": "TNPL"
-    }
-  },
-  {
-    "id": "p-127",
-    "name": "Shiva Singh",
-    "role": "Bowler",
-    "category": "spinner",
-    "battingStyle": "Left-hand Bat",
-    "bowlingStyle": "Slow Left-arm Orthodox Spin",
-    "bowlingType": "Spin",
-    "allrounderType": null,
-    "specialization": "Spin Bowler (Slow Left-arm Orthodox Spin & LHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "USP1",
-    "setName": "Uncapped Spinners Set 1",
-    "stats": {
-      "matches": 1,
-      "wkts": 0,
-      "econ": 8,
-      "bb": "0/16"
-    }
-  },
-  {
-    "id": "p-128",
-    "name": "Himanshu Sharma",
-    "role": "Bowler",
-    "category": "spinner",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": "Right-arm Legbreak Googly",
-    "bowlingType": "Spin",
-    "allrounderType": null,
-    "specialization": "Spin Bowler (Right-arm Legbreak Googly & RHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "USP1",
-    "setName": "Uncapped Spinners Set 1",
-    "stats": {
-      "matches": 2,
-      "wkts": 0,
-      "econ": 10.5,
-      "bb": "0/21"
     }
   },
   {
@@ -3854,29 +3325,6 @@
       "runs": 106,
       "sr": 101.9,
       "hs": "28"
-    }
-  },
-  {
-    "id": "p-135",
-    "name": "Abhimanyu Easwaran",
-    "role": "Batter",
-    "category": "batter",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Right-hand Bat Specialist",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "BA2",
-    "setName": "Capped Batters Set 2",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 130.2,
-      "hs": "Ranji 200"
     }
   },
   {
@@ -4432,52 +3880,6 @@
     }
   },
   {
-    "id": "p-160",
-    "name": "Keshav Maharaj",
-    "role": "Bowler",
-    "category": "spinner",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": "Slow Left-arm Orthodox Spin",
-    "bowlingType": "Spin",
-    "allrounderType": null,
-    "specialization": "Spin Bowler (Slow Left-arm Orthodox Spin & RHB)",
-    "country": "South Africa",
-    "isOverseas": true,
-    "isCapped": true,
-    "basePrice": 100,
-    "set": "SP2",
-    "setName": "Capped Spinners Set 2",
-    "stats": {
-      "matches": 2,
-      "wkts": 2,
-      "econ": 6.5,
-      "bb": "2/23"
-    }
-  },
-  {
-    "id": "p-161",
-    "name": "Akeal Hosein",
-    "role": "Bowler",
-    "category": "spinner",
-    "battingStyle": "Left-hand Bat",
-    "bowlingStyle": "Slow Left-arm Orthodox Spin",
-    "bowlingType": "Spin",
-    "allrounderType": null,
-    "specialization": "Spin Bowler (Slow Left-arm Orthodox Spin & LHB)",
-    "country": "West Indies",
-    "isOverseas": true,
-    "isCapped": true,
-    "basePrice": 150,
-    "set": "SP2",
-    "setName": "Capped Spinners Set 2",
-    "stats": {
-      "matches": 1,
-      "wkts": 1,
-      "econ": 6,
-      "bb": "1/24"
-    }
-  },
-  {
     "id": "p-162",
     "name": "Mitchell Santner",
     "role": "Bowler",
@@ -4570,29 +3972,6 @@
     }
   },
   {
-    "id": "p-166",
-    "name": "Todd Murphy",
-    "role": "Bowler",
-    "category": "spinner",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": "Right-arm Offbreak",
-    "bowlingType": "Spin",
-    "allrounderType": null,
-    "specialization": "Spin Bowler (Right-arm Offbreak & RHB)",
-    "country": "Australia",
-    "isOverseas": true,
-    "isCapped": true,
-    "basePrice": 75,
-    "set": "SP2",
-    "setName": "Capped Spinners Set 2",
-    "stats": {
-      "matches": 0,
-      "wkts": 0,
-      "econ": 7.2,
-      "bb": "BBL 3/18"
-    }
-  },
-  {
     "id": "p-167",
     "name": "Vijayakanth Viyaskanth",
     "role": "Bowler",
@@ -4613,98 +3992,6 @@
       "wkts": 1,
       "econ": 8.67,
       "bb": "1/27"
-    }
-  },
-  {
-    "id": "p-168",
-    "name": "Qais Ahmad",
-    "role": "Bowler",
-    "category": "spinner",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": "Right-arm Legbreak Googly",
-    "bowlingType": "Spin",
-    "allrounderType": null,
-    "specialization": "Spin Bowler (Right-arm Legbreak Googly & RHB)",
-    "country": "Afghanistan",
-    "isOverseas": true,
-    "isCapped": true,
-    "basePrice": 75,
-    "set": "SP2",
-    "setName": "Capped Spinners Set 2",
-    "stats": {
-      "matches": 0,
-      "wkts": 0,
-      "econ": 7.6,
-      "bb": "T20"
-    }
-  },
-  {
-    "id": "p-169",
-    "name": "Musheer Khan",
-    "role": "Batter",
-    "category": "batter",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Right-hand Bat Specialist",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UBA2",
-    "setName": "Uncapped Batters Set 2",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 135,
-      "hs": "Ranji 181"
-    }
-  },
-  {
-    "id": "p-170",
-    "name": "Prakhar Chaturvedi",
-    "role": "Batter",
-    "category": "batter",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Right-hand Bat Specialist",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UBA2",
-    "setName": "Uncapped Batters Set 2",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 130,
-      "hs": "Cooch Behar 404*"
-    }
-  },
-  {
-    "id": "p-171",
-    "name": "Uday Saharan",
-    "role": "Batter",
-    "category": "batter",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Right-hand Bat Specialist",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UBA2",
-    "setName": "Uncapped Batters Set 2",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 125,
-      "hs": "U19 WC Capt"
     }
   },
   {
@@ -4731,75 +4018,6 @@
     }
   },
   {
-    "id": "p-173",
-    "name": "Ricky Bhui",
-    "role": "Batter",
-    "category": "batter",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Right-hand Bat Specialist",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UBA2",
-    "setName": "Uncapped Batters Set 2",
-    "stats": {
-      "matches": 4,
-      "runs": 8,
-      "sr": 61.5,
-      "hs": "5"
-    }
-  },
-  {
-    "id": "p-174",
-    "name": "Himmat Singh",
-    "role": "Batter",
-    "category": "batter",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Right-hand Bat Specialist",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UBA2",
-    "setName": "Uncapped Batters Set 2",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 138,
-      "hs": "Delhi"
-    }
-  },
-  {
-    "id": "p-175",
-    "name": "Subhranshu Senapati",
-    "role": "Batter",
-    "category": "batter",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Right-hand Bat Specialist",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UBA2",
-    "setName": "Uncapped Batters Set 2",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 128,
-      "hs": "Odisha"
-    }
-  },
-  {
     "id": "p-176",
     "name": "Sachin Baby",
     "role": "Batter",
@@ -4823,144 +4041,6 @@
     }
   },
   {
-    "id": "p-177",
-    "name": "Rohan Kunnummal",
-    "role": "Batter",
-    "category": "batter",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": null,
-    "bowlingType": null,
-    "allrounderType": null,
-    "specialization": "Right-hand Bat Specialist",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UBA2",
-    "setName": "Uncapped Batters Set 2",
-    "stats": {
-      "matches": 0,
-      "runs": 0,
-      "sr": 145,
-      "hs": "Kerala"
-    }
-  },
-  {
-    "id": "p-178",
-    "name": "Sanjay Yadav",
-    "role": "All-Rounder",
-    "category": "allrounder",
-    "battingStyle": "Left-hand Bat",
-    "bowlingStyle": "Slow Left-arm Orthodox Spin",
-    "bowlingType": "Spin",
-    "allrounderType": "Spin All-Rounder",
-    "specialization": "Spin All-Rounder (Slow Left-arm Orthodox Spin & LHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UBA2",
-    "setName": "Uncapped Batters Set 2",
-    "stats": {
-      "matches": 1,
-      "runs": 0,
-      "wkts": 0,
-      "econ": 11.5
-    }
-  },
-  {
-    "id": "p-179",
-    "name": "Prince Yadav",
-    "role": "Bowler",
-    "category": "pacer",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": "Right-arm Fast-Medium",
-    "bowlingType": "Pace",
-    "allrounderType": null,
-    "specialization": "Fast Bowler (Right-arm Fast-Medium & RHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UFA2",
-    "setName": "Uncapped Fast Bowlers Set 2",
-    "stats": {
-      "matches": 0,
-      "wkts": 0,
-      "econ": 8.2,
-      "bb": "Delhi"
-    }
-  },
-  {
-    "id": "p-180",
-    "name": "Vipraj Nigam",
-    "role": "Bowler",
-    "category": "pacer",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": "Right-arm Fast-Medium",
-    "bowlingType": "Pace",
-    "allrounderType": null,
-    "specialization": "Fast Bowler (Right-arm Fast-Medium & RHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UFA2",
-    "setName": "Uncapped Fast Bowlers Set 2",
-    "stats": {
-      "matches": 0,
-      "wkts": 0,
-      "econ": 7.9,
-      "bb": "UP"
-    }
-  },
-  {
-    "id": "p-181",
-    "name": "Kuldip Yadav",
-    "role": "Bowler",
-    "category": "pacer",
-    "battingStyle": "Left-hand Bat",
-    "bowlingStyle": "Left-arm Fast-Medium",
-    "bowlingType": "Pace",
-    "allrounderType": null,
-    "specialization": "Fast Bowler (Left-arm Fast-Medium & LHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UFA2",
-    "setName": "Uncapped Fast Bowlers Set 2",
-    "stats": {
-      "matches": 1,
-      "wkts": 1,
-      "econ": 8,
-      "bb": "1/32"
-    }
-  },
-  {
-    "id": "p-182",
-    "name": "Vidwath Kaverappa",
-    "role": "Bowler",
-    "category": "pacer",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": "Right-arm Fast-Medium Outswing",
-    "bowlingType": "Pace",
-    "allrounderType": null,
-    "specialization": "Fast Bowler (Right-arm Fast-Medium Outswing & RHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UFA2",
-    "setName": "Uncapped Fast Bowlers Set 2",
-    "stats": {
-      "matches": 2,
-      "wkts": 2,
-      "econ": 9.14,
-      "bb": "2/36"
-    }
-  },
-  {
     "id": "p-183",
     "name": "Vyshak Vijaykumar",
     "role": "Bowler",
@@ -4981,29 +4061,6 @@
       "wkts": 13,
       "econ": 10.15,
       "bb": "3/23"
-    }
-  },
-  {
-    "id": "p-184",
-    "name": "Gurnoor Brar",
-    "role": "Bowler",
-    "category": "pacer",
-    "battingStyle": "Right-hand Bat",
-    "bowlingStyle": "Right-arm Fast-Medium",
-    "bowlingType": "Pace",
-    "allrounderType": null,
-    "specialization": "Fast Bowler (Right-arm Fast-Medium & RHB)",
-    "country": "India",
-    "isOverseas": false,
-    "isCapped": false,
-    "basePrice": 30,
-    "set": "UFA2",
-    "setName": "Uncapped Fast Bowlers Set 2",
-    "stats": {
-      "matches": 1,
-      "wkts": 0,
-      "econ": 14,
-      "bb": "0/42"
     }
   },
   {

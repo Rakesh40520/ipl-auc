@@ -399,4 +399,94 @@ describe('AuctionEngine State Machine Tests', () => {
 
     engine.destroy();
   });
+
+  test('Jumble players shuffles the remaining player queue', () => {
+    const events = [];
+    const manyPlayers = [
+      { id: 'p-1', name: 'Virat Kohli', role: 'Batter', basePrice: 200 },
+      { id: 'p-2', name: 'Rohit Sharma', role: 'Batter', basePrice: 200 },
+      { id: 'p-3', name: 'Jasprit Bumrah', role: 'Bowler', basePrice: 200 },
+      { id: 'p-4', name: 'Hardik Pandya', role: 'All-Rounder', basePrice: 200 },
+      { id: 'p-5', name: 'KL Rahul', role: 'Wicket-Keeper', basePrice: 200 },
+      { id: 'p-6', name: 'Rishabh Pant', role: 'Wicket-Keeper', basePrice: 200 },
+      { id: 'p-7', name: 'Shubman Gill', role: 'Batter', basePrice: 200 },
+      { id: 'p-8', name: 'Suryakumar Yadav', role: 'Batter', basePrice: 200 }
+    ];
+
+    const engine = new AuctionEngine({
+      roomCode: 'TEST-JUMBLE',
+      hostToken: 'host-1',
+      hostName: 'Host',
+      teamsData: mockTeams,
+      playersData: manyPlayers,
+      emit: (evt, data) => events.push({ evt, data })
+    });
+
+    const initialOrder = engine.playerQueue.map(p => p.id);
+    const jumbleRes = engine.jumblePlayers({ userToken: 'host-1' });
+    assert.equal(jumbleRes.success, true);
+    assert.equal(engine.playerQueue.length, 8);
+    // Queue contains all the same players
+    const newIds = engine.playerQueue.map(p => p.id).sort();
+    assert.deepEqual(newIds, initialOrder.slice().sort());
+
+    engine.destroy();
+  });
+
+  test('AI Match Simulation Mode resolves matches with realistic mathematical scorecards', () => {
+    const events = [];
+    const fourTeams = [
+      { code: 'CSK', name: 'Chennai Super Kings', primaryColor: '#F4C20D', squad: [] },
+      { code: 'MI', name: 'Mumbai Indians', primaryColor: '#0B8EC9', squad: [] },
+      { code: 'RCB', name: 'Royal Challengers Bengaluru', primaryColor: '#D1121B', squad: [] },
+      { code: 'KKR', name: 'Kolkata Knight Riders', primaryColor: '#3A225D', squad: [] }
+    ];
+
+    const engine = new AuctionEngine({
+      roomCode: 'TEST-SIM',
+      hostToken: 'host-1',
+      hostName: 'Host',
+      teamsData: fourTeams,
+      playersData: mockPlayers,
+      emit: (evt, data) => events.push({ evt, data })
+    });
+
+    // 1. Switch matchMode to 'ai_simulation'
+    const modeRes = engine.setMatchMode({ mode: 'ai_simulation', userToken: 'host-1' });
+    assert.equal(modeRes.success, true);
+    assert.equal(engine.matchMode, 'ai_simulation');
+
+    // 2. Plan fixtures
+    engine.generateFixtures();
+    assert.equal(engine.fixtures.length, 6);
+
+    // 3. Simulate first fixture
+    const f1 = engine.fixtures[0];
+    const simRes = engine.simulateFixture({ fixtureId: f1.id, userToken: 'host-1' });
+    assert.equal(simRes.success, true);
+    assert.equal(f1.status, 'completed');
+    assert.ok(f1.scorecard);
+    assert.ok(f1.scorecard.toss);
+    assert.ok(f1.scorecard.innings1);
+    assert.ok(f1.scorecard.innings2);
+    assert.ok(f1.scorecard.margin);
+    assert.ok(f1.scorecard.playerOfTheMatch);
+    assert.ok(f1.scorecard.innings1.batting.length > 0);
+    assert.ok(f1.scorecard.innings1.bowling.length > 0);
+    assert.ok(f1.scorecard.innings2.batting.length > 0);
+    assert.ok(f1.scorecard.innings2.bowling.length > 0);
+
+    // 4. Simulate remaining fixtures in one go
+    const simAllRes = engine.simulateAllFixtures({ userToken: 'host-1' });
+    assert.equal(simAllRes.success, true);
+    assert.equal(simAllRes.simulatedCount, 5); // 1 was already completed, 5 simulated
+    assert.ok(engine.fixtures.every(f => f.status === 'completed' && f.scorecard));
+
+    // 5. Standings are populated for all 4 teams
+    const standings = engine.getTournamentStandings();
+    assert.equal(standings.length, 4);
+    assert.ok(standings.every(s => s.played === 3));
+
+    engine.destroy();
+  });
 });

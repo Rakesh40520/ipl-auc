@@ -19,7 +19,9 @@ import {
   PlanFixturesSchema,
   StartFixtureBattleSchema,
   RecordFixtureResultSchema,
-  ConcludeBattleSchema
+  ConcludeBattleSchema,
+  SimulateFixtureSchema,
+  SimulateAllFixturesSchema
 } from './schema.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -348,6 +350,22 @@ export class RoomManager {
         case 'toggle_spectator_voting':
           res = engine.toggleSpectatorVoting();
           break;
+        case 'jumble_players':
+          res = engine.jumblePlayers();
+          break;
+        case 'set_match_mode':
+          res = engine.setMatchMode(parsed.data.matchMode || (engine.config.matchMode === 'voting' ? 'ai_simulation' : 'voting'));
+          break;
+        case 'simulate_fixture':
+          if (parsed.data.fixtureId) {
+            res = engine.simulateFixture({ fixtureId: parsed.data.fixtureId, userToken });
+          } else {
+            res = { success: false, error: 'fixtureId required' };
+          }
+          break;
+        case 'simulate_all_fixtures':
+          res = engine.simulateAllFixtures({ userToken });
+          break;
         case 'update_config':
           if (configUpdate) {
             res = engine.updateConfig(configUpdate);
@@ -506,7 +524,31 @@ export class RoomManager {
       callback(res);
     });
 
-    // 15. Leave Room
+    // 15. Simulate Fixture (AI Match Simulation based on Player Stats & Math)
+    socket.on('simulate_fixture', (raw, callback = () => {}) => {
+      const parsed = SimulateFixtureSchema.safeParse(raw);
+      if (!parsed.success) return callback({ success: false, error: 'Invalid simulate payload' });
+      const { roomCode, fixtureId, userToken } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.simulateFixture({ fixtureId, userToken });
+      callback(res);
+    });
+
+    // 16. Simulate All Remaining Fixtures (AI Math)
+    socket.on('simulate_all_fixtures', (raw, callback = () => {}) => {
+      const parsed = SimulateAllFixturesSchema.safeParse(raw);
+      if (!parsed.success) return callback({ success: false, error: 'Invalid payload' });
+      const { roomCode, userToken } = parsed.data;
+      const engine = this.getRoom(roomCode);
+      if (!engine) return callback({ success: false, error: 'Room not found' });
+
+      const res = engine.simulateAllFixtures({ userToken });
+      callback(res);
+    });
+
+    // 17. Leave Room
     socket.on('leave_room', ({ roomCode, userName } = {}) => {
       if (roomCode) {
         socket.leave(roomCode);

@@ -10,7 +10,9 @@ export const RoomConfigSchema = z.object({
   botsEnabled: z.boolean().default(false),
   rtmEnabled: z.boolean().default(false),
   spectatorsCanVote: z.boolean().default(true),
-  xiSelectionTime: z.number().min(30).max(300).default(90)
+  xiSelectionTime: z.number().min(30).max(300).default(90),
+  matchMode: z.enum(['voting', 'ai_simulation']).default('voting'),
+  jumblePlayers: z.boolean().default(false)
 });
 
 export const CreateRoomSchema = z.object({
@@ -50,12 +52,15 @@ export const HostControlSchema = z.object({
   hostToken: z.string().optional().nullable(),
   userToken: z.string().optional().nullable(),
   teamCode: z.string().optional().nullable(),
+  fixtureId: z.string().optional().nullable(),
+  matchMode: z.enum(['voting', 'ai_simulation']).optional(),
   action: z.enum([
     'start', 'pause', 'resume', 'skip', 'unsold', 'undo', 'sell_now',
     'next_player', 'end', 'end_auction', 'update_config', 'fill_bots',
     'clear_bots', 'toggle_bots', 'close_room', 'release_team',
     'plan_fixtures', 'conclude_battle', 'reset_fixtures',
-    'toggle_spectator_voting', 'advance_to_fixtures', 'start_super_over'
+    'toggle_spectator_voting', 'advance_to_fixtures', 'start_super_over',
+    'jumble_players', 'set_match_mode', 'simulate_fixture', 'simulate_all_fixtures'
   ]),
   configUpdate: RoomConfigSchema.partial().optional().nullable()
 });
@@ -117,6 +122,17 @@ export const RecordFixtureResultSchema = z.object({
 });
 
 export const ConcludeBattleSchema = z.object({
+  roomCode: z.string().trim().toUpperCase(),
+  userToken: z.string().min(1)
+});
+
+export const SimulateFixtureSchema = z.object({
+  roomCode: z.string().trim().toUpperCase(),
+  fixtureId: z.string().min(1),
+  userToken: z.string().min(1)
+});
+
+export const SimulateAllFixturesSchema = z.object({
   roomCode: z.string().trim().toUpperCase(),
   userToken: z.string().min(1)
 });

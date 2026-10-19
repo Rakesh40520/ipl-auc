@@ -19,7 +19,8 @@
     SkipForward,
     XCircle,
     Square,
-    LogOut
+    LogOut,
+    Shuffle
   } from 'lucide-svelte';
 
   let placingBid = $state(false);
@@ -522,6 +523,15 @@
           >
             <Bot size={13} />
             <span>{store.roomState.config?.botsEnabled ? 'Bots ON' : 'Bots OFF'}</span>
+          </button>
+
+          <button
+            onclick={() => store.jumblePlayers()}
+            class="px-3 py-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/40 text-purple-200 text-xs font-medium flex items-center gap-1.5 transition cursor-pointer"
+            title="Jumble remaining player queue"
+          >
+            <Shuffle size={13} />
+            <span>Jumble</span>
           </button>
 
           <button

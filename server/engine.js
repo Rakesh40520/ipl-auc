@@ -6,6 +6,7 @@ import {
   validateBid,
   formatLakhs
 } from './rules.js';
+import { simulateMatchFixture } from './simulator.js';
 
 export class AuctionEngine {
   constructor({
@@ -22,6 +23,7 @@ export class AuctionEngine {
     this.hostToken = hostToken;
     this.hostName = hostName;
     this.config = { ...DEFAULT_CONFIG, ...config };
+    this.config.matchMode = this.config.matchMode || 'voting';
     this.emit = emit;
     this.db = db;
 
@@ -59,6 +61,10 @@ export class AuctionEngine {
     this.unsoldQueue = [];
     this.currentPlayerIndex = 0;
     this.currentPlayer = null;
+
+    if (this.config.jumblePlayers) {
+      this.jumblePlayers();
+    }
 
     // Auction stage state
     this.currentBid = 0;
@@ -648,6 +654,130 @@ export class AuctionEngine {
     this.emit('state_sync', this.getStateSnapshot());
     this.persist();
     return { success: true, fixture };
+  }
+
+  jumblePlayers() {
+    const startIndex = this.status === 'active' && this.currentPlayer ? this.currentPlayerIndex + 1 : this.currentPlayerIndex;
+    const remaining = this.playerQueue.slice(startIndex);
+
+    for (let i = remaining.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+    }
+
+    this.playerQueue = [
+      ...this.playerQueue.slice(0, startIndex),
+      ...remaining
+    ];
+
+    this.emit('queue_jumbled', {
+      totalRemaining: remaining.length,
+      nextPlayer: this.playerQueue[startIndex] || null
+    });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return { success: true, count: remaining.length };
+  }
+
+  get matchMode() {
+    return this.config.matchMode || 'voting';
+  }
+
+  setMatchMode(modeArg) {
+    const mode = typeof modeArg === 'object' && modeArg !== null ? modeArg.mode : modeArg;
+    if (mode !== 'voting' && mode !== 'ai_simulation') {
+      return { success: false, reason: 'Invalid match mode. Must be "voting" or "ai_simulation"' };
+    }
+    this.config.matchMode = mode;
+    this.emit('config_updated', { config: this.config });
+    this.emit('match_mode_changed', { matchMode: mode });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return { success: true, matchMode: mode };
+  }
+
+  simulateFixture({ fixtureId, userToken } = {}) {
+    if (!this.fixtures || this.fixtures.length === 0) {
+      return { success: false, reason: 'No fixtures planned yet' };
+    }
+
+    const fixture = this.fixtures.find(f => f.id === fixtureId);
+    if (!fixture) {
+      return { success: false, reason: 'Fixture not found' };
+    }
+
+    const tA = this.teams.get(fixture.teamA);
+    const tB = this.teams.get(fixture.teamB);
+    if (!tA || !tB) {
+      return { success: false, reason: 'One or both franchises not found' };
+    }
+
+    // Ensure Playing XIs exist
+    if (!tA.playingXI || tA.playingXI.length === 0) {
+      tA.playingXI = this.generateDefaultPlayingXI(tA);
+    }
+    if (!tB.playingXI || tB.playingXI.length === 0) {
+      tB.playingXI = this.generateDefaultPlayingXI(tB);
+    }
+
+    // Run statistical cricket match simulation based on math & player stats
+    const scorecard = simulateMatchFixture({
+      fixtureId: fixture.id,
+      teamA: tA,
+      teamB: tB,
+      playingXIA: tA.playingXI,
+      playingXIB: tB.playingXI
+    });
+
+    // Populate fixture
+    fixture.status = 'completed';
+    fixture.completedAt = Date.now();
+    fixture.winner = scorecard.winner;
+    fixture.scorecard = scorecard;
+    fixture.isSuperOver = scorecard.isSuperOver;
+
+    // Approximate slot wins based on innings comparison for standings diff
+    if (scorecard.winner === fixture.teamA) {
+      fixture.scoreA = 6 + Math.min(4, Math.floor(Math.random() * 4));
+      fixture.scoreB = 11 - fixture.scoreA;
+    } else if (scorecard.winner === fixture.teamB) {
+      fixture.scoreB = 6 + Math.min(4, Math.floor(Math.random() * 4));
+      fixture.scoreA = 11 - fixture.scoreB;
+    } else {
+      fixture.scoreA = 5;
+      fixture.scoreB = 5;
+    }
+
+    if (this.activeBattle && this.activeBattle.fixtureId === fixtureId) {
+      this.activeBattle = null;
+      this.emit('battle_updated', { battle: null });
+    }
+
+    this.emit('fixture_simulated', { fixture, scorecard });
+    this.emit('fixtures_updated', { fixtures: this.fixtures });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return { success: true, fixture, scorecard };
+  }
+
+  simulateAllFixtures({ userToken } = {}) {
+    if (!this.fixtures || this.fixtures.length === 0) {
+      return { success: false, reason: 'No fixtures planned yet' };
+    }
+
+    let simulatedCount = 0;
+    for (const fixture of this.fixtures) {
+      if (fixture.status !== 'completed') {
+        const res = this.simulateFixture({ fixtureId: fixture.id, userToken });
+        if (res.success) simulatedCount++;
+      }
+    }
+
+    this.emit('all_fixtures_simulated', { count: simulatedCount });
+    this.emit('fixtures_updated', { fixtures: this.fixtures });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return { success: true, simulatedCount };
   }
 
   concludeActiveBattle({ userToken } = {}) {
@@ -1420,7 +1550,8 @@ export class AuctionEngine {
       canUndo: Boolean(this.lastBidSnapshot),
       activeBattle: this.activeBattle,
       fixtures: this.fixtures || [],
-      standings: this.getTournamentStandings()
+      standings: this.getTournamentStandings(),
+      matchMode: this.config.matchMode || 'voting'
     };
   }
 

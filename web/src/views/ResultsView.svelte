@@ -27,7 +27,12 @@
     Lock,
     Eye,
     EyeOff,
-    Crown
+    Crown,
+    Cpu,
+    BarChart2,
+    Star,
+    ChevronDown,
+    Shuffle
   } from 'lucide-svelte';
 
   // Sub-navigation tab: 'fixtures' | 'battle' | 'xi' | 'overview'
@@ -37,6 +42,11 @@
   let fixturesSubTab = $state('fixtures'); // 'fixtures' | 'standings'
   let roundFilter = $state('all');
   let copied = $state(false);
+
+  // Scorecard modal state for AI Math Simulation
+  let selectedScorecardFixture = $state(null);
+  let scorecardInningsTab = $state('inn1'); // 'inn1' | 'inn2'
+  const matchMode = $derived(store.roomState.matchMode || 'voting');
 
   // Spectator identification & permissions
   const isSpectator = $derived(!store.myTeamCode);
@@ -400,6 +410,32 @@
     activeTab = 'fixtures';
     fixturesSubTab = 'standings';
   }
+
+  async function handleSetMatchMode(mode) {
+    if (!store.isHost) return;
+    await store.setMatchMode(mode);
+  }
+
+  async function handleSimulateFixture(fixtureId) {
+    const res = await store.simulateFixture(fixtureId);
+    if (res?.fixture?.scorecard) {
+      selectedScorecardFixture = res.fixture;
+      scorecardInningsTab = 'inn1';
+    }
+  }
+
+  async function handleSimulateAll() {
+    await store.simulateAllFixtures();
+  }
+
+  function openScorecard(fixture) {
+    selectedScorecardFixture = fixture;
+    scorecardInningsTab = 'inn1';
+  }
+
+  function closeScorecard() {
+    selectedScorecardFixture = null;
+  }
 </script>
 
 <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
@@ -597,6 +633,114 @@
   <!-- ========================================== -->
   {#if activeTab === 'fixtures'}
     <div class="space-y-6">
+      <!-- Championship Match Resolution Mode Selector (2 Options) -->
+      <div class="bg-gradient-to-r from-[#17153b] via-[#1a1740] to-[#151336] border-2 border-purple-500/30 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+                <Crown size={12} class="text-amber-400" />
+                <span>Match Resolution Engine</span>
+              </span>
+              {#if store.isHost}
+                <span class="text-[11px] text-purple-300 font-semibold">(Host Choice: Select how tournament matches are decided)</span>
+              {:else}
+                <span class="text-[11px] text-[#9a97c4]">(Controlled by Host)</span>
+              {/if}
+            </div>
+            <h4 class="text-lg sm:text-xl font-extrabold text-white font-heading">
+              Choose Championship Match Resolution Mode
+            </h4>
+          </div>
+
+          <div class="text-xs text-[#9a97c4]">
+            Active Mode:
+            <strong class="ml-1 font-mono uppercase {matchMode === 'ai_simulation' ? 'text-emerald-400' : 'text-purple-400'}">
+              {matchMode === 'ai_simulation' ? '🤖 AI Math Simulation & Scorecards' : '🗳️ Community Jury Voting'}
+            </strong>
+          </div>
+        </div>
+
+        <!-- The 2 Options Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Option 1: Community Jury Voting -->
+          <button
+            type="button"
+            onclick={() => handleSetMatchMode('voting')}
+            disabled={!store.isHost}
+            class="relative text-left p-4 sm:p-5 rounded-2xl border-2 transition-all duration-200 cursor-pointer disabled:cursor-default
+              {matchMode === 'voting'
+                ? 'bg-purple-950/40 border-purple-500 ring-2 ring-purple-500/30 shadow-lg'
+                : 'bg-[#0f0e26] border-[#272552] hover:border-[#3d3a77] opacity-80'}"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl {matchMode === 'voting' ? 'bg-purple-600 text-white shadow-md' : 'bg-[#1e1c45] text-[#9a97c4]'} grid place-items-center flex-shrink-0">
+                  <Swords size={20} />
+                </div>
+                <div>
+                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-purple-300 block">Option 1</span>
+                  <h5 class="text-base font-extrabold text-white font-heading">Community Jury Voting Mode</h5>
+                </div>
+              </div>
+
+              {#if matchMode === 'voting'}
+                <span class="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] font-extrabold uppercase flex items-center gap-1">
+                  <Check size={11} /> Selected
+                </span>
+              {/if}
+            </div>
+
+            <p class="text-xs text-[#9a97c4] mt-3 leading-relaxed">
+              Experience position-by-position 1v1 player duels (Opener vs Opener, Finisher vs Finisher, Pacer vs Pacer). Competing neutral franchises and spectators cast live votes, with Super Over tie-breakers!
+            </p>
+
+            <div class="mt-3 flex items-center gap-2 text-[11px] text-purple-300 font-semibold">
+              <Users size={12} />
+              <span>Multiplayer live voting &amp; instant battle commentary</span>
+            </div>
+          </button>
+
+          <!-- Option 2: AI Match Simulation (Player Stats & Math) -->
+          <button
+            type="button"
+            onclick={() => handleSetMatchMode('ai_simulation')}
+            disabled={!store.isHost}
+            class="relative text-left p-4 sm:p-5 rounded-2xl border-2 transition-all duration-200 cursor-pointer disabled:cursor-default
+              {matchMode === 'ai_simulation'
+                ? 'bg-emerald-950/40 border-emerald-500 ring-2 ring-emerald-500/30 shadow-lg'
+                : 'bg-[#0f0e26] border-[#272552] hover:border-[#3d3a77] opacity-80'}"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl {matchMode === 'ai_simulation' ? 'bg-emerald-600 text-white shadow-md' : 'bg-[#1e1c45] text-[#9a97c4]'} grid place-items-center flex-shrink-0">
+                  <Cpu size={20} />
+                </div>
+                <div>
+                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300 block">Option 2</span>
+                  <h5 class="text-base font-extrabold text-white font-heading">AI Match Simulation &amp; Scorecards</h5>
+                </div>
+              </div>
+
+              {#if matchMode === 'ai_simulation'}
+                <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-extrabold uppercase flex items-center gap-1">
+                  <Check size={11} /> Selected
+                </span>
+              {/if}
+            </div>
+
+            <p class="text-xs text-[#9a97c4] mt-3 leading-relaxed">
+              Mathematical ball-by-ball simulation calculating crucial match variables: batter Strike Rate &amp; Average, bowler Economy &amp; Wickets, Powerplay/Middle/Death phases, pressure chases, and generates full authentic 20-over scorecards!
+            </p>
+
+            <div class="mt-3 flex items-center gap-2 text-[11px] text-emerald-300 font-semibold">
+              <BarChart2 size={12} />
+              <span>Full 2-innings batting/bowling scorecard &amp; Player of the Match</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
       <!-- Tournament Header Stats Strip -->
       <div class="bg-[#15142e] border border-[#272552] rounded-3xl p-5 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="space-y-1">
@@ -615,11 +759,15 @@
             Tournament Match Fixtures &amp; Standings
           </h3>
           <p class="text-xs text-[#9a97c4]">
-            Every franchise clashes head-to-head across 11 position duels. Neutral remaining franchises cast jury votes.
+            {#if matchMode === 'ai_simulation'}
+              Matches are resolved via statistical AI simulation with realistic 20-over scorecards.
+            {:else}
+              Every franchise clashes head-to-head across 11 position duels. Neutral remaining franchises cast jury votes.
+            {/if}
           </p>
         </div>
 
-        <!-- Metric Badges & Re-Plan Button -->
+        <!-- Metric Badges & Simulation / Re-Plan Buttons -->
         <div class="flex flex-wrap items-center gap-2 text-xs">
           <div class="px-3.5 py-2 rounded-xl bg-[#0c0b1d] border border-[#272552] text-center">
             <span class="block text-[10px] text-[#9a97c4] font-bold uppercase">Total Matches</span>
@@ -634,6 +782,17 @@
               <span class="block text-[10px] text-[#9a97c4] font-bold uppercase">Leader</span>
               <strong class="text-amber-300 text-sm">{standings[0].code} ({standings[0].points} pts)</strong>
             </div>
+          {/if}
+
+          {#if store.isHost && matchMode === 'ai_simulation' && completedFixturesCount < fixtures.length}
+            <button
+              onclick={handleSimulateAll}
+              class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md"
+              title="Simulate all remaining fixtures in this tournament"
+            >
+              <Zap size={13} />
+              <span>Simulate All Matches (AI)</span>
+            </button>
           {/if}
 
           {#if store.isHost}
@@ -813,12 +972,20 @@
                   <!-- Middle Score / VS -->
                   <div class="text-center px-3 py-1.5 rounded-xl bg-[#0c0b1d] border border-[#272552] flex-shrink-0">
                     {#if fixture.status === 'completed'}
-                      <div class="text-base font-extrabold font-heading text-white">
-                        <span class="{fixture.winner === fixture.teamA ? 'text-amber-400' : 'text-white'}">{fixture.scoreA}</span>
-                        <span class="text-[#6b6891] px-1">-</span>
-                        <span class="{fixture.winner === fixture.teamB ? 'text-amber-400' : 'text-white'}">{fixture.scoreB}</span>
-                      </div>
-                      <span class="text-[9px] uppercase font-bold text-emerald-400 block">
+                      {#if fixture.scorecard}
+                        <div class="text-sm font-extrabold font-heading text-white">
+                          <span class="{fixture.winner === fixture.teamA ? 'text-amber-400 font-black' : 'text-white'}">{fixture.scoreA}</span>
+                          <span class="text-[#6b6891] px-1">-</span>
+                          <span class="{fixture.winner === fixture.teamB ? 'text-amber-400 font-black' : 'text-white'}">{fixture.scoreB}</span>
+                        </div>
+                      {:else}
+                        <div class="text-base font-extrabold font-heading text-white">
+                          <span class="{fixture.winner === fixture.teamA ? 'text-amber-400' : 'text-white'}">{fixture.scoreA}</span>
+                          <span class="text-[#6b6891] px-1">-</span>
+                          <span class="{fixture.winner === fixture.teamB ? 'text-amber-400' : 'text-white'}">{fixture.scoreB}</span>
+                        </div>
+                      {/if}
+                      <span class="text-[9px] uppercase font-bold text-emerald-400 block whitespace-nowrap">
                         {fixture.winner === 'TIE' ? 'Tied' : `${fixture.winner} Won`}
                       </span>
                     {:else if fixture.status === 'live'}
@@ -843,13 +1010,52 @@
                   </div>
                 </div>
 
-                <!-- Action Button -->
+                <!-- AI Scorecard Quick Summary (if simulated) -->
+                {#if fixture.scorecard}
+                  <div class="mb-4 p-3 rounded-2xl bg-[#0c0b1d]/90 border border-purple-500/20 text-xs space-y-1.5 shadow-inner">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-white flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full" style="background: {fixture.scorecard.innings1.primaryColor || '#6366f1'}"></span>
+                        <span>{fixture.scorecard.innings1.teamCode} {fixture.scorecard.innings1.runs}/{fixture.scorecard.innings1.wickets}</span>
+                        <span class="text-[10px] text-[#9a97c4] font-normal font-mono">({fixture.scorecard.innings1.overs} ov)</span>
+                      </span>
+                      <span class="text-[10px] uppercase font-bold text-purple-300">Target {fixture.scorecard.innings2.target}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-white flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full" style="background: {fixture.scorecard.innings2.primaryColor || '#ff4d8d'}"></span>
+                        <span>{fixture.scorecard.innings2.teamCode} {fixture.scorecard.innings2.runs}/{fixture.scorecard.innings2.wickets}</span>
+                        <span class="text-[10px] text-[#9a97c4] font-normal font-mono">({fixture.scorecard.innings2.overs} ov)</span>
+                      </span>
+                      <span class="text-[11px] font-extrabold text-emerald-400">{fixture.scorecard.margin}</span>
+                    </div>
+
+                    {#if fixture.scorecard.playerOfTheMatch}
+                      <div class="pt-1.5 border-t border-[#272552]/80 flex items-center justify-between text-[11px]">
+                        <span class="flex items-center gap-1 text-amber-300">
+                          <Star size={11} class="text-amber-400 flex-shrink-0" />
+                          <span>POTM: <strong>{fixture.scorecard.playerOfTheMatch.name}</strong></span>
+                        </span>
+                        <span class="text-[#9a97c4] text-[10px] font-mono">({fixture.scorecard.playerOfTheMatch.summary})</span>
+                      </div>
+                    {/if}
+                  </div>
+                {/if}
+
+                <!-- Action Button Row -->
                 <div class="pt-3 border-t border-[#272552]/80 flex items-center justify-between gap-2">
                   <span class="text-[11px] text-[#9a97c4]">
                     {#if fixture.status === 'completed'}
-                      11 position duels completed
+                      {#if fixture.scorecard}
+                        20-over AI match simulated
+                      {:else}
+                        11 position duels completed
+                      {/if}
                     {:else if fixture.status === 'live'}
                       Neutral teams currently voting
+                    {:else if matchMode === 'ai_simulation'}
+                      Ready for AI match calculation
                     {:else}
                       Ready to clash in Battle Arena
                     {/if}
@@ -864,23 +1070,49 @@
                       <span>Vote Now</span>
                     </button>
                   {:else if fixture.status === 'completed'}
-                    <button
-                      onclick={() => {
-                        store.initiateBattle(fixture.teamA, fixture.teamB);
-                        activeTab = 'battle';
-                      }}
-                      class="px-3 py-1 rounded-xl bg-[#0c0b1d] hover:bg-[#272552] border border-[#272552] text-[#9a97c4] hover:text-white font-bold text-xs transition cursor-pointer"
-                    >
-                      Review Duel
-                    </button>
+                    <div class="flex items-center gap-2">
+                      {#if fixture.scorecard}
+                        <button
+                          onclick={() => openScorecard(fixture)}
+                          class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-bold text-xs transition flex items-center gap-1.5 cursor-pointer shadow-md"
+                        >
+                          <BarChart2 size={13} />
+                          <span>View Scorecard</span>
+                        </button>
+                      {:else}
+                        <button
+                          onclick={() => {
+                            store.initiateBattle(fixture.teamA, fixture.teamB);
+                            activeTab = 'battle';
+                          }}
+                          class="px-3 py-1 rounded-xl bg-[#0c0b1d] hover:bg-[#272552] border border-[#272552] text-[#9a97c4] hover:text-white font-bold text-xs transition cursor-pointer"
+                        >
+                          Review Duel
+                        </button>
+                      {/if}
+                    </div>
                   {:else}
-                    <button
-                      onclick={() => handleStartFixture(fixture)}
-                      class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-bold text-xs transition flex items-center gap-1.5 cursor-pointer shadow-md"
-                    >
-                      <Play size={13} />
-                      <span>Start Match</span>
-                    </button>
+                    {#if matchMode === 'ai_simulation'}
+                      {#if store.isHost}
+                        <button
+                          onclick={() => handleSimulateFixture(fixture.id)}
+                          class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold text-xs transition flex items-center gap-1.5 cursor-pointer shadow-md"
+                        >
+                          <Zap size={13} />
+                          <span>Simulate Match (AI)</span>
+                        </button>
+                      {:else}
+                        <span class="text-xs text-[#9a97c4] font-medium italic">Pending AI Sim</span>
+                      {/if}
+                    {:else}
+                      <button
+                        onclick={() => handleStartFixture(fixture)}
+                        class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-bold text-xs transition flex items-center gap-1.5 cursor-pointer shadow-md"
+                      >
+                        <Play size={13} />
+                        <span>Start Match</span>
+                      </button>
+                    {/if}
                   {/if}
                 </div>
               </div>
@@ -1832,6 +2064,285 @@
               {/each}
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- ========================================== -->
+  <!-- FULL CRICKET SCORECARD MODAL (AI Engine)   -->
+  <!-- ========================================== -->
+  {#if selectedScorecardFixture && selectedScorecardFixture.scorecard}
+    {@const sc = selectedScorecardFixture.scorecard}
+    {@const activeInn = scorecardInningsTab === 'inn1' ? sc.innings1 : sc.innings2}
+
+    <div
+      class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="relative w-full max-w-4xl bg-[#110f29] border border-purple-500/40 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
+        <!-- Modal Top Bar -->
+        <div class="p-4 sm:p-5 bg-[#171538] border-b border-[#272552] flex items-center justify-between gap-3 flex-shrink-0">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Cpu size={12} class="text-purple-400" />
+              <span>Match #{selectedScorecardFixture.matchNumber} • Round {selectedScorecardFixture.round}</span>
+            </span>
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold">
+              Official T20 Scorecard
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onclick={closeScorecard}
+            class="p-2 rounded-xl bg-[#0c0b1d] hover:bg-[#272552] text-[#9a97c4] hover:text-white transition cursor-pointer"
+            aria-label="Close Scorecard"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <!-- Match Result & Header Banner -->
+        <div class="p-5 sm:p-6 bg-gradient-to-r from-purple-950/40 via-[#18153b] to-indigo-950/40 border-b border-[#272552] flex-shrink-0 space-y-4">
+          <!-- Teams Summary Strip -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <!-- Innings 1 Team -->
+            <div class="flex items-center gap-3 text-center sm:text-left">
+              <div
+                class="w-12 h-12 rounded-2xl grid place-items-center font-heading font-extrabold text-base text-white shadow-lg flex-shrink-0"
+                style="background: {sc.innings1.primaryColor || '#6366f1'};"
+              >
+                {sc.innings1.teamCode}
+              </div>
+              <div>
+                <strong class="text-white text-base sm:text-lg font-bold block">{sc.innings1.teamName}</strong>
+                <span class="text-2xl font-black font-mono text-white">
+                  {sc.innings1.runs}/{sc.innings1.wickets}
+                  <span class="text-xs font-normal text-[#9a97c4]">({sc.innings1.overs} ov, RR {sc.innings1.runRate})</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- VS / Divider -->
+            <div class="px-3 py-1 rounded-full bg-[#0c0b1d] border border-[#272552] text-[#6b6891] text-xs font-mono font-bold">
+              VS
+            </div>
+
+            <!-- Innings 2 Team -->
+            <div class="flex items-center gap-3 text-center sm:text-right flex-row-reverse sm:flex-row">
+              <div class="sm:text-right">
+                <strong class="text-white text-base sm:text-lg font-bold block">{sc.innings2.teamName}</strong>
+                <span class="text-2xl font-black font-mono text-white">
+                  {sc.innings2.runs}/{sc.innings2.wickets}
+                  <span class="text-xs font-normal text-[#9a97c4]">({sc.innings2.overs} ov, RR {sc.innings2.runRate})</span>
+                </span>
+              </div>
+              <div
+                class="w-12 h-12 rounded-2xl grid place-items-center font-heading font-extrabold text-base text-white shadow-lg flex-shrink-0"
+                style="background: {sc.innings2.primaryColor || '#ff4d8d'};"
+              >
+                {sc.innings2.teamCode}
+              </div>
+            </div>
+          </div>
+
+          <!-- Margin Banner & Toss -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-2 pt-3 border-t border-[#272552]/80 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-extrabold text-xs sm:text-sm">
+                🏆 {sc.margin}
+              </span>
+              {#if sc.isSuperOver}
+                <span class="px-2.5 py-0.5 rounded-lg bg-amber-500/20 text-amber-300 font-bold text-xs">
+                  ⚡ Super Over Decider
+                </span>
+              {/if}
+            </div>
+
+            <div class="text-[#9a97c4] text-xs">
+              🪙 <span>{sc.toss.summary}</span>
+            </div>
+          </div>
+
+          <!-- Player of the Match Spotlight -->
+          {#if sc.playerOfTheMatch}
+            <div class="p-3 rounded-2xl bg-[#0c0b1d]/90 border border-amber-500/30 flex items-center justify-between gap-3 text-xs">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30 grid place-items-center flex-shrink-0">
+                  <Star size={16} class="text-amber-400" />
+                </div>
+                <div>
+                  <span class="text-[10px] text-amber-400 uppercase font-black tracking-wider block">Player of the Match</span>
+                  <strong class="text-white text-sm font-bold">{sc.playerOfTheMatch.name}</strong>
+                  <span class="text-[#9a97c4] ml-1.5">({sc.playerOfTheMatch.teamCode}) — {sc.playerOfTheMatch.summary}</span>
+                </div>
+              </div>
+
+              <div class="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] font-mono font-bold whitespace-nowrap">
+                Impact: {sc.playerOfTheMatch.impactPoints} pts
+              </div>
+            </div>
+          {/if}
+        </div>
+
+        <!-- Innings Tabs (Innings 1 vs Innings 2) -->
+        <div class="p-3 bg-[#13112e] border-b border-[#272552] flex items-center gap-2 flex-shrink-0">
+          <button
+            type="button"
+            onclick={() => scorecardInningsTab = 'inn1'}
+            class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer
+              {scorecardInningsTab === 'inn1'
+                ? 'bg-purple-600 text-white shadow-md'
+                : 'bg-[#1a173d] text-[#9a97c4] hover:text-white'}"
+          >
+            <span>1st Innings: {sc.innings1.teamCode}</span>
+            <span class="font-mono font-black">{sc.innings1.runs}/{sc.innings1.wickets}</span>
+            <span class="text-[11px] opacity-80">({sc.innings1.overs} ov)</span>
+          </button>
+
+          <button
+            type="button"
+            onclick={() => scorecardInningsTab = 'inn2'}
+            class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer
+              {scorecardInningsTab === 'inn2'
+                ? 'bg-purple-600 text-white shadow-md'
+                : 'bg-[#1a173d] text-[#9a97c4] hover:text-white'}"
+          >
+            <span>2nd Innings: {sc.innings2.teamCode}</span>
+            <span class="font-mono font-black">{sc.innings2.runs}/{sc.innings2.wickets}</span>
+            <span class="text-[11px] opacity-80">({sc.innings2.overs} ov)</span>
+          </button>
+        </div>
+
+        <!-- Scrollable Scorecard Content (Batting & Bowling Tables) -->
+        <div class="p-5 sm:p-6 overflow-y-auto space-y-6 flex-1">
+          <!-- BATTING SCORECARD -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-sm font-extrabold uppercase tracking-wider text-white flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full" style="background: {activeInn.primaryColor || '#a855f7'}"></span>
+                <span>{activeInn.teamName} Batting</span>
+              </h4>
+              <span class="text-xs text-[#9a97c4] font-mono">
+                {activeInn.runs}/{activeInn.wickets} ({activeInn.overs} Ov, RR {activeInn.runRate})
+              </span>
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-[#272552] bg-[#0c0b1d]">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="text-[#9a97c4] text-[11px] uppercase border-b border-[#272552] bg-[#14122d]">
+                    <th class="py-2.5 px-3">Batter</th>
+                    <th class="py-2.5 px-3">Dismissal</th>
+                    <th class="py-2.5 px-3 text-right">R</th>
+                    <th class="py-2.5 px-3 text-right">B</th>
+                    <th class="py-2.5 px-3 text-right">4s</th>
+                    <th class="py-2.5 px-3 text-right">6s</th>
+                    <th class="py-2.5 px-3 text-right">SR</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#272552]/40">
+                  {#each activeInn.batting as b}
+                    <tr class="hover:bg-[#151433] transition">
+                      <td class="py-2.5 px-3 font-bold text-white whitespace-nowrap">
+                        {b.name}
+                        {#if b.notOut}
+                          <span class="text-emerald-400 font-extrabold">*</span>
+                        {/if}
+                      </td>
+                      <td class="py-2.5 px-3 text-[11px] text-[#9a97c4]">
+                        {#if b.notOut}
+                          <span class="text-emerald-400 font-semibold">not out</span>
+                        {:else}
+                          <span>{b.dismissal}</span>
+                        {/if}
+                      </td>
+                      <td class="py-2.5 px-3 text-right font-black font-mono {b.runs >= 50 ? 'text-amber-300 font-extrabold text-sm' : 'text-white'}">
+                        {b.runs}
+                      </td>
+                      <td class="py-2.5 px-3 text-right text-[#9a97c4] font-mono">{b.balls}</td>
+                      <td class="py-2.5 px-3 text-right text-[#9a97c4] font-mono">{b.fours}</td>
+                      <td class="py-2.5 px-3 text-right text-purple-300 font-mono font-semibold">{b.sixes}</td>
+                      <td class="py-2.5 px-3 text-right font-mono font-semibold {b.sr >= 160 ? 'text-emerald-400' : b.sr >= 130 ? 'text-white' : 'text-[#9a97c4]'}">
+                        {b.sr}
+                      </td>
+                    </tr>
+                  {/each}
+                  <!-- Totals Row -->
+                  <tr class="bg-[#14122d] font-bold border-t border-[#272552]">
+                    <td class="py-3 px-3 text-white" colspan="2">TOTAL ({activeInn.overs} Overs, RR {activeInn.runRate})</td>
+                    <td class="py-3 px-3 text-right text-emerald-400 text-sm font-mono font-black" colspan="5">
+                      {activeInn.runs} / {activeInn.wickets}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- BOWLING SCORECARD -->
+          <div class="space-y-3">
+            <h4 class="text-sm font-extrabold uppercase tracking-wider text-white">
+              Bowling
+            </h4>
+
+            <div class="overflow-x-auto rounded-2xl border border-[#272552] bg-[#0c0b1d]">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="text-[#9a97c4] text-[11px] uppercase border-b border-[#272552] bg-[#14122d]">
+                    <th class="py-2.5 px-3">Bowler</th>
+                    <th class="py-2.5 px-3 text-right">O</th>
+                    <th class="py-2.5 px-3 text-right">M</th>
+                    <th class="py-2.5 px-3 text-right">R</th>
+                    <th class="py-2.5 px-3 text-right">W</th>
+                    <th class="py-2.5 px-3 text-right">ECON</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#272552]/40">
+                  {#each activeInn.bowling as bowl}
+                    <tr class="hover:bg-[#151433] transition">
+                      <td class="py-2.5 px-3 font-bold text-white whitespace-nowrap">{bowl.name}</td>
+                      <td class="py-2.5 px-3 text-right text-[#9a97c4] font-mono">{bowl.overs}</td>
+                      <td class="py-2.5 px-3 text-right text-[#9a97c4] font-mono">{bowl.maidens}</td>
+                      <td class="py-2.5 px-3 text-right text-white font-mono">{bowl.runs}</td>
+                      <td class="py-2.5 px-3 text-right font-black font-mono {bowl.wickets >= 3 ? 'text-amber-400 text-sm font-extrabold' : 'text-white'}">
+                        {bowl.wickets}
+                      </td>
+                      <td class="py-2.5 px-3 text-right font-mono font-semibold {bowl.economy <= 7.0 ? 'text-emerald-400' : bowl.economy <= 9.0 ? 'text-white' : 'text-rose-400'}">
+                        {bowl.economy}
+                      </td>
+                    </tr>
+                  {/each}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- SUPER OVER DETAILS (IF APPLICABLE) -->
+          {#if sc.isSuperOver && sc.superOver}
+            <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+              <h4 class="text-sm font-extrabold text-amber-300 font-heading flex items-center gap-1.5">
+                <Zap size={15} class="text-amber-400" />
+                <span>Super Over Sudden-Death Tiebreaker</span>
+              </h4>
+              <p class="text-xs text-white">
+                {sc.superOver.summary}
+              </p>
+            </div>
+          {/if}
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-4 bg-[#171538] border-t border-[#272552] flex items-center justify-end gap-2 flex-shrink-0">
+          <button
+            type="button"
+            onclick={closeScorecard}
+            class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition cursor-pointer"
+          >
+            Close Scorecard
+          </button>
         </div>
       </div>
     </div>

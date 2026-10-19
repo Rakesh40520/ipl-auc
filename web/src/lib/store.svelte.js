@@ -98,7 +98,8 @@ export class AuctionStore {
     canUndo: false,
     activeBattle: null,
     fixtures: [],
-    standings: []
+    standings: [],
+    matchMode: 'voting'
   });
 
   // Sold/Unsold Celebration overlay state
@@ -378,6 +379,27 @@ export class AuctionStore {
 
     this.socket.on('battle_updated', ({ battle }) => {
       this.roomState.activeBattle = battle;
+    });
+
+    this.socket.on('queue_jumbled', (payload) => {
+      this.notify(`Player queue jumbled randomly (${payload.totalRemaining} players)!`);
+    });
+
+    this.socket.on('match_mode_changed', ({ matchMode }) => {
+      this.roomState.matchMode = matchMode;
+      this.notify(`Tournament mode set to: ${matchMode === 'ai_simulation' ? 'AI Match Simulation (Stats & Scorecards)' : 'Community Jury Voting'}`);
+    });
+
+    this.socket.on('fixture_simulated', ({ fixture, scorecard }) => {
+      const idx = this.roomState.fixtures.findIndex(f => f.id === fixture.id);
+      if (idx !== -1) {
+        this.roomState.fixtures[idx] = fixture;
+      }
+      this.notify(`Match #${fixture.matchNumber}: ${scorecard.margin}! POTM: ${scorecard.playerOfTheMatch?.name}`);
+    });
+
+    this.socket.on('all_fixtures_simulated', ({ count }) => {
+      this.notify(`All ${count} remaining match fixtures simulated by AI!`);
     });
 
     this.socket.on('fixtures_updated', ({ fixtures, error }) => {
@@ -788,6 +810,43 @@ export class AuctionStore {
           this.notify(res.reason || res.error || 'Failed to conclude battle');
         } else {
           this.notify('Battle concluded and points recorded in tournament standings!');
+        }
+        resolve(res);
+      });
+    });
+  }
+
+  jumblePlayers() {
+    return this.hostControl('jumble_players');
+  }
+
+  setMatchMode(mode) {
+    return this.hostControl('set_match_mode', { matchMode: mode });
+  }
+
+  simulateFixture(fixtureId) {
+    return new Promise((resolve) => {
+      this.socket.emit('simulate_fixture', {
+        roomCode: this.roomCode,
+        fixtureId,
+        userToken: this.userToken
+      }, (res) => {
+        if (!res.success) {
+          this.notify(res.reason || res.error || 'Match simulation failed');
+        }
+        resolve(res);
+      });
+    });
+  }
+
+  simulateAllFixtures() {
+    return new Promise((resolve) => {
+      this.socket.emit('simulate_all_fixtures', {
+        roomCode: this.roomCode,
+        userToken: this.userToken
+      }, (res) => {
+        if (!res.success) {
+          this.notify(res.reason || res.error || 'Simulation failed');
         }
         resolve(res);
       });

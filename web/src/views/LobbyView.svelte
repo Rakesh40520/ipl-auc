@@ -1,7 +1,7 @@
 <script>
   import { store } from '../lib/store.svelte.js';
   import { getFranchise } from '../lib/utils.js';
-  import { Play, Copy, Check, Bot, Shield, Trophy, UserCheck, LogOut } from 'lucide-svelte';
+  import { Play, Copy, Check, Bot, Shield, Trophy, UserCheck, LogOut, Shuffle } from 'lucide-svelte';
 
   let copied = $state(false);
   let starting = $state(false);
@@ -224,6 +224,15 @@
         >
           <Bot size={15} class={store.roomState.config?.botsEnabled ? 'text-purple-300' : 'text-[#6b6891]'} />
           <span>{store.roomState.config?.botsEnabled ? 'Bots: ON (All 10 in Fixtures)' : 'Bots: OFF (Humans Only)'}</span>
+        </button>
+
+        <button
+          onclick={() => store.jumblePlayers()}
+          class="px-3.5 py-2.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/40 text-purple-200 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+          title="Jumble & shuffle the player auction order randomly"
+        >
+          <Shuffle size={14} />
+          <span>Jumble Players</span>
         </button>
 
         <button
