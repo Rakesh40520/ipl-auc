@@ -45,7 +45,7 @@
   );
 
   const meetsPlayerRequirement = $derived(
-    store.roomState.config?.botsEnabled || claimedCount > 3
+    store.roomState.config?.botsEnabled || claimedCount >= 2
   );
 
   async function handleStart() {
@@ -57,8 +57,8 @@
       }
     }
 
-    if (!store.roomState.config?.botsEnabled && claimedCount <= 3) {
-      store.notify(`Tournament requirement: More than 3 players (>3) are required to plan match fixtures. Currently ${claimedCount} claimed. Please invite more managers or switch AI Bots ON.`);
+    if (!store.roomState.config?.botsEnabled && claimedCount < 2) {
+      store.notify(`Tournament requirement: At least 2 players are required to start the auction and tournament (currently ${claimedCount} claimed). Please claim at least 2 teams or switch AI Bots ON.`);
       return;
     }
 
@@ -189,15 +189,15 @@
             {#if store.roomState.config?.botsEnabled}
               <span class="text-purple-300 font-semibold">AI Bots Enabled: All 10 franchises will participate in match fixtures.</span>
             {:else}
-              <span class={claimedCount > 3 ? 'text-emerald-400 font-semibold' : 'text-amber-400 font-semibold'}>
-                Fixtures Requirement: {claimedCount} / 4 minimum claimed ({claimedCount > 3 ? 'Ready for tournament' : 'More than 3 players required'})
+              <span class={claimedCount >= 2 ? 'text-emerald-400 font-semibold' : 'text-amber-400 font-semibold'}>
+                Fixtures Requirement: {claimedCount} / 2 minimum claimed ({claimedCount >= 2 ? 'Ready for tournament' : 'At least 2 players required'})
               </span>
             {/if}
           {:else}
             <span class="text-[#9a97c4]">
               Waiting for host ({store.roomState.hostName || 'Host'}) to start.
-              {#if !store.roomState.config?.botsEnabled && claimedCount <= 3}
-                <span class="text-amber-400 block sm:inline"> Need &gt; 3 players to plan match fixtures ({claimedCount}/4).</span>
+              {#if !store.roomState.config?.botsEnabled && claimedCount < 2}
+                <span class="text-amber-400 block sm:inline"> Need at least 2 players to start ({claimedCount}/2).</span>
               {/if}
             </span>
           {/if}
@@ -238,7 +238,7 @@
         <button
           onclick={handleStart}
           disabled={starting}
-          title={!meetsPlayerRequirement ? "More than 3 players (>3) required to plan match fixtures. Switch Bots ON or invite players." : "Start Tournament Auction"}
+          title={!meetsPlayerRequirement ? "At least 2 players required to plan match fixtures. Switch Bots ON or invite players." : "Start Tournament Auction"}
           class="flex-1 sm:flex-initial px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#8b73ff] to-[#ff4d8d] hover:opacity-90 text-white text-sm font-bold shadow-lg shadow-purple-900/30 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40"
         >
           {#if starting}

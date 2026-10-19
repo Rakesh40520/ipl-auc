@@ -325,7 +325,7 @@ describe('AuctionEngine State Machine Tests', () => {
     engine.destroy();
   });
 
-  test('Tournament fixtures planning requires 3 players for voting and 2 for AI, generates schedule and standings', () => {
+  test('Tournament fixtures planning requires 2 players minimum, generates schedule and standings', () => {
     const engine = new AuctionEngine({
       roomCode: 'TEST-FIXTURES',
       hostToken: 'host-1',
@@ -336,26 +336,25 @@ describe('AuctionEngine State Machine Tests', () => {
       emit: () => {}
     });
 
+    // 1. With only 1 team, generating fixtures fails (requires at least 2 teams)
     engine.claimTeam('CSK', { userToken: 'user-csk', userName: 'CSK Manager' });
-    engine.claimTeam('MI', { userToken: 'user-mi', userName: 'MI Manager' });
-
-    // 1. With 2 teams in Voting mode and 0 spectators, fails because voting requires 3 participants (2 clashing + 1 spectator)
     const failRes = engine.generateFixtures();
     assert.equal(failRes.success, false);
-    assert.match(failRes.reason, /at least 3 participants are required/i);
+    assert.match(failRes.reason, /At least 2 teams are required/i);
     assert.equal(engine.fixtures.length, 0);
 
-    // 2. Switch to AI Simulation mode -> 2 teams is the minimum!
-    engine.setMatchMode('ai_simulation');
+    // 2. Add 2nd team (MI) -> 2 teams is the minimum! Generates 1 head-to-head match
+    engine.claimTeam('MI', { userToken: 'user-mi', userName: 'MI Manager' });
+    const twoTeamsRes = engine.generateFixtures();
+    assert.equal(twoTeamsRes.success, true);
     assert.equal(engine.fixtures.length, 1);
     assert.equal(engine.fixtures[0].teamA, 'CSK');
     assert.equal(engine.fixtures[0].teamB, 'MI');
 
-    // 3. Switch back to Voting mode and add 3rd team (RCB) -> 3 teams is valid for voting!
-    engine.setMatchMode('voting');
+    // 3. Add 3rd team (RCB) -> 3 teams round-robin = 3 matches
     engine.claimTeam('RCB', { userToken: 'user-rcb', userName: 'RCB Manager' });
-    const votingRes = engine.generateFixtures();
-    assert.equal(votingRes.success, true);
+    const threeTeamsRes = engine.generateFixtures();
+    assert.equal(threeTeamsRes.success, true);
     assert.equal(engine.fixtures.length, 3);
 
     // 4. Add 4th team -> Now 4 teams

@@ -534,9 +534,7 @@ export class AuctionEngine {
         .map(t => this.sanitizeTeam(t));
     }
 
-    // Rule:
-    // - For AI Judging, 2 teams is the minimum (matches decided based on stats & math)
-    // - For Community Jury Voting, 3 participants is the minimum (2 clashing teams + 1 spectator minimum for neutral voting)
+    // Rule: Minimum 2 teams required to plan tournament match fixtures
     if (participatingTeams.length < 2) {
       this.fixtures = [];
       const reason = `At least 2 teams are required to plan tournament match fixtures (currently ${participatingTeams.length} team).`;
@@ -545,20 +543,6 @@ export class AuctionEngine {
         error: reason
       });
       return { success: false, reason };
-    }
-
-    const mode = this.matchMode;
-    const spectatorCount = this.spectatorCount || 0;
-    const totalVotingParticipants = participatingTeams.length + (this.config.spectatorsCanVote ? spectatorCount : 0);
-
-    if (mode === 'voting' && participatingTeams.length === 2 && totalVotingParticipants < 3) {
-      this.fixtures = [];
-      const reason = `For Jury Voting, at least 3 participants are required (2 clashing teams + 1 spectator minimum for neutral judging). For AI Judging, 2 teams is the minimum. Switch to AI Judging mode or invite a spectator!`;
-      this.emit('fixtures_updated', {
-        fixtures: [],
-        error: reason
-      });
-      return { success: false, reason, requiresAIOrSpectator: true };
     }
 
     const teamsList = [...participatingTeams];

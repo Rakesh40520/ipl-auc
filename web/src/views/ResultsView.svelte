@@ -381,13 +381,7 @@
     participatingCount + (spectatorsCanVote ? spectatorCount : 0)
   );
 
-  const isFixturesBlocked = $derived.by(() => {
-    if (participatingCount < 2) return true;
-    if (matchMode === 'voting' && participatingCount === 2 && totalVotingParticipants < 3) {
-      return true;
-    }
-    return false;
-  });
+  const isFixturesBlocked = $derived(participatingCount < 2);
 
   const completedFixturesCount = $derived(
     fixtures.filter(f => f.status === 'completed').length
@@ -753,7 +747,7 @@
                 <span>Multiplayer live voting &amp; instant battle commentary</span>
               </span>
               <span class="px-2 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 font-mono text-[10px] font-bold">
-                Min 3 Players (2 Clashing + 1 Spectator)
+                Min 2 Players (1v1 Duels)
               </span>
             </div>
           </button>
@@ -898,43 +892,22 @@
           <div class="flex items-center gap-3">
             <AlertCircle size={28} class="text-amber-400 flex-shrink-0" />
             <div>
-              {#if participatingCount < 2}
-                <h4 class="text-base font-bold text-amber-200 font-heading">
-                  At Least 2 Teams Required for Match Fixtures
-                </h4>
-                <p class="text-xs text-amber-300/80 mt-0.5">
-                  Currently, only {participatingCount} franchise has players. At least 2 franchises are required to schedule matches.
-                </p>
-              {:else if matchMode === 'voting' && participatingCount === 2 && totalVotingParticipants < 3}
-                <h4 class="text-base font-bold text-amber-200 font-heading">
-                  3 Players Required for Voting (2 Clashing Teams + 1 Spectator Minimum)
-                </h4>
-                <p class="text-xs text-amber-300/80 mt-0.5">
-                  Because when 2 teams clash, neither team can vote on their own duel — a neutral spectator or 3rd team is required to judge! For <strong>AI Judging</strong> based on math &amp; stats, <strong>2 teams is the minimum</strong>.
-                </p>
-              {/if}
+              <h4 class="text-base font-bold text-amber-200 font-heading">
+                At Least 2 Players Required for Tournament Fixtures
+              </h4>
+              <p class="text-xs text-amber-300/80 mt-0.5">
+                Currently, only {participatingCount} franchise has players. At least 2 franchises are required to schedule tournament match fixtures.
+              </p>
             </div>
           </div>
-          <div class="flex items-center gap-2 flex-wrap justify-center sm:justify-end">
-            {#if store.isHost && matchMode === 'voting' && participatingCount === 2}
-              <button
-                onclick={() => handleSetMatchMode('ai_simulation')}
-                class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-extrabold text-xs transition cursor-pointer whitespace-nowrap shadow-lg flex items-center gap-1.5"
-                title="Switch to AI Simulation mode (Minimum 2 teams, no spectator required)"
-              >
-                <Zap size={14} class="fill-white" />
-                <span>Switch to AI Judging (2 Teams Min)</span>
-              </button>
-            {/if}
-            {#if store.isHost}
-              <button
-                onclick={() => store.hostControl('fill_bots')}
-                class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90 text-white font-bold text-xs transition cursor-pointer whitespace-nowrap shadow-md"
-              >
-                Fill with AI Bots (10 Teams)
-              </button>
-            {/if}
-          </div>
+          {#if store.isHost}
+            <button
+              onclick={() => store.hostControl('fill_bots')}
+              class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90 text-white font-bold text-xs transition cursor-pointer whitespace-nowrap shadow-md"
+            >
+              Fill with AI Bots (10 Teams)
+            </button>
+          {/if}
         </div>
       {:else}
         <!-- Live Fixture Banner (If a battle is active) -->
