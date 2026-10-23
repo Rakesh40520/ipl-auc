@@ -43,15 +43,17 @@ export class AuctionEngine {
         accentColor: t.accentColor,
         textColor: t.textColor,
         titles: t.titles || 0,
-        purse: this.config.defaultPurse,
-        squad: [],
-        playingXI: [],
-        overseasCount: 0,
-        userToken: null,
-        userName: null,
-        isBot: false,
-        locked: false,
-        isXIConfirmed: false
+        purse: typeof t.purse === 'number' ? t.purse : this.config.defaultPurse,
+        squad: Array.isArray(t.squad) ? [...t.squad] : [],
+        playingXI: Array.isArray(t.playingXI) ? [...t.playingXI] : [],
+        overseasCount: t.overseasCount || (Array.isArray(t.squad) ? t.squad.filter(p => p.isOverseas).length : 0),
+        userToken: t.userToken || null,
+        userName: t.userName || null,
+        isBot: Boolean(t.isBot),
+        locked: Boolean(t.locked),
+        isXIConfirmed: Boolean(t.isXIConfirmed),
+        isDisqualified: Boolean(t.isDisqualified),
+        disqualificationReason: t.disqualificationReason || null
       });
     }
 
@@ -258,54 +260,31 @@ export class AuctionEngine {
     this.clearTransition();
     this.status = 'playing_xi_selection';
 
-    // Requirement: Ensure EVERY single franchise (all 10 teams) has at least 11 authentic real players in their squad
-    const acquiredIds = new Set();
-    for (const t of this.teams.values()) {
-      for (const p of (t.squad || [])) {
-        if (p?.id) acquiredIds.add(p.id);
-      }
-    }
-    const availableUnsold = (this.allPlayers || []).filter(p => !acquiredIds.has(p.id));
-    let poolIdx = 0;
-
+    // Strict Rule: If any team does not have at least 11 players in their squad, disqualify and remove them!
     for (const team of this.teams.values()) {
       team.squad = team.squad || [];
-      // 1. Backfill squad with real players from unsold pool until squad has at least 11 players
-      while (team.squad.length < 11 && poolIdx < availableUnsold.length) {
-        const draftPlayer = availableUnsold[poolIdx++];
-        team.squad.push({
-          ...draftPlayer,
-          finalBid: draftPlayer.basePrice || 20,
-          winnerTeam: team.code,
-          winnerUser: team.userName || `${team.code} Manager`
-        });
-        if (draftPlayer.isOverseas) {
-          team.overseasCount = (team.overseasCount || 0) + 1;
-        }
-      }
-      // 2. If unsold pool was exhausted, backfill from authentic cricketers reserve pool
-      let resIdx = 0;
-      while (team.squad.length < 11 && resIdx < REAL_RESERVE_POOL.length) {
-        const reserve = REAL_RESERVE_POOL[resIdx++];
-        if (!team.squad.some(p => p.name === reserve.name)) {
-          team.squad.push({
-            id: `res-${team.code}-${reserve.name.toLowerCase().replace(/\s+/g, '-')}`,
-            ...reserve,
-            finalBid: 20,
-            winnerTeam: team.code,
-            winnerUser: team.userName || `${team.code} Manager`
-          });
-        }
-      }
       team.squadCount = team.squad.length;
-      team.playingXI = this.generateDefaultPlayingXI(team);
-      team.isXIConfirmed = Boolean(team.isBot || !team.userToken);
+
+      if (team.squad.length < 11 && (!team.playingXI || team.playingXI.length < 11)) {
+        team.isDisqualified = true;
+        team.disqualificationReason = `Disqualified: Failed to acquire minimum 11 players in auction (has only ${team.squad.length}/11 players).`;
+        team.playingXI = [];
+        team.isXIConfirmed = false;
+      } else {
+        team.isDisqualified = false;
+        team.disqualificationReason = null;
+        if (!team.playingXI || team.playingXI.length < 11) {
+          team.playingXI = this.generateDefaultPlayingXI(team);
+        }
+        team.isXIConfirmed = Boolean(team.isBot || !team.userToken);
+      }
+
       if (this.db) {
         this.db.saveTeam(this.roomCode, team);
       }
     }
 
-    // Auto-plan tournament league fixtures
+    // Auto-plan tournament league fixtures ONLY for qualified teams
     this.generateFixtures();
 
     // Start XI selection countdown timer (Strict 2 minutes = 120s)
@@ -343,6 +322,10 @@ export class AuctionEngine {
         this.advanceToFixtures();
       }
     }, 1000);
+
+    if (this.xiTimerInterval?.unref) {
+      this.xiTimerInterval.unref();
+    }
   }
 
   stopXITimer() {
@@ -353,7 +336,7 @@ export class AuctionEngine {
   }
 
   areAllTeamsXIConfirmed() {
-    const activeHumanTeams = Array.from(this.teams.values()).filter(t => t.userToken && !t.isBot);
+    const activeHumanTeams = Array.from(this.teams.values()).filter(t => t.userToken && !t.isBot && !t.isDisqualified);
     if (activeHumanTeams.length === 0) return true;
     return activeHumanTeams.every(t => t.isXIConfirmed);
   }
@@ -363,12 +346,14 @@ export class AuctionEngine {
     this.status = 'completed';
     this.tournamentStage = 'league';
 
-    // Auto-confirm any unconfirmed squads
+    // Auto-confirm qualified squads only; disqualified teams have empty playingXI
     for (const team of this.teams.values()) {
-      if (!team.playingXI || team.playingXI.length === 0) {
-        team.playingXI = this.generateDefaultPlayingXI(team);
+      if (!team.isDisqualified && ((team.squad && team.squad.length >= 11) || (team.playingXI && team.playingXI.length === 11))) {
+        if (!team.playingXI || team.playingXI.length < 11) {
+          team.playingXI = this.generateDefaultPlayingXI(team);
+        }
+        team.isXIConfirmed = true;
       }
-      team.isXIConfirmed = true;
     }
 
     if (!this.fixtures || this.fixtures.length === 0 || !this.leagueFixtures || this.leagueFixtures.length === 0) {
@@ -459,6 +444,10 @@ export class AuctionEngine {
   setPlayingXI(teamCode, { userToken, playingXI, confirm = false }) {
     const team = this.teams.get(teamCode);
     if (!team) return { success: false, reason: 'Invalid team' };
+
+    if (team.isDisqualified || ((team.squad || []).length < 11 && (!team.playingXI || team.playingXI.length < 11))) {
+      return { success: false, reason: 'This franchise has been disqualified due to having fewer than 11 players.' };
+    }
 
     // Auth check: user controls team or host
     if (team.userToken && team.userToken !== userToken && this.hostToken !== userToken) {
@@ -620,51 +609,41 @@ export class AuctionEngine {
   // --- TOURNAMENT FIXTURES & STANDINGS ---
 
   generateFixtures() {
-    // Ensure all participating franchises have at least 11 real players in squad and playingXI
+    // Strict Disqualification Check:
+    // Any team without at least 11 players is disqualified and excluded from tournament fixtures
     for (const team of this.teams.values()) {
-      const isParticipating = this.config.botsEnabled || team.userToken || (team.squad && team.squad.length > 0);
-      if (isParticipating) {
-        team.squad = team.squad || [];
-        if (team.squad.length < 11) {
-          const availableUnsold = (this.allPlayers || []).filter(p => !team.squad.some(s => s.id === p.id));
-          let pIdx = 0;
-          while (team.squad.length < 11 && pIdx < availableUnsold.length) {
-            team.squad.push(availableUnsold[pIdx++]);
-          }
-          let rIdx = 0;
-          while (team.squad.length < 11 && rIdx < REAL_RESERVE_POOL.length) {
-            const r = REAL_RESERVE_POOL[rIdx++];
-            if (!team.squad.some(s => s.name === r.name)) {
-              team.squad.push({
-                id: `res-${team.code}-${r.name.toLowerCase().replace(/\s+/g, '-')}`,
-                ...r,
-                finalBid: 20,
-                winnerTeam: team.code,
-                winnerUser: team.userName || `${team.code} Manager`
-              });
-            }
-          }
-        }
-        team.squadCount = team.squad.length;
+      team.squad = team.squad || [];
+      team.squadCount = team.squad.length;
+      if (team.squad.length < 11 && (!team.playingXI || team.playingXI.length < 11)) {
+        team.isDisqualified = true;
+        team.disqualificationReason = `Disqualified: Does not have a full Playing 11 (has only ${team.squad.length}/11 players).`;
+        team.playingXI = [];
+        team.isXIConfirmed = false;
+      } else {
+        team.isDisqualified = false;
+        team.disqualificationReason = null;
         if (!team.playingXI || team.playingXI.length < 11) {
           team.playingXI = this.generateDefaultPlayingXI(team);
         }
       }
     }
 
+    // Only non-disqualified participating teams qualify for fixtures
     let participatingTeams = [];
     if (this.config.botsEnabled) {
-      participatingTeams = Array.from(this.teams.values()).map(t => this.sanitizeTeam(t));
+      participatingTeams = Array.from(this.teams.values())
+        .filter(t => !t.isDisqualified && ((t.squad && t.squad.length >= 11) || (t.playingXI && t.playingXI.length === 11)))
+        .map(t => this.sanitizeTeam(t));
     } else {
       participatingTeams = Array.from(this.teams.values())
-        .filter(t => t.userToken || (t.squad && t.squad.length > 0))
+        .filter(t => !t.isDisqualified && t.userToken && ((t.squad && t.squad.length >= 11) || (t.playingXI && t.playingXI.length === 11)))
         .map(t => this.sanitizeTeam(t));
     }
 
     if (participatingTeams.length < 2) {
       this.fixtures = [];
       this.leagueFixtures = [];
-      const reason = `At least 2 teams are required to plan tournament match fixtures (currently ${participatingTeams.length} team).`;
+      const reason = `At least 2 teams are required to schedule match fixtures (currently only ${participatingTeams.length} qualified). Teams without 11 players have been disqualified.`;
       this.emit('fixtures_updated', {
         fixtures: [],
         error: reason
@@ -1035,6 +1014,13 @@ export class AuctionEngine {
     const tB = this.teams.get(fixture.teamB);
     if (!tA || !tB) {
       return { success: false, reason: 'One or both franchises not found' };
+    }
+
+    if (tA.isDisqualified || tB.isDisqualified) {
+      return {
+        success: false,
+        reason: 'Cannot simulate fixture: One or both franchises have been disqualified due to having fewer than 11 players.'
+      };
     }
 
     // Ensure Playing XIs exist
@@ -1982,7 +1968,9 @@ export class AuctionEngine {
       userName: team.userName,
       isBot: team.isBot,
       isClaimed: Boolean(team.userToken),
-      isXIConfirmed: Boolean(team.isXIConfirmed)
+      isXIConfirmed: Boolean(team.isXIConfirmed),
+      isDisqualified: Boolean(team.isDisqualified),
+      disqualificationReason: team.disqualificationReason || null
     };
   }
 

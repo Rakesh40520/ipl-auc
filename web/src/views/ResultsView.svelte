@@ -364,6 +364,7 @@
         {#each store.roomState.teams as team (team.code)}
           {@const isSelected = team.code === selectedTeamCode}
           {@const isMine = store.myTeamCode === team.code}
+          {@const isDisq = Boolean(team.isDisqualified || (team.squadCount ?? team.squad?.length ?? 0) < 11)}
           <button
             onclick={() => selectedTeamCode = team.code}
             class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer border
@@ -376,7 +377,9 @@
             {#if isMine}
               <span class="text-[10px] text-amber-300 font-black">(You)</span>
             {/if}
-            {#if team.isXIConfirmed}
+            {#if isDisq}
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-mono font-bold">Disqualified</span>
+            {:else if team.isXIConfirmed}
               <Check size={12} class="text-emerald-400" />
             {/if}
           </button>
@@ -401,7 +404,11 @@
           </div>
 
           <div class="flex items-center gap-2">
-            {#if isMyTeamOrHost && !isCurrentTeamConfirmed}
+            {#if selectedTeam?.isDisqualified || (selectedTeam?.squadCount ?? selectedTeam?.squad?.length ?? 0) < 11}
+              <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40 text-xs font-bold">
+                <AlertCircle size={14} /> Disqualified (&lt; 11 Players)
+              </span>
+            {:else if isMyTeamOrHost && !isCurrentTeamConfirmed}
               <button
                 onclick={handleAutoBalanceXI}
                 class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer border border-slate-700"
@@ -422,6 +429,22 @@
             {/if}
           </div>
         </div>
+
+        {#if selectedTeam?.isDisqualified || (selectedTeam?.squadCount ?? selectedTeam?.squad?.length ?? 0) < 11}
+          <div class="p-6 bg-rose-950/40 border-2 border-rose-500/40 rounded-3xl flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center shrink-0">
+              <AlertCircle size={26} class="text-rose-400" />
+            </div>
+            <div class="space-y-1.5 min-w-0">
+              <span class="text-sm font-black uppercase tracking-wider text-rose-300 block">
+                Franchise Disqualified &amp; Removed from Tournament
+              </span>
+              <p class="text-xs sm:text-sm text-rose-200/90 leading-relaxed">
+                <strong>{selectedTeam?.name} ({selectedTeam?.code})</strong> only acquired <strong>{selectedTeam?.squad?.length || 0} player(s)</strong> during the auction. The mandatory rule requires at least 11 players to field a Playing 11. Because this squad is incomplete, this franchise has been disqualified and removed from tournament fixtures.
+              </p>
+            </div>
+          </div>
+        {:else}
 
         <!-- 11 Slots Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -480,6 +503,7 @@
               {/each}
             </div>
           </div>
+        {/if}
         {/if}
       </div>
     </div>

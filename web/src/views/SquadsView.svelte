@@ -1,7 +1,7 @@
 <script>
   import { store } from '../lib/store.svelte.js';
   import { formatLakhs, getFranchise } from '../lib/utils.js';
-  import { Users, Globe, Shield, Award, CheckCircle2, ChevronRight, Zap } from 'lucide-svelte';
+  import { Users, Globe, Shield, Award, CheckCircle2, ChevronRight, Zap, AlertCircle } from 'lucide-svelte';
 
   let selectedTeamCode = $state(
     store.myTeamCode || store.roomState.teams?.[0]?.code || 'CSK'
@@ -136,6 +136,7 @@
       {@const isSelected = team.code === selectedTeamCode}
       {@const isMine = store.myTeamCode === team.code}
       {@const franchise = getFranchise(team.code)}
+      {@const isDisq = Boolean(team.isDisqualified || (team.squadCount ?? team.squad?.length ?? 0) < 11)}
 
       <button
         onclick={() => selectedTeamCode = team.code}
@@ -149,9 +150,15 @@
         {#if isMine}
           <span class="text-[10px] text-amber-300 font-normal">(You)</span>
         {/if}
-        <span class="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-950 text-slate-300 border border-slate-800">
-          {team.squadCount || 0}
-        </span>
+        {#if isDisq}
+          <span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-mono font-bold">
+            Disqualified
+          </span>
+        {:else}
+          <span class="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-950 text-slate-300 border border-slate-800">
+            {team.squadCount || 0}
+          </span>
+        {/if}
       </button>
     {/each}
   </div>
@@ -159,6 +166,21 @@
   {#if selectedTeam}
     <!-- Franchise Summary Banner -->
     <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-8 shadow-xl space-y-6">
+      <!-- Disqualification Alert Banner -->
+      {#if selectedTeam.isDisqualified || squad.length < 11}
+        <div class="p-4 bg-rose-950/40 border-2 border-rose-500/40 rounded-2xl flex items-center gap-3">
+          <AlertCircle size={22} class="text-rose-400 shrink-0" />
+          <div class="space-y-0.5">
+            <span class="text-xs font-black uppercase tracking-wider text-rose-300 block">
+              Franchise Disqualified (<span class="font-mono">{squad.length}/11</span> Players)
+            </span>
+            <p class="text-xs text-rose-200/90">
+              This franchise did not acquire the minimum 11 players required to field a Playing 11 during the auction. It has been disqualified from tournament match fixtures.
+            </p>
+          </div>
+        </div>
+      {/if}
+
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
         <div class="flex items-center gap-4">
           <div

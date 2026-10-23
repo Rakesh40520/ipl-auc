@@ -3,6 +3,17 @@ import assert from 'node:assert/strict';
 import { AuctionEngine } from '../server/engine.js';
 import { calculateT20Rating } from '../server/rating.js';
 
+export function createMockSquad(count = 11) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: `mock-p-${i + 1}`,
+    name: `Player ${i + 1}`,
+    role: i < 5 ? 'Batter' : (i === 5 ? 'WK-Batter' : (i < 8 ? 'All-Rounder' : 'Bowler')),
+    category: i < 5 ? 'batter' : (i === 5 ? 'wicketkeeper' : (i < 8 ? 'allrounder' : 'pacer')),
+    rating: 85,
+    stats: { sr: 135, avg: 30, econ: 8.0, wkts: 20, runs: 1000 }
+  }));
+}
+
 const mockTeams = [
   { code: 'CSK', name: 'Chennai Super Kings', primaryColor: '#F4C20D' },
   { code: 'RCB', name: 'Royal Challengers Bengaluru', primaryColor: '#D1121B' },
@@ -226,7 +237,7 @@ describe('AuctionEngine State Machine Tests', () => {
       hostToken: 'host-1',
       hostName: 'Host',
       config: { timerDuration: 10, botsEnabled: false },
-      teamsData: mockTeams,
+      teamsData: mockTeams.map(t => ({ ...t, squad: createMockSquad(11) })),
       playersData: queue,
       emit: () => {}
     });
@@ -249,10 +260,10 @@ describe('AuctionEngine State Machine Tests', () => {
     assert.ok(Array.isArray(cskTeam.playingXI));
 
     // Custom setPlayingXI with confirm flag
-    const customXI = [{ id: 'p-1', name: 'Player One', role: 'Batter', rating: 90 }];
+    const customXI = createMockSquad(11);
     const setRes = engine.setPlayingXI('CSK', { userToken: 'user-csk', playingXI: customXI, confirm: true });
     assert.equal(setRes.success, true);
-    assert.equal(cskTeam.playingXI.length, 1);
+    assert.equal(cskTeam.playingXI.length, 11);
     assert.equal(cskTeam.isXIConfirmed, true);
 
     // Host advances to fixtures
@@ -348,7 +359,7 @@ describe('AuctionEngine State Machine Tests', () => {
       hostToken: 'host-1',
       hostName: 'Host',
       config: { timerDuration: 10, botsEnabled: false },
-      teamsData: [...mockTeams, { code: 'KKR', name: 'Kolkata Knight Riders', primaryColor: '#3A225D' }],
+      teamsData: [...mockTeams, { code: 'KKR', name: 'Kolkata Knight Riders', primaryColor: '#3A225D' }].map(t => ({ ...t, squad: createMockSquad(11) })),
       playersData: mockPlayers,
       emit: () => {}
     });
@@ -464,10 +475,10 @@ describe('AuctionEngine State Machine Tests', () => {
   test('AI Match Simulation Mode resolves matches with realistic mathematical scorecards', () => {
     const events = [];
     const fourTeams = [
-      { code: 'CSK', name: 'Chennai Super Kings', primaryColor: '#F4C20D', squad: [] },
-      { code: 'MI', name: 'Mumbai Indians', primaryColor: '#0B8EC9', squad: [] },
-      { code: 'RCB', name: 'Royal Challengers Bengaluru', primaryColor: '#D1121B', squad: [] },
-      { code: 'KKR', name: 'Kolkata Knight Riders', primaryColor: '#3A225D', squad: [] }
+      { code: 'CSK', name: 'Chennai Super Kings', primaryColor: '#F4C20D', squad: createMockSquad(11) },
+      { code: 'MI', name: 'Mumbai Indians', primaryColor: '#0B8EC9', squad: createMockSquad(11) },
+      { code: 'RCB', name: 'Royal Challengers Bengaluru', primaryColor: '#D1121B', squad: createMockSquad(11) },
+      { code: 'KKR', name: 'Kolkata Knight Riders', primaryColor: '#3A225D', squad: createMockSquad(11) }
     ];
 
     const engine = new AuctionEngine({
@@ -573,5 +584,49 @@ describe('AuctionEngine State Machine Tests', () => {
     const bowlRatingObj = calculateT20Rating(starBowler);
     assert.ok(bowlRatingObj.overall >= 90, `Expected elite bowler rating >= 90, got ${bowlRatingObj.overall}`);
     assert.ok(bowlRatingObj.bowlingScore >= 90, `Expected bowlingScore >= 90, got ${bowlRatingObj.bowlingScore}`);
+  });
+
+  test('Teams with fewer than 11 players are disqualified and removed from fixtures', () => {
+    const engine = new AuctionEngine({
+      roomCode: 'TEST-DISQ',
+      hostToken: 'host-1',
+      hostName: 'Host',
+      teamsData: [
+        { code: 'CSK', name: 'CSK', squad: createMockSquad(11) }, // Qualified (11 players)
+        { code: 'MI', name: 'MI', squad: createMockSquad(12) },  // Qualified (12 players)
+        { code: 'RCB', name: 'RCB', squad: createMockSquad(4) },  // Disqualified (< 11 players)
+        { code: 'KKR', name: 'KKR', squad: [] }                  // Disqualified (0 players)
+      ],
+      playersData: mockPlayers,
+      emit: () => {}
+    });
+
+    const res = engine.endAuction();
+    assert.equal(res.success, true);
+
+    const csk = engine.teams.get('CSK');
+    const mi = engine.teams.get('MI');
+    const rcb = engine.teams.get('RCB');
+    const kkr = engine.teams.get('KKR');
+
+    assert.equal(csk.isDisqualified, false);
+    assert.equal(mi.isDisqualified, false);
+    assert.equal(rcb.isDisqualified, true);
+    assert.equal(kkr.isDisqualified, true);
+
+    // Only qualified teams appear in fixtures (CSK vs MI only)
+    assert.equal(engine.fixtures.length, 1);
+    assert.equal(engine.fixtures[0].teamA, 'CSK');
+    assert.equal(engine.fixtures[0].teamB, 'MI');
+
+    // Standings points table only includes qualified teams
+    const standings = engine.getTournamentStandings();
+    assert.equal(standings.length, 2);
+    assert.ok(standings.some(s => s.code === 'CSK'));
+    assert.ok(standings.some(s => s.code === 'MI'));
+    assert.ok(!standings.some(s => s.code === 'RCB'));
+    assert.ok(!standings.some(s => s.code === 'KKR'));
+
+    engine.destroy();
   });
 });
