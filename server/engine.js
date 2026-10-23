@@ -6,7 +6,7 @@ import {
   validateBid,
   formatLakhs
 } from './rules.js';
-import { simulateMatchFixture } from './simulator.js';
+import { simulateMatchFixture, REAL_RESERVE_POOL } from './simulator.js';
 
 export class AuctionEngine {
   constructor({
@@ -258,38 +258,50 @@ export class AuctionEngine {
     this.clearTransition();
     this.status = 'playing_xi_selection';
 
-    // Requirement: Ensure every participating franchise has at least 11 authentic players in their squad
+    // Requirement: Ensure EVERY single franchise (all 10 teams) has at least 11 authentic real players in their squad
     const acquiredIds = new Set();
     for (const t of this.teams.values()) {
       for (const p of (t.squad || [])) {
-        acquiredIds.add(p.id);
+        if (p?.id) acquiredIds.add(p.id);
       }
     }
     const availableUnsold = (this.allPlayers || []).filter(p => !acquiredIds.has(p.id));
     let poolIdx = 0;
 
     for (const team of this.teams.values()) {
-      const isParticipating = this.config.botsEnabled || team.userToken || (team.squad && team.squad.length > 0);
-      if (isParticipating) {
-        team.squad = team.squad || [];
-        // Backfill squad with real players until squad has at least 11 players
-        while (team.squad.length < 11 && poolIdx < availableUnsold.length) {
-          const draftPlayer = availableUnsold[poolIdx++];
+      team.squad = team.squad || [];
+      // 1. Backfill squad with real players from unsold pool until squad has at least 11 players
+      while (team.squad.length < 11 && poolIdx < availableUnsold.length) {
+        const draftPlayer = availableUnsold[poolIdx++];
+        team.squad.push({
+          ...draftPlayer,
+          finalBid: draftPlayer.basePrice || 20,
+          winnerTeam: team.code,
+          winnerUser: team.userName || `${team.code} Manager`
+        });
+        if (draftPlayer.isOverseas) {
+          team.overseasCount = (team.overseasCount || 0) + 1;
+        }
+      }
+      // 2. If unsold pool was exhausted, backfill from authentic cricketers reserve pool
+      let resIdx = 0;
+      while (team.squad.length < 11 && resIdx < REAL_RESERVE_POOL.length) {
+        const reserve = REAL_RESERVE_POOL[resIdx++];
+        if (!team.squad.some(p => p.name === reserve.name)) {
           team.squad.push({
-            ...draftPlayer,
-            finalBid: draftPlayer.basePrice || 20,
+            id: `res-${team.code}-${reserve.name.toLowerCase().replace(/\s+/g, '-')}`,
+            ...reserve,
+            finalBid: 20,
             winnerTeam: team.code,
             winnerUser: team.userName || `${team.code} Manager`
           });
-          if (draftPlayer.isOverseas) {
-            team.overseasCount = (team.overseasCount || 0) + 1;
-          }
         }
-        team.playingXI = this.generateDefaultPlayingXI(team);
-        team.isXIConfirmed = Boolean(team.isBot);
-        if (this.db) {
-          this.db.saveTeam(this.roomCode, team);
-        }
+      }
+      team.squadCount = team.squad.length;
+      team.playingXI = this.generateDefaultPlayingXI(team);
+      team.isXIConfirmed = Boolean(team.isBot || !team.userToken);
+      if (this.db) {
+        this.db.saveTeam(this.roomCode, team);
       }
     }
 
@@ -608,6 +620,38 @@ export class AuctionEngine {
   // --- TOURNAMENT FIXTURES & STANDINGS ---
 
   generateFixtures() {
+    // Ensure all participating franchises have at least 11 real players in squad and playingXI
+    for (const team of this.teams.values()) {
+      const isParticipating = this.config.botsEnabled || team.userToken || (team.squad && team.squad.length > 0);
+      if (isParticipating) {
+        team.squad = team.squad || [];
+        if (team.squad.length < 11) {
+          const availableUnsold = (this.allPlayers || []).filter(p => !team.squad.some(s => s.id === p.id));
+          let pIdx = 0;
+          while (team.squad.length < 11 && pIdx < availableUnsold.length) {
+            team.squad.push(availableUnsold[pIdx++]);
+          }
+          let rIdx = 0;
+          while (team.squad.length < 11 && rIdx < REAL_RESERVE_POOL.length) {
+            const r = REAL_RESERVE_POOL[rIdx++];
+            if (!team.squad.some(s => s.name === r.name)) {
+              team.squad.push({
+                id: `res-${team.code}-${r.name.toLowerCase().replace(/\s+/g, '-')}`,
+                ...r,
+                finalBid: 20,
+                winnerTeam: team.code,
+                winnerUser: team.userName || `${team.code} Manager`
+              });
+            }
+          }
+        }
+        team.squadCount = team.squad.length;
+        if (!team.playingXI || team.playingXI.length < 11) {
+          team.playingXI = this.generateDefaultPlayingXI(team);
+        }
+      }
+    }
+
     let participatingTeams = [];
     if (this.config.botsEnabled) {
       participatingTeams = Array.from(this.teams.values()).map(t => this.sanitizeTeam(t));
@@ -705,7 +749,7 @@ export class AuctionEngine {
         round: 'Playoffs',
         stage: 'playoffs',
         playoffType: 'qualifier1',
-        stageLabel: `⚔️ QUALIFIER 1: ${standings[0].code} (1st) vs ${standings[1].code} (2nd)`,
+        stageLabel: `⚔️ QUALIFIER 1: ${standings[0].code} (1st) vs ${standings[1].code} (2nd) — Winner to Grand Final`,
         teamA: standings[0].code,
         teamB: standings[1].code,
         status: 'scheduled',
@@ -723,7 +767,7 @@ export class AuctionEngine {
         round: 'Playoffs',
         stage: 'playoffs',
         playoffType: 'eliminator',
-        stageLabel: `🔥 ELIMINATOR: ${standings[2].code} (3rd) vs ${standings[3].code} (4th - Knockout)`,
+        stageLabel: `🔥 ELIMINATOR / QUARTER-FINAL: ${standings[2].code} (3rd) vs ${standings[3].code} (4th) — Knockout`,
         teamA: standings[2].code,
         teamB: standings[3].code,
         status: 'scheduled',
@@ -741,7 +785,7 @@ export class AuctionEngine {
         round: 'Playoffs',
         stage: 'playoffs',
         playoffType: 'qualifier2',
-        stageLabel: '⚔️ QUALIFIER 2: Loser Q1 vs Winner Eliminator (Winner to Final)',
+        stageLabel: '⚔️ QUALIFIER 2 / SEMI-FINAL: Loser Q1 vs Winner Eliminator (Winner to Final)',
         teamA: 'TBD',
         teamB: 'TBD',
         status: 'scheduled',
@@ -795,7 +839,7 @@ export class AuctionEngine {
       round: 'Finals',
       stage: 'finals',
       playoffType: 'final',
-      stageLabel: `🏆 IPL GRAND FINAL: ${tA} vs ${tB}`,
+      stageLabel: `🏆 THE IPL GRAND FINAL: ${tA} vs ${tB} (Championship Trophy Match)`,
       teamA: tA,
       teamB: tB,
       status: 'scheduled',
@@ -1020,7 +1064,7 @@ export class AuctionEngine {
       if (q2 && (q2.teamA === 'TBD' || q2.teamB === 'TBD') && this.q1Loser && this.elimWinner) {
         q2.teamA = this.q1Loser;
         q2.teamB = this.elimWinner;
-        q2.stageLabel = `⚔️ QUALIFIER 2: ${this.q1Loser} vs ${this.elimWinner} (Winner to Final)`;
+        q2.stageLabel = `⚔️ QUALIFIER 2 / SEMI-FINAL: ${this.q1Loser} vs ${this.elimWinner} (Winner to Final)`;
       }
 
       if (q2 && q2.status === 'completed' && q2.winner) {

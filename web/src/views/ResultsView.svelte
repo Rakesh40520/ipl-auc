@@ -265,31 +265,31 @@
   function getStageBadge(fixture) {
     if (fixture.stage === 'final' || fixture.stage === 'finals' || fixture.playoffType === 'final') {
       return {
-        label: '🏆 IPL GRAND FINAL',
+        label: '🏆 THE IPL GRAND FINAL (Winner Q1 vs Winner Q2)',
         bg: 'bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 border-amber-500/40 ring-1 ring-amber-500/30 font-extrabold'
       };
     }
     if (fixture.playoffType === 'qualifier1') {
       return {
-        label: '⚔️ QUALIFIER 1 (1st vs 2nd)',
+        label: '⚔️ QUALIFIER 1: 1st vs 2nd (Winner to Grand Final)',
         bg: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30 font-bold'
       };
     }
     if (fixture.playoffType === 'eliminator') {
       return {
-        label: '🔥 ELIMINATOR (3rd vs 4th)',
+        label: '🔥 ELIMINATOR / QUARTER-FINAL: 3rd vs 4th (Knockout)',
         bg: 'bg-rose-500/20 text-rose-300 border-rose-500/30 font-bold'
       };
     }
     if (fixture.playoffType === 'qualifier2') {
       return {
-        label: '⚔️ QUALIFIER 2 (Winner to Final)',
+        label: '⚔️ QUALIFIER 2 / SEMI-FINAL: Winner to Grand Final',
         bg: 'bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold'
       };
     }
     return {
       label: fixture.stageLabel || `League Match #${fixture.matchNumber}`,
-      bg: 'bg-slate-800 text-slate-300 border-slate-700 font-medium'
+      bg: 'bg-slate-800 text-slate-200 border-slate-700 font-medium'
     };
   }
 

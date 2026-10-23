@@ -45,18 +45,32 @@ export function pickBowlers(playingXI = []) {
 }
 
 // Authentic reserve players pool to ensure real cricket player names are always used (NEVER generic names like "CSK Player 1")
-const REAL_RESERVE_POOL = [
-  { name: 'Abhimanyu Easwaran', role: 'Batter', category: 'batter', stats: { sr: 132.5, runs: 1240, avg: 34.2, matches: 42 }, rating: 80 },
-  { name: 'Priyam Garg', role: 'Batter', category: 'batter', stats: { sr: 136.0, runs: 850, avg: 26.5, matches: 38 }, rating: 80 },
-  { name: 'Sheldon Jackson', role: 'WK-Batter', category: 'wicketkeeper', stats: { sr: 139.4, runs: 1420, avg: 31.0, matches: 54 }, rating: 81 },
-  { name: 'Baba Indrajith', role: 'Batter', category: 'batter', stats: { sr: 128.0, runs: 980, avg: 30.5, matches: 36 }, rating: 79 },
-  { name: 'Rishi Dhawan', role: 'All-Rounder', category: 'allrounder', stats: { sr: 125.0, runs: 750, wkts: 52, econ: 7.95, matches: 62 }, rating: 81 },
-  { name: 'Jalaj Saxena', role: 'All-Rounder', category: 'allrounder', stats: { sr: 120.0, runs: 680, wkts: 68, econ: 7.20, matches: 58 }, rating: 82 },
-  { name: 'Sandeep Warrier', role: 'Bowler', category: 'pacer', stats: { econ: 7.80, wkts: 48, matches: 45 }, rating: 81 },
-  { name: 'Basil Thampi', role: 'Bowler', category: 'pacer', stats: { econ: 8.60, wkts: 42, matches: 40 }, rating: 79 },
-  { name: 'Shivalik Sharma', role: 'Batter', category: 'batter', stats: { sr: 130.0, runs: 520, matches: 22 }, rating: 78 },
-  { name: 'Manav Suthar', role: 'Bowler', category: 'spinner', stats: { econ: 7.10, wkts: 28, matches: 20 }, rating: 80 },
-  { name: 'Vyshak Vijaykumar', role: 'Bowler', category: 'pacer', stats: { econ: 8.20, wkts: 34, matches: 25 }, rating: 80 }
+export const REAL_RESERVE_POOL = [
+  { name: 'Abhimanyu Easwaran', role: 'Batter', category: 'batter', stats: { sr: 132.5, runs: 1240, avg: 34.2, matches: 42, iplSr: 130, intlSr: 135 }, rating: 82 },
+  { name: 'Priyam Garg', role: 'Batter', category: 'batter', stats: { sr: 136.0, runs: 850, avg: 26.5, matches: 38, iplSr: 134, intlSr: 138 }, rating: 81 },
+  { name: 'Sheldon Jackson', role: 'WK-Batter', category: 'wicketkeeper', stats: { sr: 139.4, runs: 1420, avg: 31.0, matches: 54, iplSr: 138, intlSr: 140 }, rating: 83 },
+  { name: 'Baba Indrajith', role: 'Batter', category: 'batter', stats: { sr: 128.0, runs: 980, avg: 30.5, matches: 36, iplSr: 126, intlSr: 130 }, rating: 80 },
+  { name: 'Rishi Dhawan', role: 'All-Rounder', category: 'allrounder', stats: { sr: 125.0, runs: 750, wkts: 52, econ: 7.95, matches: 62, iplSr: 124, iplEcon: 8.0 }, rating: 82 },
+  { name: 'Jalaj Saxena', role: 'All-Rounder', category: 'allrounder', stats: { sr: 120.0, runs: 680, wkts: 68, econ: 7.20, matches: 58, iplSr: 118, iplEcon: 7.3 }, rating: 83 },
+  { name: 'Sandeep Warrier', role: 'Bowler', category: 'pacer', stats: { econ: 7.80, wkts: 48, matches: 45, iplEcon: 7.9, intlEcon: 7.7 }, rating: 82 },
+  { name: 'Basil Thampi', role: 'Bowler', category: 'pacer', stats: { econ: 8.60, wkts: 42, matches: 40, iplEcon: 8.7, intlEcon: 8.5 }, rating: 80 },
+  { name: 'Shivalik Sharma', role: 'Batter', category: 'batter', stats: { sr: 130.0, runs: 520, matches: 22, iplSr: 128, intlSr: 132 }, rating: 79 },
+  { name: 'Manav Suthar', role: 'Bowler', category: 'spinner', stats: { econ: 7.10, wkts: 28, matches: 20, iplEcon: 7.2, intlEcon: 7.0 }, rating: 81 },
+  { name: 'Vyshak Vijaykumar', role: 'Bowler', category: 'pacer', stats: { econ: 8.20, wkts: 34, matches: 25, iplEcon: 8.3, intlEcon: 8.1 }, rating: 82 },
+  { name: 'Yash Dayal', role: 'Bowler', category: 'pacer', stats: { econ: 8.10, wkts: 38, matches: 30, iplEcon: 8.2, intlEcon: 8.0 }, rating: 84 },
+  { name: 'Harpreet Brar', role: 'All-Rounder', category: 'allrounder', stats: { sr: 128.0, runs: 420, wkts: 36, econ: 7.45, matches: 38, iplSr: 125, iplEcon: 7.5 }, rating: 83 },
+  { name: 'Mohsin Khan', role: 'Bowler', category: 'pacer', stats: { econ: 7.60, wkts: 32, matches: 24, iplEcon: 7.7, intlEcon: 7.5 }, rating: 83 },
+  { name: 'Ashutosh Sharma', role: 'Batter', category: 'batter', stats: { sr: 165.0, runs: 480, avg: 32.0, matches: 20, iplSr: 168, intlSr: 160 }, rating: 85 },
+  { name: 'Angkrish Raghuvanshi', role: 'Batter', category: 'batter', stats: { sr: 142.0, runs: 510, avg: 28.5, matches: 22, iplSr: 140, intlSr: 144 }, rating: 82 },
+  { name: 'Anuj Rawat', role: 'WK-Batter', category: 'wicketkeeper', stats: { sr: 134.0, runs: 650, avg: 25.0, matches: 32, iplSr: 132, intlSr: 136 }, rating: 81 },
+  { name: 'Kumar Kushagra', role: 'WK-Batter', category: 'wicketkeeper', stats: { sr: 138.0, runs: 440, avg: 27.5, matches: 18, iplSr: 135, intlSr: 140 }, rating: 80 },
+  { name: 'Nehal Wadhera', role: 'Batter', category: 'batter', stats: { sr: 145.0, runs: 580, avg: 31.0, matches: 26, iplSr: 148, intlSr: 142 }, rating: 83 },
+  { name: 'Sameer Rizvi', role: 'Batter', category: 'batter', stats: { sr: 148.0, runs: 490, avg: 29.0, matches: 21, iplSr: 150, intlSr: 145 }, rating: 82 },
+  { name: 'Ramandeep Singh', role: 'All-Rounder', category: 'allrounder', stats: { sr: 155.0, runs: 520, wkts: 22, econ: 8.40, matches: 28, iplSr: 158, iplEcon: 8.5 }, rating: 84 },
+  { name: 'Rasikh Salam', role: 'Bowler', category: 'pacer', stats: { econ: 8.35, wkts: 29, matches: 22, iplEcon: 8.4, intlEcon: 8.3 }, rating: 81 },
+  { name: 'Akash Madhwal', role: 'Bowler', category: 'pacer', stats: { econ: 8.40, wkts: 35, matches: 25, iplEcon: 8.5, intlEcon: 8.2 }, rating: 82 },
+  { name: 'Suyash Sharma', role: 'Bowler', category: 'spinner', stats: { econ: 7.75, wkts: 31, matches: 24, iplEcon: 7.8, intlEcon: 7.7 }, rating: 82 },
+  { name: 'Kartik Tyagi', role: 'Bowler', category: 'pacer', stats: { econ: 8.70, wkts: 30, matches: 26, iplEcon: 8.8, intlEcon: 8.6 }, rating: 81 }
 ];
 
 // Ensure at least 11 players in any playing XI with real authentic cricket player names
@@ -177,7 +191,7 @@ function simulateInnings({
 
     const activeBowler = (availableBowlers.length > 0)
       ? availableBowlers[Math.floor(Math.random() * availableBowlers.length)]
-      : (bowlers.length > 0 ? bowlers[Math.floor(Math.random() * bowlers.length)] : { id: 'bowl-1', name: 'Bowler 1' });
+      : (bowlers.length > 0 ? bowlers[Math.floor(Math.random() * bowlers.length)] : REAL_RESERVE_POOL[6]);
 
     const bowlerId = activeBowler.id || activeBowler.name;
     lastBowlerId = bowlerId;

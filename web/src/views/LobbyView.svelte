@@ -76,7 +76,7 @@
         Pick your franchise
       </h2>
       <p class="text-slate-300 text-xs sm:text-base mt-1">
-        Claim a franchise to build your squad. Invite friends to join live and battle in the tournament.
+        Claim a franchise to build your squad. Invite friends to join live and compete in the IPL tournament.
       </p>
     </div>
 

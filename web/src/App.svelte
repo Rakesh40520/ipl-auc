@@ -56,7 +56,11 @@
     {:else if store.view === 'lobby'}
       <LobbyView />
     {:else if store.view === 'auction'}
-      <AuctionView />
+      {#if store.roomState.status === 'playing_xi_selection' || store.roomState.status === 'completed'}
+        <ResultsView />
+      {:else}
+        <AuctionView />
+      {/if}
     {:else if store.view === 'squads'}
       <SquadsView />
     {:else if store.view === 'results'}
