@@ -983,7 +983,7 @@ export class AuctionEngine {
     return { success: true, matchMode: mode };
   }
 
-  simulateFixture({ fixtureId, userToken } = {}) {
+  simulateFixture({ fixtureId, format = null, seed = null, userToken } = {}) {
     if (!this.fixtures || this.fixtures.length === 0) {
       return { success: false, reason: 'No fixtures planned yet' };
     }
@@ -991,6 +991,40 @@ export class AuctionEngine {
     const fixture = this.fixtures.find(f => f.id === fixtureId);
     if (!fixture) {
       return { success: false, reason: 'Fixture not found' };
+    }
+
+    // Idempotency: If match is already completed, return existing result without re-simulating
+    if (fixture.status === 'completed' && fixture.scorecard) {
+      return {
+        success: true,
+        fixture,
+        scorecard: fixture.scorecard,
+        alreadySimulated: true
+      };
+    }
+
+    // Check DB if match was completed previously
+    if (this.db) {
+      try {
+        const savedMatch = this.db.getFixtureMatch(fixture.id);
+        if (savedMatch && savedMatch.status === 'completed' && savedMatch.scorecard) {
+          fixture.status = 'completed';
+          fixture.winner = savedMatch.winner;
+          fixture.margin = savedMatch.margin;
+          fixture.scorecard = savedMatch.scorecard;
+          fixture.seed = savedMatch.seed;
+          fixture.format = savedMatch.format;
+          fixture.completedAt = savedMatch.completedAt;
+          return {
+            success: true,
+            fixture,
+            scorecard: fixture.scorecard,
+            alreadySimulated: true
+          };
+        }
+      } catch (err) {
+        // ignore
+      }
     }
 
     if (fixture.teamA === 'TBD' || fixture.teamB === 'TBD') {
@@ -1011,21 +1045,29 @@ export class AuctionEngine {
       tB.playingXI = this.generateDefaultPlayingXI(tB);
     }
 
+    const matchFormat = format || fixture.format || this.config.format || 'T20';
+    const matchSeed = seed || fixture.seed || `${this.roomCode}-${fixture.id}-${fixture.matchNumber || 1}`;
+
     // Run statistical cricket match simulation based on math & player stats
     const scorecard = simulateMatchFixture({
       fixtureId: fixture.id,
       teamA: tA,
       teamB: tB,
       playingXIA: tA.playingXI,
-      playingXIB: tB.playingXI
+      playingXIB: tB.playingXI,
+      format: matchFormat,
+      seed: matchSeed
     });
 
     // Populate fixture
     fixture.status = 'completed';
-    fixture.completedAt = Date.now();
+    fixture.completedAt = scorecard.simulatedAt || Date.now();
     fixture.winner = scorecard.winner;
+    fixture.margin = scorecard.margin;
     fixture.scorecard = scorecard;
     fixture.isSuperOver = scorecard.isSuperOver;
+    fixture.seed = matchSeed;
+    fixture.format = matchFormat;
 
     // Approximate slot wins based on innings comparison for standings diff
     if (scorecard.winner === fixture.teamA) {
@@ -1037,6 +1079,14 @@ export class AuctionEngine {
     } else {
       fixture.scoreA = 5;
       fixture.scoreB = 5;
+    }
+
+    if (this.db) {
+      try {
+        this.db.saveFixtureMatch(this.roomCode, fixture);
+      } catch (err) {
+        // ignore
+      }
     }
 
     if (this.activeBattle && this.activeBattle.fixtureId === fixtureId) {
@@ -1065,6 +1115,11 @@ export class AuctionEngine {
         q2.teamA = this.q1Loser;
         q2.teamB = this.elimWinner;
         q2.stageLabel = `⚔️ QUALIFIER 2 / SEMI-FINAL: ${this.q1Loser} vs ${this.elimWinner} (Winner to Final)`;
+        if (this.db) {
+          try {
+            this.db.saveFixtureMatch(this.roomCode, q2);
+          } catch (e) {}
+        }
       }
 
       if (q2 && q2.status === 'completed' && q2.winner) {
@@ -1092,7 +1147,7 @@ export class AuctionEngine {
     return { success: true, fixture, scorecard };
   }
 
-  simulateAllFixtures({ userToken } = {}) {
+  simulateAllFixtures({ format = null, userToken } = {}) {
     if (!this.fixtures || this.fixtures.length === 0) {
       return { success: false, reason: 'No fixtures planned yet' };
     }
@@ -1106,7 +1161,7 @@ export class AuctionEngine {
       const nextFixture = this.fixtures.find(f => f.status === 'scheduled' && f.teamA !== 'TBD' && f.teamB !== 'TBD');
       if (!nextFixture) break;
 
-      const res = this.simulateFixture({ fixtureId: nextFixture.id, userToken });
+      const res = this.simulateFixture({ fixtureId: nextFixture.id, format, userToken });
       if (res.success) {
         simulatedCount++;
       } else {
@@ -1274,6 +1329,12 @@ export class AuctionEngine {
         slotsWon: 0,
         slotsLost: 0,
         diff: 0,
+        runsScored: 0,
+        oversFaced: 0,
+        runsConceded: 0,
+        oversBowled: 0,
+        nrr: 0,
+        nrrFormatted: '+0.000',
         form: []
       });
     }
@@ -1319,14 +1380,55 @@ export class AuctionEngine {
         tB.points += 1;
         tB.form.push('T');
       }
+
+      // Authentic Net Run Rate calculation when scorecard is available
+      if (f.scorecard && f.scorecard.innings1 && f.scorecard.innings2) {
+        const inn1 = f.scorecard.innings1;
+        const inn2 = f.scorecard.innings2;
+        const maxQuota = f.scorecard.format === 'ODI' ? 50.0 : 20.0;
+
+        const teamAIsInnings1 = inn1.teamCode === f.teamA;
+        const innA = teamAIsInnings1 ? inn1 : inn2;
+        const innB = teamAIsInnings1 ? inn2 : inn1;
+
+        // Team A: Overs faced (if all out, full quota counted per ICC/IPL rules)
+        const oversFacedA = innA.wickets >= 10 ? maxQuota : ((innA.ballsBowled || 120) / 6);
+        const oversBowledA = innB.wickets >= 10 ? maxQuota : ((innB.ballsBowled || 120) / 6);
+
+        tA.runsScored += innA.runs;
+        tA.oversFaced += oversFacedA;
+        tA.runsConceded += innB.runs;
+        tA.oversBowled += oversBowledA;
+
+        // Team B
+        const oversFacedB = innB.wickets >= 10 ? maxQuota : ((innB.ballsBowled || 120) / 6);
+        const oversBowledB = innA.wickets >= 10 ? maxQuota : ((innA.ballsBowled || 120) / 6);
+
+        tB.runsScored += innB.runs;
+        tB.oversFaced += oversFacedB;
+        tB.runsConceded += innA.runs;
+        tB.oversBowled += oversBowledB;
+      }
     }
 
     for (const item of standingsMap.values()) {
       item.diff = item.slotsWon - item.slotsLost;
+      if (item.oversFaced > 0 && item.oversBowled > 0) {
+        const forRate = item.runsScored / item.oversFaced;
+        const againstRate = item.runsConceded / item.oversBowled;
+        const rawNrr = forRate - againstRate;
+        item.nrr = parseFloat(rawNrr.toFixed(3));
+        item.nrrFormatted = (rawNrr >= 0 ? '+' : '') + rawNrr.toFixed(3);
+      } else {
+        item.nrr = 0;
+        item.nrrFormatted = '+0.000';
+      }
     }
 
     return Array.from(standingsMap.values()).sort((a, b) => {
       if (b.points !== a.points) return b.points - a.points;
+      if (b.nrr !== a.nrr) return b.nrr - a.nrr;
+      if (b.won !== a.won) return b.won - a.won;
       if (b.diff !== a.diff) return b.diff - a.diff;
       return b.slotsWon - a.slotsWon;
     });

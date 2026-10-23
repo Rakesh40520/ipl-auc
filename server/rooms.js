@@ -389,13 +389,21 @@ export class RoomManager {
           break;
         case 'simulate_fixture':
           if (parsed.data.fixtureId) {
-            res = engine.simulateFixture({ fixtureId: parsed.data.fixtureId, userToken });
+            res = engine.simulateFixture({
+              fixtureId: parsed.data.fixtureId,
+              format: parsed.data.format,
+              seed: parsed.data.seed,
+              userToken
+            });
           } else {
             res = { success: false, error: 'fixtureId required' };
           }
           break;
         case 'simulate_all_fixtures':
-          res = engine.simulateAllFixtures({ userToken });
+          res = engine.simulateAllFixtures({
+            format: parsed.data.format,
+            userToken
+          });
           break;
         case 'update_config':
           if (configUpdate) {
@@ -559,11 +567,11 @@ export class RoomManager {
     socket.on('simulate_fixture', (raw, callback = () => {}) => {
       const parsed = SimulateFixtureSchema.safeParse(raw);
       if (!parsed.success) return callback({ success: false, error: 'Invalid simulate payload' });
-      const { roomCode, fixtureId, userToken } = parsed.data;
+      const { roomCode, fixtureId, format, seed, userToken } = parsed.data;
       const engine = this.getRoom(roomCode);
       if (!engine) return callback({ success: false, error: 'Room not found' });
 
-      const res = engine.simulateFixture({ fixtureId, userToken });
+      const res = engine.simulateFixture({ fixtureId, format, seed, userToken });
       callback(res);
     });
 
@@ -571,11 +579,11 @@ export class RoomManager {
     socket.on('simulate_all_fixtures', (raw, callback = () => {}) => {
       const parsed = SimulateAllFixturesSchema.safeParse(raw);
       if (!parsed.success) return callback({ success: false, error: 'Invalid payload' });
-      const { roomCode, userToken } = parsed.data;
+      const { roomCode, format, userToken } = parsed.data;
       const engine = this.getRoom(roomCode);
       if (!engine) return callback({ success: false, error: 'Room not found' });
 
-      const res = engine.simulateAllFixtures({ userToken });
+      const res = engine.simulateAllFixtures({ format, userToken });
       callback(res);
     });
 

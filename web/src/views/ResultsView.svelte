@@ -1000,28 +1000,39 @@
   {/if}
 </div>
 
-<!-- AUTHENTIC SCORECARD MODAL -->
+<!-- AUTHENTIC CRICKET MATCH SCORECARD MODAL -->
 {#if selectedScorecardFixture && selectedScorecardFixture.scorecard}
   {@const sc = selectedScorecardFixture.scorecard}
-  <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-3xl w-full p-5 sm:p-7 shadow-2xl space-y-6 my-8">
+  <div class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-3xl w-full p-4 sm:p-7 shadow-2xl space-y-5 my-8 text-slate-200">
       <!-- Modal Header -->
-      <div class="flex items-start justify-between border-b border-slate-800 pb-4">
-        <div>
-          <span class="text-xs font-bold uppercase tracking-wider text-amber-400">
-            {selectedScorecardFixture.stageLabel || `Match #${selectedScorecardFixture.matchNumber}`}
-          </span>
-          <h2 class="text-xl sm:text-2xl font-black text-white font-heading mt-0.5">
-            {sc.teamA.code} vs {sc.teamB.code} Scorecard
+      <div class="flex items-start justify-between border-b border-slate-800 pb-4 gap-3">
+        <div class="space-y-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              {selectedScorecardFixture.stageLabel || `Match #${selectedScorecardFixture.matchNumber}`}
+            </span>
+            <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              {sc.format || 'T20'} Match
+            </span>
+            {#if sc.pitch}
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                🏟️ {sc.pitch.type} Pitch
+              </span>
+            {/if}
+          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-white font-heading tracking-tight">
+            {sc.teamA?.code || selectedScorecardFixture.teamA} vs {sc.teamB?.code || selectedScorecardFixture.teamB} Official Scorecard
           </h2>
-          <p class="text-xs text-slate-400 mt-1">
-            {sc.toss?.summary || 'T20 Match'} · <strong class="text-emerald-400">{sc.margin}</strong>
+          <p class="text-xs text-slate-400">
+            {sc.toss?.summary || 'Match Completed'} · <strong class="text-emerald-400">{sc.margin}</strong>
           </p>
         </div>
 
         <button
           onclick={() => selectedScorecardFixture = null}
-          class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
+          class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition cursor-pointer shrink-0"
+          title="Close Scorecard"
         >
           <X size={18} />
         </button>
@@ -1029,29 +1040,43 @@
 
       <!-- Player of the Match Spotlight -->
       {#if sc.playerOfTheMatch}
-        <div class="p-3.5 bg-gradient-to-r from-amber-500/10 via-slate-800/40 to-amber-500/10 rounded-2xl border border-amber-500/30 flex items-center gap-3">
-          <Award size={22} class="text-amber-400 shrink-0" />
-          <div class="min-w-0">
-            <span class="text-[10px] uppercase font-bold text-amber-300 block">Player of the Match</span>
-            <strong class="text-white text-sm block truncate">{sc.playerOfTheMatch.name} ({sc.playerOfTheMatch.teamCode})</strong>
-            <span class="text-xs text-slate-300 block">{sc.playerOfTheMatch.summary}</span>
+        <div class="p-3.5 bg-gradient-to-r from-amber-500/15 via-slate-800/60 to-amber-500/10 rounded-2xl border border-amber-500/30 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0">
+              <Award size={22} class="text-amber-400" />
+            </div>
+            <div class="min-w-0">
+              <span class="text-[10px] uppercase font-black tracking-wider text-amber-300 block">Player of the Match</span>
+              <strong class="text-white text-sm block truncate font-sans">
+                {sc.playerOfTheMatch.name} <span class="text-amber-300/80 font-normal">({sc.playerOfTheMatch.teamCode})</span>
+              </strong>
+              <span class="text-xs text-slate-300 block truncate">{sc.playerOfTheMatch.summary}</span>
+            </div>
           </div>
+          {#if sc.playerOfTheMatch.impactPoints}
+            <div class="text-right shrink-0">
+              <span class="text-[9px] uppercase font-bold text-slate-400 block">Impact</span>
+              <span class="text-base font-black text-amber-300 font-mono">{sc.playerOfTheMatch.impactPoints} pts</span>
+            </div>
+          {/if}
         </div>
       {/if}
 
       <!-- Innings Switcher Tabs -->
-      <div class="flex items-center gap-2 border-b border-slate-800 pb-2">
+      <div class="grid grid-cols-2 gap-2 border-b border-slate-800 pb-2">
         <button
           onclick={() => scorecardInningsTab = 'inn1'}
-          class="px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer {scorecardInningsTab === 'inn1' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}"
+          class="px-3 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 {scorecardInningsTab === 'inn1' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-slate-800/60 text-slate-400 hover:text-white'}"
         >
-          {sc.innings1.teamCode} Innings: {sc.innings1.runs}/{sc.innings1.wickets} ({sc.innings1.overs} ov)
+          <span class="truncate">{sc.innings1.teamCode} 1st Innings</span>
+          <span class="font-mono font-black text-white">{sc.innings1.runs}/{sc.innings1.wickets} <span class="text-[10px] font-normal opacity-80">({sc.innings1.overs} ov)</span></span>
         </button>
         <button
           onclick={() => scorecardInningsTab = 'inn2'}
-          class="px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer {scorecardInningsTab === 'inn2' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}"
+          class="px-3 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 {scorecardInningsTab === 'inn2' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-slate-800/60 text-slate-400 hover:text-white'}"
         >
-          {sc.innings2.teamCode} Innings: {sc.innings2.runs}/{sc.innings2.wickets} ({sc.innings2.overs} ov)
+          <span class="truncate">{sc.innings2.teamCode} 2nd Innings</span>
+          <span class="font-mono font-black text-white">{sc.innings2.runs}/{sc.innings2.wickets} <span class="text-[10px] font-normal opacity-80">({sc.innings2.overs} ov)</span></span>
         </button>
       </div>
 
@@ -1060,31 +1085,34 @@
         {@const activeInnings = getActiveInnings(sc, scorecardInningsTab)}
         <div class="space-y-4">
           <!-- Batting Table -->
-          <div class="space-y-2">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Batting Card</h4>
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <h4 class="text-[11px] font-black uppercase tracking-wider text-slate-400">Batting Card</h4>
+              <span class="text-[10px] font-mono text-slate-400">RR: {activeInnings.runRate}</span>
+            </div>
             <div class="overflow-x-auto rounded-xl border border-slate-800">
               <table class="w-full text-xs text-left">
                 <thead class="bg-slate-950 text-slate-400 text-[10px] uppercase font-bold">
                   <tr>
-                    <th class="py-2.5 px-3">Batter</th>
-                    <th class="py-2.5 px-2">Dismissal</th>
-                    <th class="py-2.5 px-2 text-right font-bold text-white">R</th>
-                    <th class="py-2.5 px-2 text-right">B</th>
-                    <th class="py-2.5 px-2 text-right">4s</th>
-                    <th class="py-2.5 px-2 text-right">6s</th>
-                    <th class="py-2.5 px-3 text-right">SR</th>
+                    <th class="py-2 px-3">Batter</th>
+                    <th class="py-2 px-2">Dismissal</th>
+                    <th class="py-2 px-2 text-right font-bold text-white">R</th>
+                    <th class="py-2 px-2 text-right">B</th>
+                    <th class="py-2 px-2 text-right">4s</th>
+                    <th class="py-2 px-2 text-right">6s</th>
+                    <th class="py-2 px-3 text-right">SR</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800/60 font-mono">
                   {#each activeInnings.batting as b}
                     <tr class="hover:bg-slate-800/30">
-                      <td class="py-2 px-3 font-sans font-bold text-white">
+                      <td class="py-2 px-3 font-sans font-bold text-white whitespace-nowrap">
                         {b.name}
                         {#if b.notOut}
-                          <span class="text-amber-400">*</span>
+                          <span class="text-amber-400 font-black">*</span>
                         {/if}
                       </td>
-                      <td class="py-2 px-2 text-slate-400 font-sans text-[11px] truncate max-w-[140px]">{b.dismissal}</td>
+                      <td class="py-2 px-2 text-slate-400 font-sans text-[11px] truncate max-w-[150px]">{b.dismissal}</td>
                       <td class="py-2 px-2 text-right font-black text-amber-300 text-sm">{b.runs}</td>
                       <td class="py-2 px-2 text-right text-slate-300">{b.balls}</td>
                       <td class="py-2 px-2 text-right text-slate-400">{b.fours}</td>
@@ -1092,35 +1120,83 @@
                       <td class="py-2 px-3 text-right text-slate-300 font-bold">{b.sr}</td>
                     </tr>
                   {/each}
+
+                  <!-- Extras Row -->
+                  <tr class="bg-slate-950/60 text-[11px]">
+                    <td colspan="2" class="py-2 px-3 font-sans font-medium text-slate-400">
+                      Extras
+                      <span class="text-[10px] text-slate-500">
+                        (b {activeInnings.extras?.byes || 0}, lb {activeInnings.extras?.legByes || 0}, w {activeInnings.extras?.wides || 0}, nb {activeInnings.extras?.noBalls || 0})
+                      </span>
+                    </td>
+                    <td class="py-2 px-2 text-right font-bold text-slate-300">{activeInnings.extras?.total || 0}</td>
+                    <td colspan="4" class="py-2 px-3"></td>
+                  </tr>
+
+                  <!-- Total Score Row -->
+                  <tr class="bg-indigo-950/40 border-t-2 border-indigo-500/30 font-bold">
+                    <td colspan="2" class="py-2.5 px-3 font-sans text-white text-xs uppercase tracking-wider">
+                      Total ({activeInnings.overs} overs, RR {activeInnings.runRate})
+                    </td>
+                    <td class="py-2.5 px-2 text-right text-emerald-400 text-sm font-black font-mono">
+                      {activeInnings.runs}/{activeInnings.wickets}
+                    </td>
+                    <td colspan="4" class="py-2.5 px-3"></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
+
+            <!-- Did Not Bat List -->
+            {#if activeInnings.didNotBat && activeInnings.didNotBat.length > 0}
+              <div class="px-3 py-2 bg-slate-950/40 rounded-xl border border-slate-800/80 text-[11px] text-slate-400">
+                <span class="font-bold text-slate-300">Did not bat:</span> {activeInnings.didNotBat.join(', ')}
+              </div>
+            {/if}
+
+            <!-- Fall of Wickets List -->
+            {#if activeInnings.fallOfWickets && activeInnings.fallOfWickets.length > 0}
+              <div class="px-3 py-2 bg-slate-950/40 rounded-xl border border-slate-800/80 text-[11px] text-slate-400 space-y-1">
+                <span class="font-bold text-slate-300 block text-[10px] uppercase tracking-wider">Fall of Wickets:</span>
+                <div class="flex flex-wrap gap-x-3 gap-y-1">
+                  {#each activeInnings.fallOfWickets as fow}
+                    <span class="font-mono text-slate-300">
+                      <strong class="text-amber-400">{fow.score}-{fow.wicket}</strong> ({fow.batter}, {fow.overs} ov)
+                    </span>
+                  {/each}
+                </div>
+              </div>
+            {/if}
           </div>
 
           <!-- Bowling Table -->
-          <div class="space-y-2">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Bowling Card</h4>
+          <div class="space-y-1.5 pt-2">
+            <h4 class="text-[11px] font-black uppercase tracking-wider text-slate-400">Bowling Card</h4>
             <div class="overflow-x-auto rounded-xl border border-slate-800">
               <table class="w-full text-xs text-left">
                 <thead class="bg-slate-950 text-slate-400 text-[10px] uppercase font-bold">
                   <tr>
-                    <th class="py-2.5 px-3">Bowler</th>
-                    <th class="py-2.5 px-2 text-right">O</th>
-                    <th class="py-2.5 px-2 text-right">M</th>
-                    <th class="py-2.5 px-2 text-right">R</th>
-                    <th class="py-2.5 px-2 text-right font-bold text-cyan-300">W</th>
-                    <th class="py-2.5 px-3 text-right">Econ</th>
+                    <th class="py-2 px-3">Bowler</th>
+                    <th class="py-2 px-2 text-right">O</th>
+                    <th class="py-2 px-2 text-right">M</th>
+                    <th class="py-2 px-2 text-right">R</th>
+                    <th class="py-2 px-2 text-right font-bold text-cyan-300">W</th>
+                    <th class="py-2 px-2 text-right">Econ</th>
+                    <th class="py-2 px-2 text-right text-slate-500">WD</th>
+                    <th class="py-2 px-3 text-right text-slate-500">NB</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800/60 font-mono">
                   {#each activeInnings.bowling as b}
                     <tr class="hover:bg-slate-800/30">
-                      <td class="py-2 px-3 font-sans font-bold text-white">{b.name}</td>
+                      <td class="py-2 px-3 font-sans font-bold text-white whitespace-nowrap">{b.name}</td>
                       <td class="py-2 px-2 text-right text-slate-300">{b.overs}</td>
                       <td class="py-2 px-2 text-right text-slate-400">{b.maidens}</td>
                       <td class="py-2 px-2 text-right text-slate-300">{b.runs}</td>
                       <td class="py-2 px-2 text-right font-black text-cyan-300 text-sm">{b.wickets}</td>
-                      <td class="py-2 px-3 text-right text-slate-300 font-bold">{b.economy}</td>
+                      <td class="py-2 px-2 text-right text-slate-300 font-bold">{b.economy}</td>
+                      <td class="py-2 px-2 text-right text-slate-400">{b.wides || 0}</td>
+                      <td class="py-2 px-3 text-right text-slate-400">{b.noBalls || 0}</td>
                     </tr>
                   {/each}
                 </tbody>

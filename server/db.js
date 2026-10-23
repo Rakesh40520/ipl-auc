@@ -61,6 +61,23 @@ export class AuctionDB {
         amount INTEGER NOT NULL,
         timestamp INTEGER NOT NULL
       );
+
+      CREATE TABLE IF NOT EXISTS match_fixtures (
+        id TEXT PRIMARY KEY,
+        room_code TEXT NOT NULL,
+        match_number INTEGER,
+        stage TEXT NOT NULL DEFAULT 'league',
+        format TEXT NOT NULL DEFAULT 'T20',
+        team_a TEXT NOT NULL,
+        team_b TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'scheduled',
+        winner TEXT,
+        margin TEXT,
+        seed TEXT,
+        scorecard_json TEXT,
+        completed_at INTEGER,
+        FOREIGN KEY (room_code) REFERENCES rooms (code) ON DELETE CASCADE
+      );
     `);
   }
 
@@ -184,6 +201,82 @@ export class AuctionDB {
     this.db.prepare(`DELETE FROM room_teams WHERE room_code = ?`).run(roomCode);
     this.db.prepare(`DELETE FROM auction_results WHERE room_code = ?`).run(roomCode);
     this.db.prepare(`DELETE FROM auction_bids WHERE room_code = ?`).run(roomCode);
+    this.db.prepare(`DELETE FROM match_fixtures WHERE room_code = ?`).run(roomCode);
+  }
+
+  saveFixtureMatch(roomCode, fixture) {
+    const stmt = this.db.prepare(`
+      INSERT INTO match_fixtures (id, room_code, match_number, stage, format, team_a, team_b, status, winner, margin, seed, scorecard_json, completed_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        room_code = excluded.room_code,
+        match_number = excluded.match_number,
+        stage = excluded.stage,
+        format = excluded.format,
+        team_a = excluded.team_a,
+        team_b = excluded.team_b,
+        status = excluded.status,
+        winner = excluded.winner,
+        margin = excluded.margin,
+        seed = excluded.seed,
+        scorecard_json = excluded.scorecard_json,
+        completed_at = excluded.completed_at
+    `);
+    stmt.run(
+      fixture.id,
+      roomCode,
+      fixture.matchNumber || 0,
+      fixture.stage || 'league',
+      fixture.format || fixture.scorecard?.format || 'T20',
+      fixture.teamA,
+      fixture.teamB,
+      fixture.status || 'scheduled',
+      fixture.winner || null,
+      fixture.margin || fixture.scorecard?.margin || null,
+      fixture.seed ? String(fixture.seed) : (fixture.scorecard?.seed ? String(fixture.scorecard.seed) : null),
+      fixture.scorecard ? JSON.stringify(fixture.scorecard) : null,
+      fixture.completedAt || (fixture.status === 'completed' ? Date.now() : null)
+    );
+  }
+
+  getFixtureMatch(fixtureId) {
+    const stmt = this.db.prepare(`SELECT * FROM match_fixtures WHERE id = ?`);
+    const row = stmt.get(fixtureId);
+    if (!row) return null;
+    return {
+      id: row.id,
+      roomCode: row.room_code,
+      matchNumber: row.match_number,
+      stage: row.stage,
+      format: row.format,
+      teamA: row.team_a,
+      teamB: row.team_b,
+      status: row.status,
+      winner: row.winner,
+      margin: row.margin,
+      seed: row.seed,
+      scorecard: row.scorecard_json ? JSON.parse(row.scorecard_json) : null,
+      completedAt: row.completed_at
+    };
+  }
+
+  getRoomFixtures(roomCode) {
+    const stmt = this.db.prepare(`SELECT * FROM match_fixtures WHERE room_code = ? ORDER BY match_number ASC`);
+    return stmt.all(roomCode).map(row => ({
+      id: row.id,
+      roomCode: row.room_code,
+      matchNumber: row.match_number,
+      stage: row.stage,
+      format: row.format,
+      teamA: row.team_a,
+      teamB: row.team_b,
+      status: row.status,
+      winner: row.winner,
+      margin: row.margin,
+      seed: row.seed,
+      scorecard: row.scorecard_json ? JSON.parse(row.scorecard_json) : null,
+      completedAt: row.completed_at
+    }));
   }
 
   close() {

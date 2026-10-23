@@ -131,11 +131,14 @@ export const ConcludeBattleSchema = z.object({
 export const SimulateFixtureSchema = z.object({
   roomCode: z.string().trim().toUpperCase(),
   fixtureId: z.string().min(1),
+  format: z.enum(['T20', 'ODI']).optional(),
+  seed: z.union([z.number(), z.string()]).optional(),
   userToken: z.string().min(1)
 });
 
 export const SimulateAllFixturesSchema = z.object({
   roomCode: z.string().trim().toUpperCase(),
+  format: z.enum(['T20', 'ODI']).optional(),
   userToken: z.string().min(1)
 });
 
