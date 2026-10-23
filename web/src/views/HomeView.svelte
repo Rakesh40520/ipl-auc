@@ -1,6 +1,6 @@
 <script>
   import { store } from '../lib/store.svelte.js';
-  import { formatLakhs, FRANCHISE_COLORS } from '../lib/utils.js';
+  import { formatLakhs } from '../lib/utils.js';
   import { Sparkles, ArrowRight, Settings, ShieldCheck, Flame, Bot, Check } from 'lucide-svelte';
 
   let name = $state(store.userName || '');
@@ -68,23 +68,23 @@
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
     <!-- Left Hero Column -->
     <div class="lg:col-span-7 space-y-6">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-semibold">
-        <Sparkles size={14} class="text-pink-400" />
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold">
+        <Sparkles size={14} class="text-indigo-400" />
         <span>Realtime Multi-User Auction Engine</span>
       </div>
 
       <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05] text-white">
-        Run your own <span class="bg-gradient-to-r from-[#ffe14d] via-[#ff4d8d] to-[#8b73ff] bg-clip-text text-transparent">IPL auction</span> with friends.
+        Run your own <span class="bg-gradient-to-r from-amber-300 via-indigo-400 to-blue-400 bg-clip-text text-transparent">IPL auction</span> with friends.
       </h1>
 
-      <p class="text-lg sm:text-xl text-[#9a97c4] max-w-xl font-normal leading-relaxed">
-        Pick a franchise, manage your purse and outbid your mates live. Authentic sets, official bid ladders, and server-enforced solvency rules.
+      <p class="text-base sm:text-xl text-slate-300 max-w-xl font-normal leading-relaxed">
+        Pick a franchise, manage your purse, draft your Playing 11, and simulate full IPL tournament fixtures live with authentic scorecards and player probability calculations.
       </p>
 
       <!-- Main Form Card -->
-      <div class="bg-[#15142e] border border-[#272552] rounded-3xl p-6 sm:p-8 shadow-2xl max-w-lg space-y-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl max-w-lg space-y-4">
         <div>
-          <label for="user-name" class="block text-xs font-semibold text-[#9a97c4] uppercase tracking-wider mb-2">Your Name</label>
+          <label for="user-name" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Your Name</label>
           <input
             id="user-name"
             type="text"
@@ -92,19 +92,19 @@
             placeholder="e.g. Aarav or Virat Fan"
             maxlength="30"
             onkeydown={(e) => { if (e.key === 'Enter') { if (joinCode.trim()) handleJoin(); else handleCreate(); } }}
-            class="w-full h-12 px-4 rounded-xl bg-[#0c0b1d] border border-[#272552] text-white placeholder-[#6b6891] focus:border-purple-500 focus:outline-none transition font-medium"
+            class="w-full h-12 px-4 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none transition font-medium"
           />
         </div>
 
         <!-- Bot Inclusion Mode Option -->
-        <div class="p-3.5 bg-[#0c0b1d] rounded-2xl border border-[#272552] flex items-center justify-between gap-3">
+        <div class="p-3.5 bg-slate-950 rounded-2xl border border-slate-800 flex items-center justify-between gap-3">
           <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg grid place-items-center {botsEnabled ? 'bg-purple-500/20 text-purple-300' : 'bg-[#15142e] text-[#6b6891]'}">
+            <div class="w-8 h-8 rounded-lg grid place-items-center {botsEnabled ? 'bg-indigo-500/20 text-indigo-300' : 'bg-slate-900 text-slate-400'}">
               <Bot size={16} />
             </div>
             <div>
               <span class="block text-xs font-bold text-white">Fill Open Teams with AI Bots</span>
-              <span class="block text-[11px] text-[#9a97c4]">
+              <span class="block text-[11px] text-slate-400">
                 {botsEnabled ? 'AI bots will bid for unclaimed teams' : 'Humans only (no AI bots)'}
               </span>
             </div>
@@ -113,7 +113,7 @@
           <button
             type="button"
             onclick={() => botsEnabled = !botsEnabled}
-            class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold border transition cursor-pointer flex items-center gap-1.5 {botsEnabled ? 'bg-purple-600 text-white border-purple-400 shadow-md shadow-purple-900/40' : 'bg-[#15142e] hover:bg-[#201e42] text-[#9a97c4] border-[#272552]'}"
+            class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold border transition cursor-pointer flex items-center gap-1.5 {botsEnabled ? 'bg-indigo-600 text-white border-indigo-400 shadow-md shadow-indigo-900/40' : 'bg-slate-900 hover:bg-slate-800 text-slate-400 border-slate-800'}"
           >
             {#if botsEnabled}
               <Check size={12} />
@@ -128,7 +128,7 @@
         <button
           onclick={handleCreate}
           disabled={isCreating}
-          class="w-full h-12 rounded-xl bg-gradient-to-r from-[#8b73ff] to-[#ff4d8d] hover:opacity-95 text-white font-bold text-base flex items-center justify-center gap-2 shadow-lg shadow-purple-900/40 hover:-translate-y-0.5 active:translate-y-0 transition cursor-pointer disabled:opacity-50"
+          class="w-full h-12 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-bold text-base flex items-center justify-center gap-2 shadow-lg shadow-indigo-950/40 hover:-translate-y-0.5 active:translate-y-0 transition cursor-pointer disabled:opacity-50"
         >
           {#if isCreating}
             <span class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
@@ -144,53 +144,45 @@
           <button
             type="button"
             onclick={() => showAdvanced = !showAdvanced}
-            class="text-xs text-[#9a97c4] hover:text-white flex items-center gap-1.5 transition cursor-pointer"
+            class="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 transition cursor-pointer"
           >
             <Settings size={13} />
             <span>{showAdvanced ? 'Hide auction settings' : 'Customize rules (purse, timer, bots)'}</span>
           </button>
 
           {#if showAdvanced}
-            <div class="mt-3 p-3.5 bg-[#0c0b1d] rounded-xl border border-[#272552] space-y-3 text-xs">
+            <div class="mt-3 p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs">
               <div class="flex items-center justify-between">
-                <span class="text-[#9a97c4]">Starting Purse per Team</span>
+                <span class="text-slate-400">Starting Purse per Team</span>
                 <div class="flex items-center gap-1 font-bold text-white">
                   <input
                     type="number"
                     bind:value={defaultPurseCr}
                     min="50"
                     max="200"
-                    class="w-16 h-7 px-2 text-center bg-[#15142e] border border-[#272552] rounded text-white"
+                    class="w-16 h-7 px-2 text-center bg-slate-900 border border-slate-800 rounded text-white"
                   />
                   <span>Cr</span>
                 </div>
               </div>
 
               <div class="flex items-center justify-between">
-                <span class="text-[#9a97c4]">Bid Timer Duration</span>
+                <span class="text-slate-400">Bid Timer Duration</span>
                 <div class="flex items-center gap-1 font-bold text-white">
                   <input
                     type="number"
                     bind:value={timerDuration}
                     min="5"
                     max="25"
-                    class="w-16 h-7 px-2 text-center bg-[#15142e] border border-[#272552] rounded text-white"
+                    class="w-16 h-7 px-2 text-center bg-slate-900 border border-slate-800 rounded text-white"
                   />
                   <span>Sec</span>
                 </div>
               </div>
 
               <div class="flex items-center justify-between">
-                <span class="text-[#9a97c4]">Min Squad Requirement</span>
+                <span class="text-slate-400">Min Squad Requirement</span>
                 <span class="font-bold text-white">18 Players</span>
-              </div>
-
-              <div class="flex items-center justify-between">
-                <span class="text-[#9a97c4]">Fill unclaimed teams with AI bots</span>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" bind:checked={botsEnabled} class="sr-only peer">
-                  <div class="w-9 h-5 bg-[#272552] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
-                </label>
               </div>
             </div>
           {/if}
@@ -198,9 +190,9 @@
 
         <!-- Or Join Section -->
         <div class="relative flex py-2 items-center">
-          <div class="flex-grow border-t border-[#272552]"></div>
-          <span class="flex-shrink mx-4 text-xs font-semibold text-[#6b6891] uppercase">Or Join Room</span>
-          <div class="flex-grow border-t border-[#272552]"></div>
+          <div class="flex-grow border-t border-slate-800"></div>
+          <span class="flex-shrink mx-4 text-xs font-semibold text-slate-400 uppercase">Or Join Room</span>
+          <div class="flex-grow border-t border-slate-800"></div>
         </div>
 
         <div class="flex gap-2">
@@ -210,12 +202,12 @@
             onkeydown={(e) => { if (e.key === 'Enter') handleJoin(); }}
             placeholder="5-LETTER CODE"
             maxlength="10"
-            class="flex-1 h-12 px-4 rounded-xl bg-[#0c0b1d] border border-[#272552] text-white uppercase tracking-widest font-mono text-center text-lg placeholder-[#6b6891] focus:border-purple-500 focus:outline-none transition"
+            class="flex-1 h-12 px-4 rounded-xl bg-slate-950 border border-slate-800 text-white uppercase tracking-widest font-mono text-center text-lg placeholder-slate-500 focus:border-indigo-500 focus:outline-none transition"
           />
           <button
             onclick={handleJoin}
             disabled={isJoining}
-            class="h-12 px-6 rounded-xl bg-[#272552] hover:bg-[#322f68] text-white font-bold transition flex items-center justify-center cursor-pointer disabled:opacity-50"
+            class="h-12 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition flex items-center justify-center cursor-pointer disabled:opacity-50 border border-slate-700"
           >
             {#if isJoining}
               <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
@@ -232,13 +224,13 @@
       <div class="relative w-full max-w-md transform rotate-1 hover:rotate-0 transition-transform duration-500">
         <!-- Ambient glow behind card -->
         <div
-          class="absolute -inset-1 rounded-3xl blur-xl opacity-40 transition-colors duration-700"
+          class="absolute -inset-1 rounded-3xl blur-xl opacity-30 transition-colors duration-700"
           style="background: {demoTeams[demoTeamIdx].color};"
         ></div>
 
-        <div class="relative bg-[#15142e] border border-[#272552] rounded-3xl p-7 shadow-2xl space-y-6">
+        <div class="relative bg-slate-900 border border-slate-800 rounded-3xl p-7 shadow-2xl space-y-6">
           <div class="flex items-center justify-between">
-            <span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30">
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
               Live Auction Demo
             </span>
             <span class="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold">
@@ -254,25 +246,25 @@
             </div>
             <div>
               <h3 class="text-2xl font-extrabold text-white font-heading">Virat Kohli</h3>
-              <p class="text-sm text-[#9a97c4]">Batter · India · Marquee Set 1</p>
+              <p class="text-sm text-slate-300">Batter · India · Marquee Set 1</p>
             </div>
           </div>
 
           <!-- Current Bid Display -->
-          <div class="bg-[#0c0b1d] p-5 rounded-2xl border border-[#272552] space-y-1">
-            <span class="text-xs uppercase font-semibold text-[#9a97c4] tracking-wider">Current Bid</span>
+          <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-1">
+            <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Current Bid</span>
             <div class="text-5xl font-extrabold text-white font-heading tracking-tight animate-price-pop">
               {formatLakhs(demoBid)}
             </div>
-            <div class="pt-2 flex items-center justify-between text-xs text-[#9a97c4]">
+            <div class="pt-2 flex items-center justify-between text-xs text-slate-300">
               <span>Base Price: ₹2 Cr</span>
-              <span class="text-purple-300 font-medium">Increment: +₹25 L</span>
+              <span class="text-indigo-400 font-medium">Increment: +₹25 L</span>
             </div>
           </div>
 
           <!-- Leading Franchise Chip -->
           <div class="flex items-center justify-between pt-1">
-            <span class="text-xs text-[#9a97c4]">Leading Franchise:</span>
+            <span class="text-xs text-slate-300">Leading Franchise:</span>
             <div
               class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-bold text-sm border shadow-sm transition-all duration-500"
               style="background: {demoTeams[demoTeamIdx].color}25; border-color: {demoTeams[demoTeamIdx].color}70; color: #fff;"
@@ -283,13 +275,13 @@
           </div>
 
           <!-- Feature Bullets -->
-          <div class="pt-4 border-t border-[#272552] grid grid-cols-2 gap-3 text-xs text-[#9a97c4]">
+          <div class="pt-4 border-t border-slate-800 grid grid-cols-2 gap-3 text-xs text-slate-300">
             <div class="flex items-center gap-2">
-              <ShieldCheck size={14} class="text-purple-400" />
+              <ShieldCheck size={14} class="text-indigo-400" />
               <span>Solvency Block</span>
             </div>
             <div class="flex items-center gap-2">
-              <Flame size={14} class="text-pink-400" />
+              <Flame size={14} class="text-amber-400" />
               <span>Accelerated Round</span>
             </div>
           </div>

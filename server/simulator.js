@@ -44,21 +44,49 @@ export function pickBowlers(playingXI = []) {
   return chosen;
 }
 
-// Ensure at least 11 players in any playing XI
+// Authentic reserve players pool to ensure real cricket player names are always used (NEVER generic names like "CSK Player 1")
+const REAL_RESERVE_POOL = [
+  { name: 'Abhimanyu Easwaran', role: 'Batter', category: 'batter', stats: { sr: 132.5, runs: 1240, avg: 34.2, matches: 42 }, rating: 80 },
+  { name: 'Priyam Garg', role: 'Batter', category: 'batter', stats: { sr: 136.0, runs: 850, avg: 26.5, matches: 38 }, rating: 80 },
+  { name: 'Sheldon Jackson', role: 'WK-Batter', category: 'wicketkeeper', stats: { sr: 139.4, runs: 1420, avg: 31.0, matches: 54 }, rating: 81 },
+  { name: 'Baba Indrajith', role: 'Batter', category: 'batter', stats: { sr: 128.0, runs: 980, avg: 30.5, matches: 36 }, rating: 79 },
+  { name: 'Rishi Dhawan', role: 'All-Rounder', category: 'allrounder', stats: { sr: 125.0, runs: 750, wkts: 52, econ: 7.95, matches: 62 }, rating: 81 },
+  { name: 'Jalaj Saxena', role: 'All-Rounder', category: 'allrounder', stats: { sr: 120.0, runs: 680, wkts: 68, econ: 7.20, matches: 58 }, rating: 82 },
+  { name: 'Sandeep Warrier', role: 'Bowler', category: 'pacer', stats: { econ: 7.80, wkts: 48, matches: 45 }, rating: 81 },
+  { name: 'Basil Thampi', role: 'Bowler', category: 'pacer', stats: { econ: 8.60, wkts: 42, matches: 40 }, rating: 79 },
+  { name: 'Shivalik Sharma', role: 'Batter', category: 'batter', stats: { sr: 130.0, runs: 520, matches: 22 }, rating: 78 },
+  { name: 'Manav Suthar', role: 'Bowler', category: 'spinner', stats: { econ: 7.10, wkts: 28, matches: 20 }, rating: 80 },
+  { name: 'Vyshak Vijaykumar', role: 'Bowler', category: 'pacer', stats: { econ: 8.20, wkts: 34, matches: 25 }, rating: 80 }
+];
+
+// Ensure at least 11 players in any playing XI with real authentic cricket player names
 function fillXI(xi, team) {
   const list = Array.isArray(xi) && xi.length > 0 ? [...xi] : [];
-  const code = team?.code || 'TEAM';
+  const existingNames = new Set(list.map(p => p.name));
+
+  // 1. Try to pull unused real players from team's squad first
+  if (team?.squad && Array.isArray(team.squad)) {
+    for (const sqPlayer of team.squad) {
+      if (list.length >= 11) break;
+      if (!existingNames.has(sqPlayer.name)) {
+        list.push(sqPlayer);
+        existingNames.add(sqPlayer.name);
+      }
+    }
+  }
+
+  // 2. If still under 11, backfill using authentic named domestic cricketers
+  let poolIdx = 0;
   while (list.length < 11) {
-    const idx = list.length + 1;
-    const isBowler = idx > 6;
-    list.push({
-      id: `${code}-p${idx}`,
-      name: `${code} Player ${idx}`,
-      role: idx <= 2 ? 'Batter' : idx === 3 ? 'Wicket-Keeper' : idx <= 6 ? 'All-Rounder' : 'Bowler',
-      category: idx <= 5 ? 'batsman' : idx === 6 ? 'allrounder' : 'pacer',
-      stats: isBowler ? { econ: 8.2, wkts: 12 } : { sr: 135.0, avg: 28.5 },
-      rating: 80
-    });
+    const reserve = REAL_RESERVE_POOL[poolIdx % REAL_RESERVE_POOL.length];
+    poolIdx++;
+    if (!existingNames.has(reserve.name)) {
+      list.push({
+        id: `res-${reserve.name.toLowerCase().replace(/\s+/g, '-')}`,
+        ...reserve
+      });
+      existingNames.add(reserve.name);
+    }
   }
   return list;
 }

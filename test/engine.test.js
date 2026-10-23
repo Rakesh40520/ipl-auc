@@ -504,11 +504,12 @@ describe('AuctionEngine State Machine Tests', () => {
     assert.ok(f1.scorecard.innings2.batting.length > 0);
     assert.ok(f1.scorecard.innings2.bowling.length > 0);
 
-    // 4. Simulate remaining fixtures in one go
+    // 4. Simulate remaining fixtures in one go (league + playoffs + final)
     const simAllRes = engine.simulateAllFixtures({ userToken: 'host-1' });
     assert.equal(simAllRes.success, true);
-    assert.equal(simAllRes.simulatedCount, 5); // 1 was already completed, 5 simulated
+    assert.ok(simAllRes.simulatedCount >= 5, 'Should simulate remaining league and playoff fixtures');
     assert.ok(engine.fixtures.every(f => f.status === 'completed' && f.scorecard));
+    assert.ok(engine.tournamentWinner, 'Tournament winner should be declared after grand final');
 
     // 5. Standings are populated for all 4 teams
     const standings = engine.getTournamentStandings();

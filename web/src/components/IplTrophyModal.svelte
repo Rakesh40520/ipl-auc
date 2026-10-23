@@ -141,12 +141,12 @@
     <canvas bind:this={canvasEl} class="absolute inset-0 pointer-events-none z-10"></canvas>
 
     <!-- Modal Dialog Card -->
-    <div class="relative z-20 w-full max-w-3xl my-6 bg-gradient-to-b from-[#18153c] via-[#120f2e] to-[#0c0a21] border-2 border-amber-500/60 rounded-3xl p-6 sm:p-8 shadow-[0_0_80px_rgba(245,158,11,0.35)] text-center space-y-6">
+    <div class="relative z-20 w-full max-w-3xl my-6 bg-slate-900 border-2 border-amber-500/60 rounded-3xl p-6 sm:p-8 shadow-[0_0_80px_rgba(245,158,11,0.35)] text-center space-y-6">
 
       <!-- Close Button -->
       <button
         onclick={onClose}
-        class="absolute top-4 right-4 p-2 rounded-full bg-[#272552]/80 hover:bg-[#34316d] text-[#9a97c4] hover:text-white transition cursor-pointer z-30"
+        class="absolute top-4 right-4 p-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition cursor-pointer z-30"
         title="Close celebration"
       >
         <X size={18} />
@@ -154,7 +154,7 @@
 
       <!-- CHAMPIONS BANNER HEADER -->
       <div class="space-y-2">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/30 to-purple-600/30 border border-amber-400/60 text-amber-300 font-extrabold text-xs uppercase tracking-widest shadow-md animate-pulse">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-indigo-600/20 border border-amber-400/50 text-amber-300 font-extrabold text-xs uppercase tracking-widest shadow-md">
           <Sparkles size={14} class="text-amber-400" />
           <span>TATA IPL 2026 CHAMPIONSHIP</span>
           <Sparkles size={14} class="text-amber-400" />
@@ -288,7 +288,7 @@
       <!-- CHAMPION TEAM SHOWCASE CARD -->
       <div
         class="p-5 sm:p-6 rounded-3xl border-2 text-white shadow-2xl relative overflow-hidden"
-        style="background: linear-gradient(135deg, {champion.primaryColor || '#6366f1'}33 0%, #15142e 75%); border-color: {champion.primaryColor || '#6366f1'}88;"
+        style="background: linear-gradient(135deg, {champion.primaryColor || '#6366f1'}33 0%, #0f172a 75%); border-color: {champion.primaryColor || '#6366f1'}88;"
       >
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
           <!-- Team Emblem & Name -->
@@ -307,7 +307,7 @@
               <h3 class="text-2xl sm:text-3xl font-black font-heading tracking-tight text-white">
                 {champion.name}
               </h3>
-              <p class="text-xs text-[#9a97c4] mt-0.5">
+              <p class="text-xs text-slate-300 mt-0.5">
                 Manager: <strong class="text-white font-semibold">{champion.userName}</strong>
               </p>
             </div>
@@ -315,15 +315,15 @@
 
           <!-- Tournament Record Pills -->
           <div class="grid grid-cols-2 gap-2 text-center text-xs">
-            <div class="p-2.5 rounded-xl bg-[#0c0b1d]/80 border border-white/10">
-              <span class="text-[10px] uppercase font-bold text-[#9a97c4] block">Won / Played</span>
+            <div class="p-2.5 rounded-xl bg-slate-950/80 border border-white/10">
+              <span class="text-[10px] uppercase font-bold text-slate-400 block">Won / Played</span>
               <strong class="text-lg font-black text-emerald-400 font-mono">{champion.won} / {champion.played}</strong>
             </div>
-            <div class="p-2.5 rounded-xl bg-[#0c0b1d]/80 border border-white/10">
-              <span class="text-[10px] uppercase font-bold text-[#9a97c4] block">Points</span>
+            <div class="p-2.5 rounded-xl bg-slate-950/80 border border-white/10">
+              <span class="text-[10px] uppercase font-bold text-slate-400 block">Points</span>
               <strong class="text-lg font-black text-amber-400 font-mono">{champion.points} pts</strong>
             </div>
-            <div class="col-span-2 p-2 rounded-xl bg-[#0c0b1d]/80 border border-white/10 text-[11px] text-[#9a97c4]">
+            <div class="col-span-2 p-2 rounded-xl bg-slate-950/80 border border-white/10 text-[11px] text-slate-300">
               Net Slot Margin: <strong class="text-white font-mono">{champion.diff > 0 ? '+' : ''}{champion.diff}</strong>
             </div>
           </div>
@@ -334,9 +334,9 @@
           <div class="mt-4 pt-3.5 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
             <div class="flex items-center gap-2">
               <Award size={16} class="text-amber-400" />
-              <span class="text-[#9a97c4]">Player of the Tournament:</span>
+              <span class="text-slate-300">Player of the Tournament:</span>
               <strong class="text-amber-300 font-bold">{tournamentMVP.name}</strong>
-              <span class="px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-mono">
+              <span class="px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[10px] font-mono">
                 {tournamentMVP.teamCode}
               </span>
             </div>
@@ -347,7 +347,7 @@
         {/if}
 
         {#if runnerUp}
-          <div class="mt-2 text-xs text-[#9a97c4] text-center sm:text-right">
+          <div class="mt-2 text-xs text-slate-300 text-center sm:text-right">
             🥈 Runner-Up: <strong class="text-white">{runnerUp.name}</strong> ({runnerUp.points} pts)
           </div>
         {/if}
@@ -357,13 +357,13 @@
       <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
         <button
           onclick={shareVictory}
-          class="px-5 py-2.5 rounded-xl bg-[#272552] hover:bg-[#34316d] text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition cursor-pointer"
+          class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition cursor-pointer border border-slate-700"
         >
           {#if copied}
             <Check size={16} class="text-emerald-400" />
             <span>Copied to Clipboard!</span>
           {:else}
-            <Share2 size={16} class="text-purple-300" />
+            <Share2 size={16} class="text-indigo-300" />
             <span>Share Victory Card</span>
           {/if}
         </button>

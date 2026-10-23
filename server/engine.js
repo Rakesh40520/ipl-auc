@@ -86,9 +86,11 @@ export class AuctionEngine {
     this.transitionTimeout = null;
     this.isTransitioning = false;
 
-    // Post-Auction Head-to-Head 1-on-1 Battle Arena & Tournament Fixtures
+    // Post-Auction Tournament Fixtures & Playoffs
     this.activeBattle = null;
     this.fixtures = [];
+    this.tournamentWinner = null;
+    this.championTeam = null;
 
     // Spectator voting & Playing XI selection window
     this.config.spectatorsCanVote = this.config.spectatorsCanVote ?? true;
@@ -240,15 +242,42 @@ export class AuctionEngine {
     this.clearTransition();
     this.status = 'playing_xi_selection';
 
-    // Auto-generate default Playing XI for any franchises that don't have one set yet
-    for (const team of this.teams.values()) {
-      if (!team.playingXI || team.playingXI.length === 0) {
-        team.playingXI = this.generateDefaultPlayingXI(team);
+    // Requirement: Ensure every participating franchise has at least 11 authentic players in their squad
+    const acquiredIds = new Set();
+    for (const t of this.teams.values()) {
+      for (const p of (t.squad || [])) {
+        acquiredIds.add(p.id);
       }
-      team.isXIConfirmed = team.isBot;
+    }
+    const availableUnsold = (this.allPlayers || []).filter(p => !acquiredIds.has(p.id));
+    let poolIdx = 0;
+
+    for (const team of this.teams.values()) {
+      const isParticipating = this.config.botsEnabled || team.userToken || (team.squad && team.squad.length > 0);
+      if (isParticipating) {
+        team.squad = team.squad || [];
+        // Backfill squad with real players until squad has at least 11 players
+        while (team.squad.length < 11 && poolIdx < availableUnsold.length) {
+          const draftPlayer = availableUnsold[poolIdx++];
+          team.squad.push({
+            ...draftPlayer,
+            finalBid: draftPlayer.basePrice || 20,
+            winnerTeam: team.code,
+            winnerUser: team.userName || `${team.code} Manager`
+          });
+          if (draftPlayer.isOverseas) {
+            team.overseasCount = (team.overseasCount || 0) + 1;
+          }
+        }
+        team.playingXI = this.generateDefaultPlayingXI(team);
+        team.isXIConfirmed = Boolean(team.isBot);
+        if (this.db) {
+          this.db.saveTeam(this.roomCode, team);
+        }
+      }
     }
 
-    // Auto-plan tournament fixtures if participating teams > 3
+    // Auto-plan tournament fixtures
     this.generateFixtures();
 
     // Start XI selection countdown timer (default 90s)
@@ -594,8 +623,10 @@ export class AuctionEngine {
         if (team1.code !== 'BYE' && team2.code !== 'BYE') {
           fixtures.push({
             id: `fixture-${matchNumber}`,
-            matchNumber: matchNumber++,
+            matchNumber: matchNumber,
             round: r + 1,
+            stage: 'league',
+            stageLabel: `League Match #${matchNumber}`,
             teamA: team1.code,
             teamB: team2.code,
             status: 'scheduled', // 'scheduled' | 'live' | 'completed'
@@ -603,8 +634,10 @@ export class AuctionEngine {
             scoreB: null,
             winner: null,
             battleId: null,
+            scorecard: null,
             completedAt: null
           });
+          matchNumber++;
         }
       }
 
@@ -617,6 +650,99 @@ export class AuctionEngine {
     }
 
     this.fixtures = fixtures;
+    this.emit('fixtures_updated', { fixtures: this.fixtures });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return { success: true, fixtures: this.fixtures };
+  }
+
+  planPlayoffs() {
+    const standings = this.getTournamentStandings();
+    if (standings.length < 2) return;
+
+    // Check if playoffs are already planned
+    if (this.fixtures.some(f => f.stage === 'semifinal' || f.stage === 'final')) {
+      return;
+    }
+
+    let nextMatchNum = this.fixtures.length + 1;
+    const playoffFixtures = [];
+
+    if (standings.length >= 4) {
+      // 4+ teams: Top 4 qualify for Playoffs!
+      // Semi-Final 1: 1st vs 4th
+      const sf1 = {
+        id: `fixture-${nextMatchNum}`,
+        matchNumber: nextMatchNum++,
+        round: 'Playoffs',
+        stage: 'semifinal',
+        stageLabel: `Semi-Final 1: ${standings[0].code} (1st) vs ${standings[3].code} (4th)`,
+        teamA: standings[0].code,
+        teamB: standings[3].code,
+        status: 'scheduled',
+        scoreA: null,
+        scoreB: null,
+        winner: null,
+        scorecard: null,
+        completedAt: null
+      };
+
+      // Semi-Final 2: 2nd vs 3rd
+      const sf2 = {
+        id: `fixture-${nextMatchNum}`,
+        matchNumber: nextMatchNum++,
+        round: 'Playoffs',
+        stage: 'semifinal',
+        stageLabel: `Semi-Final 2: ${standings[1].code} (2nd) vs ${standings[2].code} (3rd)`,
+        teamA: standings[1].code,
+        teamB: standings[2].code,
+        status: 'scheduled',
+        scoreA: null,
+        scoreB: null,
+        winner: null,
+        scorecard: null,
+        completedAt: null
+      };
+
+      // Grand Final
+      const grandFinal = {
+        id: `fixture-${nextMatchNum}`,
+        matchNumber: nextMatchNum++,
+        round: 'Playoffs',
+        stage: 'final',
+        stageLabel: '🏆 IPL Grand Final (Championship)',
+        teamA: 'TBD',
+        teamB: 'TBD',
+        status: 'scheduled',
+        scoreA: null,
+        scoreB: null,
+        winner: null,
+        scorecard: null,
+        completedAt: null
+      };
+
+      playoffFixtures.push(sf1, sf2, grandFinal);
+    } else {
+      // 2 or 3 teams: Direct Grand Final between Top 2
+      const grandFinal = {
+        id: `fixture-${nextMatchNum}`,
+        matchNumber: nextMatchNum++,
+        round: 'Playoffs',
+        stage: 'final',
+        stageLabel: `🏆 IPL Grand Final: ${standings[0].code} vs ${standings[1].code}`,
+        teamA: standings[0].code,
+        teamB: standings[1].code,
+        status: 'scheduled',
+        scoreA: null,
+        scoreB: null,
+        winner: null,
+        scorecard: null,
+        completedAt: null
+      };
+      playoffFixtures.push(grandFinal);
+    }
+
+    this.fixtures.push(...playoffFixtures);
     this.emit('fixtures_updated', { fixtures: this.fixtures });
     this.emit('state_sync', this.getStateSnapshot());
     this.persist();
@@ -743,6 +869,10 @@ export class AuctionEngine {
       return { success: false, reason: 'Fixture not found' };
     }
 
+    if (fixture.teamA === 'TBD' || fixture.teamB === 'TBD') {
+      return { success: false, reason: 'Teams for this match are not finalized yet. Please simulate preceding matches.' };
+    }
+
     const tA = this.teams.get(fixture.teamA);
     const tB = this.teams.get(fixture.teamB);
     if (!tA || !tB) {
@@ -790,6 +920,35 @@ export class AuctionEngine {
       this.emit('battle_updated', { battle: null });
     }
 
+    // 1. Check if all league matches are done -> Plan Playoffs (Semifinals & Final)
+    const leagueMatches = this.fixtures.filter(f => !f.stage || f.stage === 'league');
+    const allLeagueDone = leagueMatches.every(f => f.status === 'completed');
+    if (allLeagueDone && !this.fixtures.some(f => f.stage === 'semifinal' || f.stage === 'final')) {
+      this.planPlayoffs();
+    }
+
+    // 2. Check if Semi-Finals are completed -> Update Grand Final teams
+    const sfMatches = this.fixtures.filter(f => f.stage === 'semifinal');
+    if (sfMatches.length === 2 && sfMatches.every(f => f.status === 'completed' && f.winner)) {
+      const grandFinal = this.fixtures.find(f => f.stage === 'final');
+      if (grandFinal && (grandFinal.teamA === 'TBD' || grandFinal.teamB === 'TBD')) {
+        grandFinal.teamA = sfMatches[0].winner;
+        grandFinal.teamB = sfMatches[1].winner;
+        grandFinal.stageLabel = `🏆 IPL Grand Final: ${grandFinal.teamA} vs ${grandFinal.teamB}`;
+      }
+    }
+
+    // 3. Check if Grand Final is completed -> Declare IPL Champion!
+    const finalMatch = this.fixtures.find(f => f.stage === 'final');
+    if (finalMatch && finalMatch.status === 'completed' && finalMatch.winner) {
+      this.tournamentWinner = finalMatch.winner;
+      this.championTeam = this.sanitizeTeam(this.teams.get(finalMatch.winner));
+      this.emit('tournament_winner_declared', {
+        winner: this.tournamentWinner,
+        champion: this.championTeam
+      });
+    }
+
     this.emit('fixture_simulated', { fixture, scorecard });
     this.emit('fixtures_updated', { fixtures: this.fixtures });
     this.emit('state_sync', this.getStateSnapshot());
@@ -803,10 +962,19 @@ export class AuctionEngine {
     }
 
     let simulatedCount = 0;
-    for (const fixture of this.fixtures) {
-      if (fixture.status !== 'completed') {
-        const res = this.simulateFixture({ fixtureId: fixture.id, userToken });
-        if (res.success) simulatedCount++;
+    let safety = 0;
+
+    while (safety < 60) {
+      safety++;
+      // Pick next scheduled fixture that is ready (not TBD)
+      const nextFixture = this.fixtures.find(f => f.status === 'scheduled' && f.teamA !== 'TBD' && f.teamB !== 'TBD');
+      if (!nextFixture) break;
+
+      const res = this.simulateFixture({ fixtureId: nextFixture.id, userToken });
+      if (res.success) {
+        simulatedCount++;
+      } else {
+        break;
       }
     }
 
@@ -814,7 +982,7 @@ export class AuctionEngine {
     this.emit('fixtures_updated', { fixtures: this.fixtures });
     this.emit('state_sync', this.getStateSnapshot());
     this.persist();
-    return { success: true, simulatedCount };
+    return { success: true, simulatedCount, tournamentWinner: this.tournamentWinner };
   }
 
   concludeActiveBattle({ userToken } = {}) {
@@ -974,6 +1142,7 @@ export class AuctionEngine {
     }
 
     for (const f of this.fixtures) {
+      if (f.stage && f.stage !== 'league') continue; // Only league matches count toward the points table
       if (f.status !== 'completed' || !f.winner) continue;
 
       const tA = standingsMap.get(f.teamA);
@@ -1590,7 +1759,9 @@ export class AuctionEngine {
       activeBattle: this.activeBattle,
       fixtures: this.fixtures || [],
       standings: this.getTournamentStandings(),
-      matchMode: this.config.matchMode || 'voting'
+      tournamentWinner: this.tournamentWinner,
+      championTeam: this.championTeam ? this.sanitizeTeam(this.championTeam) : null,
+      matchMode: this.config.matchMode || 'ai_simulation'
     };
   }
 
