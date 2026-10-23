@@ -1,6 +1,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { AuctionEngine } from '../server/engine.js';
+import { calculateT20Rating } from '../server/rating.js';
 
 const mockTeams = [
   { code: 'CSK', name: 'Chennai Super Kings', primaryColor: '#F4C20D' },
@@ -37,6 +38,22 @@ describe('AuctionEngine State Machine Tests', () => {
     // Attempt to claim CSK by another user should fail
     const conflictRes = engine.claimTeam('CSK', { userToken: 'user-2', userName: 'Bob' });
     assert.equal(conflictRes.success, false);
+
+    // Switch team: User claims MI while holding CSK
+    const switchRes = engine.claimTeam('MI', { userToken: 'user-1', userName: 'Aarav' });
+    assert.equal(switchRes.success, true);
+    assert.equal(switchRes.team.code, 'MI');
+    assert.equal(switchRes.team.userName, 'Aarav');
+
+    // CSK MUST be vacated immediately!
+    const cskTeam = engine.teams.get('CSK');
+    assert.equal(cskTeam.userToken, null);
+    assert.equal(cskTeam.userName, null);
+
+    // Verify team_updated was emitted for both CSK (vacated) and MI (claimed)
+    const teamUpdatedEvents = events.filter(e => e.evt === 'team_updated');
+    const vacatedCSK = teamUpdatedEvents.find(e => e.data.team.code === 'CSK' && e.data.team.userName === null);
+    assert.ok(vacatedCSK, 'team_updated should have been emitted for vacated CSK');
   });
 
   test('Start auction presents first player and allows bids', () => {
@@ -499,5 +516,38 @@ describe('AuctionEngine State Machine Tests', () => {
     assert.ok(standings.every(s => s.played === 3));
 
     engine.destroy();
+  });
+
+  test('calculateT20Rating computes impact incorporating both IPL and International stats', () => {
+    const superstarBatter = {
+      name: 'Virat Kohli',
+      role: 'Batter',
+      category: 'batter',
+      isCapped: true,
+      rating: 98,
+      iplStats: { matches: 252, runs: 8004, sr: 131.9, hs: '113*', wkts: 0, econ: 8.2 },
+      intlStats: { matches: 125, runs: 4188, sr: 137.04, hs: '122*', wkts: 4, econ: 8.05 },
+      stats: { matches: 377, runs: 12192, sr: 133.7, hs: '122*', wkts: 4, econ: 8.2 }
+    };
+
+    const ratingObj = calculateT20Rating(superstarBatter);
+    assert.ok(ratingObj.overall >= 90, `Expected elite rating >= 90, got ${ratingObj.overall}`);
+    assert.ok(ratingObj.battingScore >= 90, `Expected battingScore >= 90, got ${ratingObj.battingScore}`);
+    assert.ok(ratingObj.clutchScore >= 90, `Expected clutchScore >= 90, got ${ratingObj.clutchScore}`);
+
+    const starBowler = {
+      name: 'Jasprit Bumrah',
+      role: 'Bowler',
+      category: 'pacer',
+      isCapped: true,
+      rating: 98,
+      iplStats: { matches: 133, wkts: 165, econ: 7.3, bb: '5/10' },
+      intlStats: { matches: 70, wkts: 89, econ: 6.27, bb: '3/11' },
+      stats: { matches: 203, wkts: 254, econ: 6.94, bb: '5/10' }
+    };
+
+    const bowlRatingObj = calculateT20Rating(starBowler);
+    assert.ok(bowlRatingObj.overall >= 90, `Expected elite bowler rating >= 90, got ${bowlRatingObj.overall}`);
+    assert.ok(bowlRatingObj.bowlingScore >= 90, `Expected bowlingScore >= 90, got ${bowlRatingObj.bowlingScore}`);
   });
 });

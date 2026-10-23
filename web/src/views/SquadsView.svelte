@@ -336,6 +336,12 @@
 
                       <!-- Career IPL / T20 Stats Row -->
                       {#if p.stats}
+                        {#if p.iplStats || p.intlStats}
+                          <div class="flex items-center justify-between text-[9px] text-[#9a97c4] px-1 pt-1 border-t border-[#272552]/40">
+                            <span>IPL: {p.iplStats?.runs ?? p.stats?.iplRuns ?? 0}r · {p.iplStats?.wkts ?? p.stats?.iplWkts ?? 0}w ({p.iplStats?.sr ?? p.stats?.iplSr ?? '-'} SR)</span>
+                            <span>T20I: {p.intlStats?.runs ?? p.stats?.intlRuns ?? 0}r · {p.intlStats?.wkts ?? p.stats?.intlWkts ?? 0}w ({p.intlStats?.sr ?? p.stats?.intlSr ?? '-'} SR)</span>
+                          </div>
+                        {/if}
                         <div class="grid grid-cols-3 gap-1 pt-1 border-t border-[#272552]/60 text-center text-[11px]">
                           <div class="bg-[#15142e]/60 p-1.5 rounded-lg border border-[#272552]/40">
                             <span class="text-[#6b6891] block text-[10px]">Matches</span>

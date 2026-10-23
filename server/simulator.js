@@ -21,12 +21,17 @@ export function pickBowlers(playingXI = []) {
     } else if (p.bowlingStyle) {
       bowlScore = 40;
     }
-    const econBonus = p.stats?.econ ? Math.max(0, 10.0 - p.stats.econ) * 5 : 10;
-    const wktBonus = p.stats?.wkts ? Math.min(30, p.stats.wkts * 0.3) : 10;
+    const iplEcon = p.iplStats?.econ || p.stats?.iplEcon || p.stats?.econ || 8.5;
+    const intlEcon = p.intlStats?.econ || p.stats?.intlEcon || p.stats?.econ || 8.5;
+    const effEcon = p.intlStats?.matches > 0 ? (iplEcon * 0.55 + intlEcon * 0.45) : iplEcon;
+    const econBonus = Math.max(0, 10.0 - effEcon) * 6;
+    const totalWkts = p.stats?.wkts || ((p.iplStats?.wkts || 0) + (p.intlStats?.wkts || 0));
+    const wktBonus = Math.min(30, totalWkts * 0.18);
+    const intlBonus = p.intlStats?.wkts ? Math.min(10, p.intlStats.wkts * 0.15) : 0;
     return {
       player: p,
       index: idx,
-      score: bowlScore + econBonus + wktBonus + (p.rating || 80) * 0.2
+      score: bowlScore + econBonus + wktBonus + intlBonus + (p.rating || 80) * 0.2
     };
   });
 
@@ -192,13 +197,23 @@ function simulateInnings({
       if (!striker) break;
       striker.balls++;
 
-      // Pure Mathematical Probability Breakdown based on 100-point ratings:
+      // Pure Mathematical Probability Breakdown based on 100-point ratings & comprehensive IPL + International stats:
       const rBat = striker.rating || 82;
       const rBowl = bRecord.rating || 82;
       const ratingDelta = (rBat - rBowl) / 100; // e.g. +0.12 or -0.15
 
-      const bSr = striker.player?.stats?.sr || 135;
-      const bowlerEcon = activeBowler.stats?.econ || 8.2;
+      // Combine both IPL and International T20 stats for batter & bowler
+      const batIPL = striker.player?.iplStats || {};
+      const batIntl = striker.player?.intlStats || {};
+      const iplSr = batIPL.sr || striker.player?.stats?.iplSr || striker.player?.stats?.sr || 135;
+      const intlSr = batIntl.sr || striker.player?.stats?.intlSr || striker.player?.stats?.sr || 135;
+      const bSr = batIntl.matches > 0 ? (iplSr * 0.55 + intlSr * 0.45) : (striker.player?.stats?.sr || iplSr);
+
+      const bowlIPL = activeBowler.iplStats || {};
+      const bowlIntl = activeBowler.intlStats || {};
+      const iplEcon = bowlIPL.econ || activeBowler.stats?.iplEcon || activeBowler.stats?.econ || 8.2;
+      const intlEcon = bowlIntl.econ || activeBowler.stats?.intlEcon || activeBowler.stats?.econ || 8.2;
+      const bowlerEcon = bowlIntl.matches > 0 ? (iplEcon * 0.55 + intlEcon * 0.45) : (activeBowler.stats?.econ || iplEcon);
 
       // 1. Wicket Probability per ball (T20 avg is ~0.048)
       let pWicket = 0.048 * (1.0 - ratingDelta * 0.75) * (8.5 / Math.max(6.0, bowlerEcon)) * phaseWicketMultiplier;
@@ -340,31 +355,52 @@ function simulateInnings({
 
 /**
  * Super Over Sudden-Death Simulation (6 balls each)
+ * Driven by top power-hitters and death specialists using authentic IPL + International ratings
  */
 function simulateSuperOver({ teamA, teamB, playingXIA, playingXIB }) {
-  const simSOInnings = (team, xi) => {
+  const simSOInnings = (team, xi, oppXI) => {
+    const hitters = [...(xi || [])].sort((a, b) => {
+      const srA = a.intlStats?.matches > 0 ? ((a.iplStats?.sr || 135) * 0.55 + (a.intlStats?.sr || 135) * 0.45) : (a.stats?.sr || 135);
+      const srB = b.intlStats?.matches > 0 ? ((b.iplStats?.sr || 135) * 0.55 + (b.intlStats?.sr || 135) * 0.45) : (b.stats?.sr || 135);
+      return (srB + (b.rating || 80) * 0.5) - (srA + (a.rating || 80) * 0.5);
+    });
+    const batter = hitters[0] || { name: 'Super Striker', rating: 85 };
+    const deathBowlers = pickBowlers(oppXI || []);
+    const bowler = deathBowlers[0] || { name: 'Death Specialist', rating: 85 };
+
+    const rBat = batter.rating || 82;
+    const rBowl = bowler.rating || 82;
+    const rDelta = (rBat - rBowl) / 100;
+    const bSr = batter.intlStats?.matches > 0 ? ((batter.iplStats?.sr || 135) * 0.55 + (batter.intlStats?.sr || 135) * 0.45) : (batter.stats?.sr || 135);
+
     let runs = 0;
     let wkts = 0;
     for (let ball = 0; ball < 6; ball++) {
       if (wkts >= 2) break; // 2 wickets ends Super Over innings
+      const pWkt = clamp(0.12 * (1.0 - rDelta * 0.5), 0.05, 0.25);
       const r = Math.random();
-      if (r < 0.16) {
+      if (r < pWkt) {
         wkts++;
-      } else if (r < 0.35) {
-        runs += 1;
-      } else if (r < 0.52) {
-        runs += 2;
-      } else if (r < 0.76) {
-        runs += 4;
       } else {
-        runs += 6;
+        const pSix = clamp(0.22 * (1.0 + rDelta) * (bSr / 140), 0.08, 0.40);
+        const pFour = clamp(0.26 * (1.0 + rDelta * 0.7), 0.12, 0.38);
+        const shotRoll = Math.random();
+        if (shotRoll < pSix) {
+          runs += 6;
+        } else if (shotRoll < pSix + pFour) {
+          runs += 4;
+        } else if (shotRoll < pSix + pFour + 0.20) {
+          runs += 2;
+        } else if (shotRoll < pSix + pFour + 0.40) {
+          runs += 1;
+        }
       }
     }
-    return { runs, wkts };
+    return { runs, wkts, batter: batter.name, bowler: bowler.name };
   };
 
-  const soA = simSOInnings(teamA, playingXIA);
-  const soB = simSOInnings(teamB, playingXIB);
+  const soA = simSOInnings(teamA, playingXIA, playingXIB);
+  const soB = simSOInnings(teamB, playingXIB, playingXIA);
 
   let winner = teamA;
   if (soB.runs > soA.runs) {

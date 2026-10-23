@@ -2069,12 +2069,18 @@
                           {/if}
                         </div>
 
-                        <!-- Stats Row -->
+                        <!-- Stats Row with IPL & International breakdown -->
                         {#if playerA.stats}
-                          <div class="grid grid-cols-3 gap-1 text-center text-[10px] bg-[#15142e]/60 p-1.5 rounded-lg border border-[#272552]/40">
-                            <div><span class="text-[#6b6891] block">Matches</span><strong class="text-white">{playerA.stats.matches ?? '-'}</strong></div>
-                            <div><span class="text-[#6b6891] block">Runs (SR)</span><strong class="text-amber-300">{playerA.stats.runs ?? '-'}{#if playerA.stats.sr} ({playerA.stats.sr}){/if}</strong></div>
-                            <div><span class="text-[#6b6891] block">Wkts (Econ)</span><strong class="text-cyan-300">{playerA.stats.wkts ?? '-'}{#if playerA.stats.econ} ({playerA.stats.econ}){/if}</strong></div>
+                          <div class="space-y-1">
+                            <div class="flex items-center justify-between text-[9px] px-1 text-[#9a97c4] bg-[#15142e]/40 py-0.5 rounded">
+                              <span class="truncate">IPL: {playerA.iplStats?.matches ?? playerA.stats.iplMatches ?? '-'}m · {playerA.iplStats?.runs ?? playerA.stats.iplRuns ?? 0}r ({playerA.iplStats?.sr ?? playerA.stats.iplSr ?? '-'}) · {playerA.iplStats?.wkts ?? playerA.stats.iplWkts ?? 0}w</span>
+                              <span class="truncate">T20I: {playerA.intlStats?.matches ?? playerA.stats.intlMatches ?? '-'}m · {playerA.intlStats?.runs ?? playerA.stats.intlRuns ?? 0}r ({playerA.intlStats?.sr ?? playerA.stats.intlSr ?? '-'}) · {playerA.intlStats?.wkts ?? playerA.stats.intlWkts ?? 0}w</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-1 text-center text-[10px] bg-[#15142e]/60 p-1.5 rounded-lg border border-[#272552]/40">
+                              <div><span class="text-[#6b6891] block">Total Mat</span><strong class="text-white">{playerA.stats.matches ?? '-'}</strong></div>
+                              <div><span class="text-[#6b6891] block">Runs (SR)</span><strong class="text-amber-300">{playerA.stats.runs ?? '-'}{#if playerA.stats.sr} ({playerA.stats.sr}){/if}</strong></div>
+                              <div><span class="text-[#6b6891] block">Wkts (Econ)</span><strong class="text-cyan-300">{playerA.stats.wkts ?? '-'}{#if playerA.stats.econ} ({playerA.stats.econ}){/if}</strong></div>
+                            </div>
                           </div>
                         {/if}
                       {/if}
@@ -2163,12 +2169,18 @@
                           {/if}
                         </div>
 
-                        <!-- Stats Row -->
+                        <!-- Stats Row with IPL & International breakdown -->
                         {#if playerB.stats}
-                          <div class="grid grid-cols-3 gap-1 text-center text-[10px] bg-[#15142e]/60 p-1.5 rounded-lg border border-[#272552]/40">
-                            <div><span class="text-[#6b6891] block">Matches</span><strong class="text-white">{playerB.stats.matches ?? '-'}</strong></div>
-                            <div><span class="text-[#6b6891] block">Runs (SR)</span><strong class="text-amber-300">{playerB.stats.runs ?? '-'}{#if playerB.stats.sr} ({playerB.stats.sr}){/if}</strong></div>
-                            <div><span class="text-[#6b6891] block">Wkts (Econ)</span><strong class="text-cyan-300">{playerB.stats.wkts ?? '-'}{#if playerB.stats.econ} ({playerB.stats.econ}){/if}</strong></div>
+                          <div class="space-y-1">
+                            <div class="flex items-center justify-between text-[9px] px-1 text-[#9a97c4] bg-[#15142e]/40 py-0.5 rounded">
+                              <span class="truncate">IPL: {playerB.iplStats?.matches ?? playerB.stats.iplMatches ?? '-'}m · {playerB.iplStats?.runs ?? playerB.stats.iplRuns ?? 0}r ({playerB.iplStats?.sr ?? playerB.stats.iplSr ?? '-'}) · {playerB.iplStats?.wkts ?? playerB.stats.iplWkts ?? 0}w</span>
+                              <span class="truncate">T20I: {playerB.intlStats?.matches ?? playerB.stats.intlMatches ?? '-'}m · {playerB.intlStats?.runs ?? playerB.stats.intlRuns ?? 0}r ({playerB.intlStats?.sr ?? playerB.stats.intlSr ?? '-'}) · {playerB.intlStats?.wkts ?? playerB.stats.intlWkts ?? 0}w</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-1 text-center text-[10px] bg-[#15142e]/60 p-1.5 rounded-lg border border-[#272552]/40">
+                              <div><span class="text-[#6b6891] block">Total Mat</span><strong class="text-white">{playerB.stats.matches ?? '-'}</strong></div>
+                              <div><span class="text-[#6b6891] block">Runs (SR)</span><strong class="text-amber-300">{playerB.stats.runs ?? '-'}{#if playerB.stats.sr} ({playerB.stats.sr}){/if}</strong></div>
+                              <div><span class="text-[#6b6891] block">Wkts (Econ)</span><strong class="text-cyan-300">{playerB.stats.wkts ?? '-'}{#if playerB.stats.econ} ({playerB.stats.econ}){/if}</strong></div>
+                            </div>
                           </div>
                         {/if}
                       {/if}

@@ -242,26 +242,55 @@
           <span class="text-xl font-bold font-heading text-white">{formatLakhs(player.basePrice)}</span>
         </div>
 
-        <!-- Career Stats Card -->
+        <!-- Career Stats Card (IPL + International T20) -->
         {#if player.stats}
           <div class="space-y-2">
-            <span class="text-xs font-semibold uppercase tracking-wider text-[#9a97c4]">Career IPL / T20 Stats</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold uppercase tracking-wider text-[#9a97c4]">All T20 Career Stats</span>
+              <span class="text-[10px] text-purple-300 font-semibold bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
+                IPL + International
+              </span>
+            </div>
+
+            <!-- IPL & International Sub-Breakdown -->
+            <div class="grid grid-cols-2 gap-2 text-[11px]">
+              <div class="p-2.5 bg-[#0c0b1d] rounded-xl border border-[#272552]/80 space-y-0.5">
+                <span class="text-amber-400 font-bold block text-[10px] uppercase">IPL Career</span>
+                <span class="text-white font-semibold block">
+                  {player.iplStats?.matches ?? player.stats.iplMatches ?? '-'} matches · {player.iplStats?.runs ?? player.stats.iplRuns ?? 0} runs
+                </span>
+                <span class="text-[#9a97c4] text-[10px] block">
+                  SR {player.iplStats?.sr ?? player.stats.iplSr ?? '-'} · {player.iplStats?.wkts ?? player.stats.iplWkts ?? 0}w ({player.iplStats?.econ ?? player.stats.iplEcon ?? '-'})
+                </span>
+              </div>
+              <div class="p-2.5 bg-[#0c0b1d] rounded-xl border border-[#272552]/80 space-y-0.5">
+                <span class="text-cyan-400 font-bold block text-[10px] uppercase">International T20</span>
+                <span class="text-white font-semibold block">
+                  {player.intlStats?.matches ?? player.stats.intlMatches ?? '-'} matches · {player.intlStats?.runs ?? player.stats.intlRuns ?? 0} runs
+                </span>
+                <span class="text-[#9a97c4] text-[10px] block">
+                  SR {player.intlStats?.sr ?? player.stats.intlSr ?? '-'} · {player.intlStats?.wkts ?? player.stats.intlWkts ?? 0}w ({player.intlStats?.econ ?? player.stats.intlEcon ?? '-'})
+                </span>
+              </div>
+            </div>
+
+            <!-- Combined Career Grid -->
             <div class="grid grid-cols-2 gap-2 text-xs">
               <div class="p-3 bg-[#0c0b1d] rounded-xl border border-[#272552]/80">
-                <span class="text-[#9a97c4] block">Matches</span>
+                <span class="text-[#9a97c4] block">Total Matches</span>
                 <span class="text-base font-bold text-white font-heading">{player.stats.matches ?? '-'}</span>
               </div>
 
               {#if player.stats.runs != null}
                 <div class="p-3 bg-[#0c0b1d] rounded-xl border border-[#272552]/80">
-                  <span class="text-[#9a97c4] block">Runs (SR)</span>
+                  <span class="text-[#9a97c4] block">Total Runs (SR)</span>
                   <span class="text-base font-bold text-white font-heading">
                     {player.stats.runs} <span class="text-xs font-normal text-[#9a97c4]">({player.stats.sr})</span>
                   </span>
                 </div>
               {:else if player.stats.wkts != null}
                 <div class="p-3 bg-[#0c0b1d] rounded-xl border border-[#272552]/80">
-                  <span class="text-[#9a97c4] block">Wickets (Econ)</span>
+                  <span class="text-[#9a97c4] block">Total Wickets (Econ)</span>
                   <span class="text-base font-bold text-white font-heading">
                     {player.stats.wkts} <span class="text-xs font-normal text-[#9a97c4]">({player.stats.econ})</span>
                   </span>

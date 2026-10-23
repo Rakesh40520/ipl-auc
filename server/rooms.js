@@ -156,6 +156,12 @@ export class RoomManager {
     const claimedCount = Array.from(engine.teams.values()).filter(t => t.userToken && !t.isBot).length;
     engine.connectedUsersCount = connectedCount;
     engine.spectatorCount = Math.max(0, connectedCount - claimedCount);
+
+    this.io.to(roomCode).emit('presence_update', {
+      connectedUsersCount: engine.connectedUsersCount,
+      spectatorCount: engine.spectatorCount,
+      claimedCount
+    });
   }
 
   setupSocketEvents(socket) {
@@ -245,11 +251,11 @@ export class RoomManager {
       const parsed = LeaveTeamSchema.safeParse(raw);
       if (!parsed.success) return callback({ success: false, error: 'Invalid leave data' });
 
-      const { roomCode, teamCode, userToken } = parsed.data;
+      const { roomCode, teamCode, userToken, userName } = parsed.data;
       const engine = this.getRoom(roomCode);
       if (!engine) return callback({ success: false, error: 'Room not found' });
 
-      const res = engine.leaveTeam(teamCode, { userToken });
+      const res = engine.leaveTeam(teamCode, { userToken, userName: userName || socket.data?.userName });
       this.updateRoomPresence(roomCode, engine);
       callback(res);
     });

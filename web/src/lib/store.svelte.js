@@ -65,6 +65,8 @@ function saveUserRoomData(roomCode, data) {
 export class AuctionStore {
   // Reactive Svelte 5 State
   connected = $state(false);
+  isReconnecting = $state(false);
+  reconnectAttempts = $state(0);
   view = $state('home'); // home, lobby, auction, squads, results
   roomCode = $state('');
   userName = $state('');
@@ -150,22 +152,79 @@ export class AuctionStore {
 
     this.socket = io({
       autoConnect: true,
-      reconnectionAttempts: 15,
-      reconnectionDelay: 1000
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      randomizationFactor: 0.5,
+      timeout: 10000
     });
 
     this.socket.on('connect', () => {
       this.connected = true;
+      this.isReconnecting = false;
+      this.reconnectAttempts = 0;
       if (this.roomCode && this.userName) {
         this.joinRoom(this.roomCode, this.userName, true);
       }
     });
 
-    this.socket.on('disconnect', () => {
+    this.socket.on('disconnect', (reason) => {
       this.connected = false;
+      this.isReconnecting = true;
+      if (reason === 'io server disconnect') {
+        this.socket.connect();
+      }
     });
 
+    this.socket.on('connect_error', () => {
+      this.connected = false;
+      this.isReconnecting = true;
+    });
+
+    if (this.socket.io) {
+      this.socket.io.on('reconnect_attempt', (attempt) => {
+        this.isReconnecting = true;
+        this.reconnectAttempts = attempt;
+      });
+
+      this.socket.io.on('reconnect', () => {
+        this.connected = true;
+        this.isReconnecting = false;
+        this.reconnectAttempts = 0;
+        this.notify('Connection restored! State synchronized.');
+        if (this.roomCode && this.userName) {
+          this.joinRoom(this.roomCode, this.userName, true);
+        }
+      });
+
+      this.socket.io.on('reconnect_error', () => {
+        this.isReconnecting = true;
+      });
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', () => {
+        this.notify('Network online. Reconnecting…');
+        this.reconnectNow();
+      });
+      window.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && !this.connected) {
+          this.reconnectNow();
+        }
+      });
+    }
+
     // --- REALTIME SERVER EVENTS ---
+
+    this.socket.on('presence_update', (data) => {
+      if (data.connectedUsersCount !== undefined) {
+        this.roomState.connectedUsersCount = data.connectedUsersCount;
+      }
+      if (data.spectatorCount !== undefined) {
+        this.roomState.spectatorCount = data.spectatorCount;
+      }
+    });
 
     this.socket.on('state_sync', (state) => {
       this.roomState = state;
@@ -540,7 +599,31 @@ export class AuctionStore {
     });
   }
 
+  reconnectNow() {
+    if (!this.socket) {
+      this.init();
+      return;
+    }
+    if (!this.connected) {
+      this.socket.connect();
+    }
+    if (this.roomCode && this.userName) {
+      this.joinRoom(this.roomCode, this.userName, true);
+    }
+  }
+
   claimTeam(teamCode) {
+    // Eagerly vacate previous team in local state so UI unlocks old team immediately
+    if (this.myTeamCode && this.myTeamCode !== teamCode && Array.isArray(this.roomState?.teams)) {
+      const prevTeam = this.roomState.teams.find(t => t.code === this.myTeamCode);
+      if (prevTeam) {
+        prevTeam.userToken = null;
+        prevTeam.userName = null;
+        prevTeam.isClaimed = false;
+        prevTeam.isBot = false;
+      }
+    }
+
     return new Promise((resolve) => {
       this.socket.emit('claim_team', {
         roomCode: this.roomCode,
@@ -565,11 +648,22 @@ export class AuctionStore {
   }
 
   leaveTeam(teamCode) {
+    if (Array.isArray(this.roomState?.teams)) {
+      const tObj = this.roomState.teams.find(t => t.code === teamCode);
+      if (tObj) {
+        tObj.userToken = null;
+        tObj.userName = null;
+        tObj.isClaimed = false;
+        tObj.isBot = false;
+      }
+    }
+
     return new Promise((resolve) => {
       this.socket.emit('leave_team', {
         roomCode: this.roomCode,
         teamCode,
-        userToken: this.userToken
+        userToken: this.userToken,
+        userName: this.userName
       }, (res) => {
         if (res.success) {
           this.myTeamCode = null;

@@ -38,7 +38,8 @@ export const ClaimTeamSchema = z.object({
 export const LeaveTeamSchema = z.object({
   roomCode: z.string().trim().toUpperCase(),
   teamCode: z.string().trim().toUpperCase(),
-  userToken: z.string().min(1)
+  userToken: z.string().min(1),
+  userName: z.string().optional()
 });
 
 export const PlaceBidSchema = z.object({

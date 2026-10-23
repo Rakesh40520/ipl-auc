@@ -28,11 +28,21 @@
     </div>
   {/if}
 
-  <!-- Offline / Reconnection Banner -->
+  <!-- Offline / Auto-Reconnection Banner -->
   {#if !store.connected && store.roomCode}
-    <div class="bg-amber-500/20 border-b border-amber-500/30 text-amber-300 py-1.5 px-4 text-center text-xs font-semibold flex items-center justify-center gap-2">
-      <WifiOff size={14} />
-      <span>Reconnecting to auction server… All state is securely saved.</span>
+    <div class="bg-amber-500/25 border-b border-amber-500/40 text-amber-200 py-2 px-4 text-center text-xs font-semibold flex flex-wrap items-center justify-center gap-3 backdrop-blur-md shadow-lg sticky top-0 z-50">
+      <div class="flex items-center gap-2">
+        <WifiOff size={15} class="text-amber-400 animate-pulse" />
+        <span>
+          Connection lost. Automatically reconnecting{store.reconnectAttempts > 0 ? ` (attempt #${store.reconnectAttempts})` : ''}… All state & squad data are saved.
+        </span>
+      </div>
+      <button
+        onclick={() => store.reconnectNow()}
+        class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/35 border border-amber-400/40 text-amber-200 text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-sm"
+      >
+        <span>⚡ Reconnect Now</span>
+      </button>
     </div>
   {/if}
 

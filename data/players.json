@@ -17,10 +17,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 98,
     "stats": {
+      "matches": 377,
+      "runs": 12192,
+      "sr": 133.7,
+      "hs": "122*",
+      "wkts": 4,
+      "econ": 8.2,
+      "bb": "1/13",
+      "iplMatches": 252,
+      "iplRuns": 8004,
+      "iplSr": 131.9,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 125,
+      "intlRuns": 4188,
+      "intlSr": 137.04,
+      "intlWkts": 4,
+      "intlEcon": 8.05
+    },
+    "iplStats": {
       "matches": 252,
       "runs": 8004,
       "sr": 131.9,
-      "hs": "113*"
+      "hs": "113*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 125,
+      "runs": 4188,
+      "sr": 137.04,
+      "hs": "122*",
+      "avg": 48.69,
+      "wkts": 4,
+      "econ": 8.05,
+      "bb": "1/13"
     }
   },
   {
@@ -41,10 +73,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 96,
     "stats": {
+      "matches": 416,
+      "runs": 10859,
+      "sr": 134.9,
+      "hs": "121*",
+      "wkts": 1,
+      "econ": 8.19,
+      "bb": "1/22",
+      "iplMatches": 257,
+      "iplRuns": 6628,
+      "iplSr": 131.1,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 159,
+      "intlRuns": 4231,
+      "intlSr": 140.89,
+      "intlWkts": 1,
+      "intlEcon": 7
+    },
+    "iplStats": {
       "matches": 257,
       "runs": 6628,
       "sr": 131.1,
-      "hs": "109*"
+      "hs": "109*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 159,
+      "runs": 4231,
+      "sr": 140.89,
+      "hs": "121*",
+      "avg": 32.05,
+      "wkts": 1,
+      "econ": 7,
+      "bb": "1/22"
     }
   },
   {
@@ -65,10 +129,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 95,
     "stats": {
+      "matches": 362,
+      "runs": 6860,
+      "sr": 134.8,
+      "hs": "84*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 264,
+      "iplRuns": 5243,
+      "iplSr": 137.5,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 98,
+      "intlRuns": 1617,
+      "intlSr": 126.13,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 264,
       "runs": 5243,
       "sr": 137.5,
-      "hs": "84*"
+      "hs": "84*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 98,
+      "runs": 1617,
+      "sr": 126.13,
+      "hs": "56",
+      "avg": 37.6,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -89,10 +185,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 99,
     "stats": {
+      "matches": 203,
+      "runs": 8,
+      "sr": 61.5,
+      "hs": "50",
+      "wkts": 254,
+      "econ": 6.94,
+      "bb": "5/10",
+      "iplMatches": 133,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 165,
+      "iplEcon": 7.3,
+      "intlMatches": 70,
+      "intlRuns": 8,
+      "intlSr": 61.5,
+      "intlWkts": 89,
+      "intlEcon": 6.27
+    },
+    "iplStats": {
       "matches": 133,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 165,
       "econ": 7.3,
       "bb": "5/10"
+    },
+    "intlStats": {
+      "matches": 70,
+      "runs": 8,
+      "sr": 61.5,
+      "hs": "7",
+      "avg": 4,
+      "wkts": 89,
+      "econ": 6.27,
+      "bb": "3/11"
     }
   },
   {
@@ -113,10 +241,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 97,
     "stats": {
+      "matches": 228,
+      "runs": 6164,
+      "sr": 155.3,
+      "hs": "117",
+      "wkts": 1,
+      "econ": 8.17,
+      "bb": "1/5",
+      "iplMatches": 150,
+      "iplRuns": 3594,
+      "iplSr": 145.3,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 78,
+      "intlRuns": 2570,
+      "intlSr": 169.4,
+      "intlWkts": 1,
+      "intlEcon": 6
+    },
+    "iplStats": {
       "matches": 150,
       "runs": 3594,
       "sr": 145.3,
-      "hs": "103*"
+      "hs": "103*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 78,
+      "runs": 2570,
+      "sr": 169.4,
+      "hs": "117",
+      "avg": 42.13,
+      "wkts": 1,
+      "econ": 6,
+      "bb": "1/5"
     }
   },
   {
@@ -137,11 +297,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 95,
     "stats": {
+      "matches": 246,
+      "runs": 4166,
+      "sr": 143.9,
+      "hs": "71*",
+      "wkts": 153,
+      "econ": 8.47,
+      "bb": "4/38",
+      "iplMatches": 137,
+      "iplRuns": 2525,
+      "iplSr": 145.8,
+      "iplWkts": 64,
+      "iplEcon": 8.91,
+      "intlMatches": 109,
+      "intlRuns": 1641,
+      "intlSr": 141,
+      "intlWkts": 89,
+      "intlEcon": 8.16
+    },
+    "iplStats": {
       "matches": 137,
       "runs": 2525,
       "sr": 145.8,
+      "hs": "50",
       "wkts": 64,
-      "econ": 8.91
+      "econ": 8.91,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 109,
+      "runs": 1641,
+      "sr": 141,
+      "hs": "71*",
+      "avg": 27.35,
+      "wkts": 89,
+      "econ": 8.16,
+      "bb": "4/38"
     }
   },
   {
@@ -162,10 +353,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 96,
     "stats": {
+      "matches": 93,
+      "runs": 1993,
+      "sr": 155.5,
+      "hs": "104",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 35,
+      "iplRuns": 993,
+      "iplSr": 168.3,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 58,
+      "intlRuns": 1000,
+      "intlSr": 142.86,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 35,
       "runs": 993,
       "sr": 168.3,
-      "hs": "104"
+      "hs": "104",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 58,
+      "runs": 1000,
+      "sr": 142.86,
+      "hs": "81",
+      "avg": 24.39,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -186,11 +409,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 95,
     "stats": {
+      "matches": 110,
+      "runs": 667,
+      "sr": 147.5,
+      "hs": "50",
+      "wkts": 129,
+      "econ": 8.09,
+      "bb": "3/15",
+      "iplMatches": 58,
+      "iplRuns": 515,
+      "iplSr": 151,
+      "iplWkts": 63,
+      "iplEcon": 8.78,
+      "intlMatches": 52,
+      "intlRuns": 152,
+      "intlSr": 135.7,
+      "intlWkts": 66,
+      "intlEcon": 7.43
+    },
+    "iplStats": {
       "matches": 58,
       "runs": 515,
       "sr": 151,
+      "hs": "50",
       "wkts": 63,
-      "econ": 8.78
+      "econ": 8.78,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 52,
+      "runs": 152,
+      "sr": 135.7,
+      "hs": "28",
+      "avg": 15.2,
+      "wkts": 66,
+      "econ": 7.43,
+      "bb": "3/15"
     }
   },
   {
@@ -211,11 +465,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 96,
     "stats": {
+      "matches": 228,
+      "runs": 1748,
+      "sr": 159.2,
+      "hs": "50",
+      "wkts": 232,
+      "econ": 6.57,
+      "bb": "4/12",
+      "iplMatches": 177,
+      "iplRuns": 1534,
+      "iplSr": 165.8,
+      "iplWkts": 180,
+      "iplEcon": 6.73,
+      "intlMatches": 51,
+      "intlRuns": 214,
+      "intlSr": 112,
+      "intlWkts": 52,
+      "intlEcon": 6.02
+    },
+    "iplStats": {
       "matches": 177,
       "runs": 1534,
       "sr": 165.8,
+      "hs": "50",
       "wkts": 180,
-      "econ": 6.73
+      "econ": 6.73,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 51,
+      "runs": 214,
+      "sr": 112,
+      "hs": "30",
+      "avg": 10.7,
+      "wkts": 52,
+      "econ": 6.02,
+      "bb": "4/12"
     }
   },
   {
@@ -236,11 +521,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 96,
     "stats": {
+      "matches": 209,
+      "runs": 3523,
+      "sr": 171.6,
+      "hs": "51",
+      "wkts": 175,
+      "econ": 9.18,
+      "bb": "3/19",
+      "iplMatches": 127,
+      "iplRuns": 2484,
+      "iplSr": 174.9,
+      "iplWkts": 115,
+      "iplEcon": 9.28,
+      "intlMatches": 82,
+      "intlRuns": 1039,
+      "intlSr": 163.6,
+      "intlWkts": 60,
+      "intlEcon": 9
+    },
+    "iplStats": {
       "matches": 127,
       "runs": 2484,
       "sr": 174.9,
+      "hs": "50",
       "wkts": 115,
-      "econ": 9.28
+      "econ": 9.28,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 82,
+      "runs": 1039,
+      "sr": 163.6,
+      "hs": "51",
+      "avg": 21.6,
+      "wkts": 60,
+      "econ": 9,
+      "bb": "3/19"
     }
   },
   {
@@ -261,10 +577,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 93,
     "stats": {
+      "matches": 68,
+      "runs": 1364,
+      "sr": 154,
+      "hs": "69*",
+      "wkts": 2,
+      "econ": 8.06,
+      "bb": "2/10",
+      "iplMatches": 45,
+      "iplRuns": 893,
+      "iplSr": 143.3,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 23,
+      "intlRuns": 471,
+      "intlSr": 174.4,
+      "intlWkts": 2,
+      "intlEcon": 6.5
+    },
+    "iplStats": {
       "matches": 45,
       "runs": 893,
       "sr": 143.3,
-      "hs": "67*"
+      "hs": "67*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 23,
+      "runs": 471,
+      "sr": 174.4,
+      "hs": "69*",
+      "avg": 58.87,
+      "wkts": 2,
+      "econ": 6.5,
+      "bb": "2/10"
     }
   },
   {
@@ -285,10 +633,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 94,
     "stats": {
+      "matches": 204,
+      "runs": 5229,
+      "sr": 141,
+      "hs": "119",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 167,
+      "iplRuns": 4419,
+      "iplSr": 138.9,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 37,
+      "intlRuns": 810,
+      "intlSr": 152.5,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 167,
       "runs": 4419,
       "sr": 138.9,
-      "hs": "119"
+      "hs": "119",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 37,
+      "runs": 810,
+      "sr": 152.5,
+      "hs": "111",
+      "avg": 26.12,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -309,10 +689,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 95,
     "stats": {
+      "matches": 75,
+      "runs": 2330,
+      "sr": 154.9,
+      "hs": "124",
+      "wkts": 1,
+      "econ": 8.19,
+      "bb": "1/19",
+      "iplMatches": 52,
+      "iplRuns": 1607,
+      "iplSr": 150.6,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 23,
+      "intlRuns": 723,
+      "intlSr": 164.3,
+      "intlWkts": 1,
+      "intlEcon": 8
+    },
+    "iplStats": {
       "matches": 52,
       "runs": 1607,
       "sr": 150.6,
-      "hs": "124"
+      "hs": "124",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 23,
+      "runs": 723,
+      "sr": 164.3,
+      "hs": "100",
+      "avg": 36.15,
+      "wkts": 1,
+      "econ": 8,
+      "bb": "1/19"
     }
   },
   {
@@ -333,10 +745,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 95,
     "stats": {
+      "matches": 124,
+      "runs": 3794,
+      "sr": 136.2,
+      "hs": "129",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 103,
+      "iplRuns": 3216,
+      "iplSr": 135.7,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 21,
+      "intlRuns": 578,
+      "intlSr": 139.3,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 103,
       "runs": 3216,
       "sr": 135.7,
-      "hs": "129"
+      "hs": "129",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 21,
+      "runs": 578,
+      "sr": 139.3,
+      "hs": "126*",
+      "avg": 30.42,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -357,10 +801,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 98,
     "stats": {
+      "matches": 214,
+      "runs": 468,
+      "sr": 131.1,
+      "hs": "50",
+      "wkts": 301,
+      "econ": 6.44,
+      "bb": "4/24",
+      "iplMatches": 121,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 149,
+      "iplEcon": 6.82,
+      "intlMatches": 93,
+      "intlRuns": 468,
+      "intlSr": 131.1,
+      "intlWkts": 152,
+      "intlEcon": 6.07
+    },
+    "iplStats": {
       "matches": 121,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 149,
       "econ": 6.82,
       "bb": "4/24"
+    },
+    "intlStats": {
+      "matches": 93,
+      "runs": 468,
+      "sr": 131.1,
+      "hs": "48*",
+      "avg": 13,
+      "wkts": 152,
+      "econ": 6.07,
+      "bb": "5/3"
     }
   },
   {
@@ -381,10 +857,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 96,
     "stats": {
+      "matches": 178,
+      "runs": 4044,
+      "sr": 147.7,
+      "hs": "98",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 76,
+      "iplRuns": 1769,
+      "iplSr": 162.3,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 102,
+      "intlRuns": 2275,
+      "intlSr": 136.4,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 76,
       "runs": 1769,
       "sr": 162.3,
-      "hs": "77"
+      "hs": "77",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 102,
+      "runs": 2275,
+      "sr": 136.4,
+      "hs": "98",
+      "avg": 26.45,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -405,10 +913,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 94,
     "stats": {
+      "matches": 89,
+      "runs": 3013,
+      "sr": 138.3,
+      "hs": "123*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 66,
+      "iplRuns": 2380,
+      "iplSr": 136.9,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 23,
+      "intlRuns": 633,
+      "intlSr": 143.5,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 66,
       "runs": 2380,
       "sr": 136.9,
-      "hs": "108*"
+      "hs": "108*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 23,
+      "runs": 633,
+      "sr": 143.5,
+      "hs": "123*",
+      "avg": 39.56,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -429,11 +969,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 95,
     "stats": {
+      "matches": 314,
+      "runs": 3474,
+      "sr": 129.4,
+      "hs": "50",
+      "wkts": 214,
+      "econ": 7.48,
+      "bb": "3/15",
+      "iplMatches": 240,
+      "iplRuns": 2959,
+      "iplSr": 129.8,
+      "iplWkts": 160,
+      "iplEcon": 7.6,
+      "intlMatches": 74,
+      "intlRuns": 515,
+      "intlSr": 127.2,
+      "intlWkts": 54,
+      "intlEcon": 7.13
+    },
+    "iplStats": {
       "matches": 240,
       "runs": 2959,
       "sr": 129.8,
+      "hs": "50",
       "wkts": 160,
-      "econ": 7.6
+      "econ": 7.6,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 74,
+      "runs": 515,
+      "sr": 127.2,
+      "hs": "46*",
+      "avg": 21.45,
+      "wkts": 54,
+      "econ": 7.13,
+      "bb": "3/15"
     }
   },
   {
@@ -454,10 +1025,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 92,
     "stats": {
+      "matches": 98,
+      "runs": 1950,
+      "sr": 154.4,
+      "hs": "95*",
+      "wkts": 14,
+      "econ": 8.34,
+      "bb": "3/30",
+      "iplMatches": 65,
+      "iplRuns": 1502,
+      "iplSr": 159.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 33,
+      "intlRuns": 448,
+      "intlSr": 138.3,
+      "intlWkts": 14,
+      "intlEcon": 8.65
+    },
+    "iplStats": {
       "matches": 65,
       "runs": 1502,
       "sr": 159.2,
-      "hs": "95*"
+      "hs": "95*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 33,
+      "runs": 448,
+      "sr": 138.3,
+      "hs": "63*",
+      "avg": 34.46,
+      "wkts": 14,
+      "econ": 8.65,
+      "bb": "3/30"
     }
   },
   {
@@ -478,10 +1081,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 94,
     "stats": {
+      "matches": 36,
+      "runs": 2,
+      "sr": 40,
+      "hs": "50",
+      "wkts": 59,
+      "econ": 7.89,
+      "bb": "4/28",
+      "iplMatches": 20,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 34,
+      "iplEcon": 7.88,
+      "intlMatches": 16,
+      "intlRuns": 2,
+      "intlSr": 40,
+      "intlWkts": 25,
+      "intlEcon": 7.9
+    },
+    "iplStats": {
       "matches": 20,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 34,
       "econ": 7.88,
       "bb": "4/28"
+    },
+    "intlStats": {
+      "matches": 16,
+      "runs": 2,
+      "sr": 40,
+      "hs": "2",
+      "avg": 2,
+      "wkts": 25,
+      "econ": 7.9,
+      "bb": "4/24"
     }
   },
   {
@@ -502,10 +1137,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 96,
     "stats": {
+      "matches": 63,
+      "runs": 1945,
+      "sr": 170.2,
+      "hs": "102",
+      "wkts": 1,
+      "econ": 8.17,
+      "bb": "1/10",
+      "iplMatches": 25,
+      "iplRuns": 852,
+      "iplSr": 184.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 38,
+      "intlRuns": 1093,
+      "intlSr": 159.3,
+      "intlWkts": 1,
+      "intlEcon": 7.8
+    },
+    "iplStats": {
       "matches": 25,
       "runs": 852,
       "sr": 184.2,
-      "hs": "102"
+      "hs": "102",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 38,
+      "runs": 1093,
+      "sr": 159.3,
+      "hs": "91",
+      "avg": 34.15,
+      "wkts": 1,
+      "econ": 7.8,
+      "bb": "1/10"
     }
   },
   {
@@ -526,10 +1193,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 94,
     "stats": {
+      "matches": 71,
+      "runs": 1547,
+      "sr": 157.1,
+      "hs": "100",
+      "wkts": 2,
+      "econ": 8.16,
+      "bb": "1/13",
+      "iplMatches": 63,
+      "iplRuns": 1377,
+      "iplSr": 155.3,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 8,
+      "intlRuns": 170,
+      "intlSr": 171.7,
+      "intlWkts": 2,
+      "intlEcon": 7.5
+    },
+    "iplStats": {
       "matches": 63,
       "runs": 1377,
       "sr": 155.3,
-      "hs": "75"
+      "hs": "75",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 8,
+      "runs": 170,
+      "sr": 171.7,
+      "hs": "100",
+      "avg": 24.28,
+      "wkts": 2,
+      "econ": 7.5,
+      "bb": "1/13"
     }
   },
   {
@@ -550,11 +1249,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 93,
     "stats": {
+      "matches": 214,
+      "runs": 2148,
+      "sr": 134,
+      "hs": "65",
+      "wkts": 185,
+      "econ": 7.27,
+      "bb": "3/9",
+      "iplMatches": 150,
+      "iplRuns": 1653,
+      "iplSr": 130.9,
+      "iplWkts": 123,
+      "iplEcon": 7.24,
+      "intlMatches": 64,
+      "intlRuns": 495,
+      "intlSr": 144.3,
+      "intlWkts": 62,
+      "intlEcon": 7.33
+    },
+    "iplStats": {
       "matches": 150,
       "runs": 1653,
       "sr": 130.9,
+      "hs": "50",
       "wkts": 123,
-      "econ": 7.24
+      "econ": 7.24,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 64,
+      "runs": 495,
+      "sr": 144.3,
+      "hs": "65",
+      "avg": 22.5,
+      "wkts": 62,
+      "econ": 7.33,
+      "bb": "3/9"
     }
   },
   {
@@ -575,10 +1305,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 95,
     "stats": {
+      "matches": 124,
+      "runs": 46,
+      "sr": 82,
+      "hs": "50",
+      "wkts": 156,
+      "econ": 7.46,
+      "bb": "4/14",
+      "iplMatches": 84,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 87,
+      "iplEcon": 8.04,
+      "intlMatches": 40,
+      "intlRuns": 46,
+      "intlSr": 82,
+      "intlWkts": 69,
+      "intlEcon": 6.74
+    },
+    "iplStats": {
       "matches": 84,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 87,
       "econ": 8.04,
       "bb": "4/14"
+    },
+    "intlStats": {
+      "matches": 40,
+      "runs": 46,
+      "sr": 82,
+      "hs": "23",
+      "avg": 9.2,
+      "wkts": 69,
+      "econ": 6.74,
+      "bb": "5/17"
     }
   },
   {
@@ -599,10 +1361,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 92,
     "stats": {
+      "matches": 47,
+      "runs": 894,
+      "sr": 162.2,
+      "hs": "76",
+      "wkts": 2,
+      "econ": 8.18,
+      "bb": "1/12",
+      "iplMatches": 18,
+      "iplRuns": 405,
+      "iplSr": 179.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 29,
+      "intlRuns": 489,
+      "intlSr": 148.2,
+      "intlWkts": 2,
+      "intlEcon": 8.1
+    },
+    "iplStats": {
       "matches": 18,
       "runs": 405,
       "sr": 179.2,
-      "hs": "71*"
+      "hs": "71*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 29,
+      "runs": 489,
+      "sr": 148.2,
+      "hs": "76",
+      "avg": 28.76,
+      "wkts": 2,
+      "econ": 8.1,
+      "bb": "1/12"
     }
   },
   {
@@ -623,10 +1417,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 92,
     "stats": {
+      "matches": 104,
+      "runs": 30,
+      "sr": 96,
+      "hs": "50",
+      "wkts": 116,
+      "econ": 7.51,
+      "bb": "3/24",
+      "iplMatches": 66,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 63,
+      "iplEcon": 7.78,
+      "intlMatches": 38,
+      "intlRuns": 30,
+      "intlSr": 96,
+      "intlWkts": 53,
+      "intlEcon": 7.2
+    },
+    "iplStats": {
       "matches": 66,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 63,
       "econ": 7.78,
       "bb": "3/24"
+    },
+    "intlStats": {
+      "matches": 38,
+      "runs": 30,
+      "sr": 96,
+      "hs": "8*",
+      "avg": 7.5,
+      "wkts": 53,
+      "econ": 7.2,
+      "bb": "4/16"
     }
   },
   {
@@ -647,10 +1473,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 94,
     "stats": {
+      "matches": 83,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 100,
+      "econ": 7.45,
+      "bb": "5/20",
+      "iplMatches": 71,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 83,
+      "iplEcon": 7.55,
+      "intlMatches": 12,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 17,
+      "intlEcon": 6.95
+    },
+    "iplStats": {
       "matches": 71,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 83,
       "econ": 7.55,
       "bb": "5/20"
+    },
+    "intlStats": {
+      "matches": 12,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 17,
+      "econ": 6.95,
+      "bb": "5/17"
     }
   },
   {
@@ -671,10 +1529,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 92,
     "stats": {
+      "matches": 58,
+      "runs": 1772,
+      "sr": 147.8,
+      "hs": "120*",
+      "wkts": 2,
+      "econ": 8.16,
+      "bb": "1/5",
+      "iplMatches": 38,
+      "iplRuns": 1156,
+      "iplSr": 146.3,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 20,
+      "intlRuns": 616,
+      "intlSr": 150.6,
+      "intlWkts": 2,
+      "intlEcon": 7.8
+    },
+    "iplStats": {
       "matches": 38,
       "runs": 1156,
       "sr": 146.3,
-      "hs": "84*"
+      "hs": "84*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 20,
+      "runs": 616,
+      "sr": 150.6,
+      "hs": "120*",
+      "avg": 47.38,
+      "wkts": 2,
+      "econ": 7.8,
+      "bb": "1/5"
     }
   },
   {
@@ -695,10 +1585,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 91,
     "stats": {
+      "matches": 79,
+      "runs": 1279,
+      "sr": 134.7,
+      "hs": "84*",
+      "wkts": 4,
+      "econ": 8.18,
+      "bb": "3/5",
+      "iplMatches": 70,
+      "iplRuns": 1173,
+      "iplSr": 135.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 9,
+      "intlRuns": 106,
+      "intlSr": 129.3,
+      "intlWkts": 4,
+      "intlEcon": 8
+    },
+    "iplStats": {
       "matches": 70,
       "runs": 1173,
       "sr": 135.2,
-      "hs": "84*"
+      "hs": "84*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 9,
+      "runs": 106,
+      "sr": 129.3,
+      "hs": "34",
+      "avg": 17.66,
+      "wkts": 4,
+      "econ": 8,
+      "bb": "3/5"
     }
   },
   {
@@ -719,10 +1641,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 90,
     "stats": {
+      "matches": 32,
+      "runs": 385,
+      "sr": 149.9,
+      "hs": "52*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 28,
+      "iplRuns": 347,
+      "iplSr": 151.5,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 4,
+      "intlRuns": 38,
+      "intlSr": 135.7,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 28,
       "runs": 347,
       "sr": 151.5,
-      "hs": "52*"
+      "hs": "52*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 4,
+      "runs": 38,
+      "sr": 135.7,
+      "hs": "20",
+      "avg": 19,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -743,10 +1697,42 @@
     "setName": "Superstars & Icons Set",
     "rating": 92,
     "stats": {
+      "matches": 26,
+      "runs": 1052,
+      "sr": 138.9,
+      "hs": "103",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 25,
+      "iplRuns": 1034,
+      "iplSr": 139.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 1,
+      "intlRuns": 18,
+      "intlSr": 120,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 25,
       "runs": 1034,
       "sr": 139.2,
-      "hs": "103"
+      "hs": "103",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 1,
+      "runs": 18,
+      "sr": 120,
+      "hs": "18",
+      "avg": 18,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -770,8 +1756,39 @@
       "matches": 93,
       "runs": 1013,
       "sr": 134.7,
+      "hs": "50",
       "wkts": 32,
-      "econ": 7.91
+      "econ": 7.92,
+      "bb": "-",
+      "iplMatches": 93,
+      "iplRuns": 1013,
+      "iplSr": 134.7,
+      "iplWkts": 32,
+      "iplEcon": 7.91,
+      "intlMatches": 0,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
+      "matches": 93,
+      "runs": 1013,
+      "sr": 134.7,
+      "hs": "50",
+      "wkts": 32,
+      "econ": 7.91,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 0,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -791,10 +1808,42 @@
     "set": "M1",
     "setName": "Marquee Set 1",
     "stats": {
+      "matches": 187,
+      "runs": 4493,
+      "sr": 142.8,
+      "hs": "128*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 111,
+      "iplRuns": 3284,
+      "iplSr": 148.5,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 76,
+      "intlRuns": 1209,
+      "intlSr": 127.3,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 111,
       "runs": 3284,
       "sr": 148.5,
-      "hs": "128*"
+      "hs": "128*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 76,
+      "runs": 1209,
+      "sr": 127.3,
+      "hs": "65*",
+      "avg": 23.25,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -814,10 +1863,42 @@
     "set": "M1",
     "setName": "Marquee Set 1",
     "stats": {
+      "matches": 167,
+      "runs": 4231,
+      "sr": 129.7,
+      "hs": "96",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 116,
+      "iplRuns": 3127,
+      "iplSr": 127.5,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 51,
+      "intlRuns": 1104,
+      "intlSr": 136.1,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 116,
       "runs": 3127,
       "sr": 127.5,
-      "hs": "96"
+      "hs": "96",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 51,
+      "runs": 1104,
+      "sr": 136.1,
+      "hs": "74*",
+      "avg": 30.66,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -837,10 +1918,42 @@
     "set": "M1",
     "setName": "Marquee Set 1",
     "stats": {
+      "matches": 204,
+      "runs": 6948,
+      "sr": 136.1,
+      "hs": "132*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 132,
+      "iplRuns": 4683,
+      "iplSr": 134.6,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 72,
+      "intlRuns": 2265,
+      "intlSr": 139.1,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 132,
       "runs": 4683,
       "sr": 134.6,
-      "hs": "132*"
+      "hs": "132*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 72,
+      "runs": 2265,
+      "sr": 139.1,
+      "hs": "110*",
+      "avg": 37.75,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -860,10 +1973,42 @@
     "set": "M1",
     "setName": "Marquee Set 1",
     "stats": {
+      "matches": 125,
+      "runs": 26,
+      "sr": 84,
+      "hs": "50",
+      "wkts": 171,
+      "econ": 8.5,
+      "bb": "5/32",
+      "iplMatches": 65,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 76,
+      "iplEcon": 8.74,
+      "intlMatches": 60,
+      "intlRuns": 26,
+      "intlSr": 84,
+      "intlWkts": 95,
+      "intlEcon": 8.3
+    },
+    "iplStats": {
       "matches": 65,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 76,
       "econ": 8.74,
       "bb": "5/32"
+    },
+    "intlStats": {
+      "matches": 60,
+      "runs": 26,
+      "sr": 84,
+      "hs": "12",
+      "avg": 5.2,
+      "wkts": 95,
+      "econ": 8.3,
+      "bb": "4/9"
     }
   },
   {
@@ -883,10 +2028,42 @@
     "set": "M1",
     "setName": "Marquee Set 1",
     "stats": {
+      "matches": 106,
+      "runs": 104,
+      "sr": 94.5,
+      "hs": "50",
+      "wkts": 130,
+      "econ": 7.86,
+      "bb": "4/15",
+      "iplMatches": 41,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 51,
+      "iplEcon": 8.21,
+      "intlMatches": 65,
+      "intlRuns": 104,
+      "intlSr": 94.5,
+      "intlWkts": 79,
+      "intlEcon": 7.64
+    },
+    "iplStats": {
       "matches": 41,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 51,
       "econ": 8.21,
       "bb": "4/15"
+    },
+    "intlStats": {
+      "matches": 65,
+      "runs": 104,
+      "sr": 94.5,
+      "hs": "14",
+      "avg": 9.4,
+      "wkts": 79,
+      "econ": 7.64,
+      "bb": "4/20"
     }
   },
   {
@@ -906,10 +2083,42 @@
     "set": "M1",
     "setName": "Marquee Set 1",
     "stats": {
+      "matches": 231,
+      "runs": 6846,
+      "sr": 146.9,
+      "hs": "124",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 107,
+      "iplRuns": 3582,
+      "iplSr": 147.5,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 124,
+      "intlRuns": 3264,
+      "intlSr": 146.3,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 107,
       "runs": 3582,
       "sr": 147.5,
-      "hs": "124"
+      "hs": "124",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 124,
+      "runs": 3264,
+      "sr": 146.3,
+      "hs": "101*",
+      "avg": 35.86,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -929,10 +2138,42 @@
     "set": "M1",
     "setName": "Marquee Set 1",
     "stats": {
+      "matches": 145,
+      "runs": 165,
+      "sr": 108,
+      "hs": "50",
+      "wkts": 188,
+      "econ": 8.43,
+      "bb": "4/21",
+      "iplMatches": 80,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 117,
+      "iplEcon": 8.42,
+      "intlMatches": 65,
+      "intlRuns": 165,
+      "intlSr": 108,
+      "intlWkts": 71,
+      "intlEcon": 8.44
+    },
+    "iplStats": {
       "matches": 80,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 117,
       "econ": 8.42,
       "bb": "4/21"
+    },
+    "intlStats": {
+      "matches": 65,
+      "runs": 165,
+      "sr": 108,
+      "hs": "22",
+      "avg": 11,
+      "wkts": 71,
+      "econ": 8.44,
+      "bb": "3/18"
     }
   },
   {
@@ -952,10 +2193,42 @@
     "set": "M1",
     "setName": "Marquee Set 1",
     "stats": {
+      "matches": 240,
+      "runs": 5,
+      "sr": 45,
+      "hs": "50",
+      "wkts": 301,
+      "econ": 7.95,
+      "bb": "5/40",
+      "iplMatches": 160,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 205,
+      "iplEcon": 7.84,
+      "intlMatches": 80,
+      "intlRuns": 5,
+      "intlSr": 45,
+      "intlWkts": 96,
+      "intlEcon": 8.19
+    },
+    "iplStats": {
       "matches": 160,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 205,
       "econ": 7.84,
       "bb": "5/40"
+    },
+    "intlStats": {
+      "matches": 80,
+      "runs": 5,
+      "sr": 45,
+      "hs": "3*",
+      "avg": 2.5,
+      "wkts": 96,
+      "econ": 8.19,
+      "bb": "6/25"
     }
   },
   {
@@ -975,10 +2248,42 @@
     "set": "M1",
     "setName": "Marquee Set 1",
     "stats": {
+      "matches": 133,
+      "runs": 11,
+      "sr": 78,
+      "hs": "50",
+      "wkts": 151,
+      "econ": 8.52,
+      "bb": "4/11",
+      "iplMatches": 110,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 127,
+      "iplEcon": 8.44,
+      "intlMatches": 23,
+      "intlRuns": 11,
+      "intlSr": 78,
+      "intlWkts": 24,
+      "intlEcon": 8.94
+    },
+    "iplStats": {
       "matches": 110,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 127,
       "econ": 8.44,
       "bb": "4/11"
+    },
+    "intlStats": {
+      "matches": 23,
+      "runs": 11,
+      "sr": 78,
+      "hs": "4",
+      "avg": 3.6,
+      "wkts": 24,
+      "econ": 8.94,
+      "bb": "3/15"
     }
   },
   {
@@ -998,10 +2303,42 @@
     "set": "M1",
     "setName": "Marquee Set 1",
     "stats": {
+      "matches": 87,
+      "runs": 1721,
+      "sr": 157.9,
+      "hs": "103",
+      "wkts": 36,
+      "econ": 8.39,
+      "bb": "3/17",
+      "iplMatches": 39,
+      "iplRuns": 939,
+      "iplSr": 162.5,
+      "iplWkts": 11,
+      "iplEcon": 8.2,
+      "intlMatches": 48,
+      "intlRuns": 782,
+      "intlSr": 152.4,
+      "intlWkts": 25,
+      "intlEcon": 8.48
+    },
+    "iplStats": {
       "matches": 39,
       "runs": 939,
       "sr": 162.5,
-      "wkts": 11
+      "hs": "50",
+      "wkts": 11,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 48,
+      "runs": 782,
+      "sr": 152.4,
+      "hs": "103",
+      "avg": 24.43,
+      "wkts": 25,
+      "econ": 8.48,
+      "bb": "3/17"
     }
   },
   {
@@ -1021,10 +2358,42 @@
     "set": "M2",
     "setName": "Marquee Set 2",
     "stats": {
+      "matches": 255,
+      "runs": 5361,
+      "sr": 140,
+      "hs": "106*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 130,
+      "iplRuns": 2924,
+      "iplSr": 139.3,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 125,
+      "intlRuns": 2437,
+      "intlSr": 140.9,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 130,
       "runs": 2924,
       "sr": 139.3,
-      "hs": "101*"
+      "hs": "101*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 125,
+      "runs": 2437,
+      "sr": 140.9,
+      "hs": "106*",
+      "avg": 34.32,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1044,10 +2413,42 @@
     "set": "M2",
     "setName": "Marquee Set 2",
     "stats": {
+      "matches": 240,
+      "runs": 5371,
+      "sr": 156.1,
+      "hs": "145*",
+      "wkts": 80,
+      "econ": 7.88,
+      "bb": "3/10",
+      "iplMatches": 134,
+      "iplRuns": 2771,
+      "iplSr": 156.7,
+      "iplWkts": 37,
+      "iplEcon": 8.2,
+      "intlMatches": 106,
+      "intlRuns": 2600,
+      "intlSr": 155.5,
+      "intlWkts": 43,
+      "intlEcon": 7.6
+    },
+    "iplStats": {
       "matches": 134,
       "runs": 2771,
       "sr": 156.7,
-      "wkts": 37
+      "hs": "50",
+      "wkts": 37,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 106,
+      "runs": 2600,
+      "sr": 155.5,
+      "hs": "145*",
+      "avg": 29.88,
+      "wkts": 43,
+      "econ": 7.6,
+      "bb": "3/10"
     }
   },
   {
@@ -1067,10 +2468,42 @@
     "set": "M2",
     "setName": "Marquee Set 2",
     "stats": {
+      "matches": 109,
+      "runs": 1,
+      "sr": 25,
+      "hs": "50",
+      "wkts": 107,
+      "econ": 8.54,
+      "bb": "4/21",
+      "iplMatches": 93,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 93,
+      "iplEcon": 8.65,
+      "intlMatches": 16,
+      "intlRuns": 1,
+      "intlSr": 25,
+      "intlWkts": 14,
+      "intlEcon": 7.8
+    },
+    "iplStats": {
       "matches": 93,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 93,
       "econ": 8.65,
       "bb": "4/21"
+    },
+    "intlStats": {
+      "matches": 16,
+      "runs": 1,
+      "sr": 25,
+      "hs": "1*",
+      "avg": 1,
+      "wkts": 14,
+      "econ": 7.8,
+      "bb": "4/17"
     }
   },
   {
@@ -1090,10 +2523,42 @@
     "set": "M2",
     "setName": "Marquee Set 2",
     "stats": {
+      "matches": 277,
+      "runs": 984,
+      "sr": 127.2,
+      "hs": "50",
+      "wkts": 252,
+      "econ": 7.06,
+      "bb": "4/8",
+      "iplMatches": 212,
+      "iplRuns": 800,
+      "iplSr": 130,
+      "iplWkts": 180,
+      "iplEcon": 7.12,
+      "intlMatches": 65,
+      "intlRuns": 184,
+      "intlSr": 115,
+      "intlWkts": 72,
+      "intlEcon": 6.9
+    },
+    "iplStats": {
       "matches": 212,
+      "runs": 800,
+      "sr": 130,
+      "hs": "50",
       "wkts": 180,
       "econ": 7.12,
-      "runs": 800
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 65,
+      "runs": 184,
+      "sr": 115,
+      "hs": "31*",
+      "avg": 18.4,
+      "wkts": 72,
+      "econ": 6.9,
+      "bb": "4/8"
     }
   },
   {
@@ -1113,10 +2578,42 @@
     "set": "M2",
     "setName": "Marquee Set 2",
     "stats": {
+      "matches": 195,
+      "runs": 6099,
+      "sr": 135.9,
+      "hs": "119",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 145,
+      "iplRuns": 4571,
+      "iplSr": 136.4,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 50,
+      "intlRuns": 1528,
+      "intlSr": 134.4,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 145,
       "runs": 4571,
       "sr": 136.4,
-      "hs": "96"
+      "hs": "96",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 50,
+      "runs": 1528,
+      "sr": 134.4,
+      "hs": "119",
+      "avg": 35.53,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1136,10 +2633,42 @@
     "set": "M2",
     "setName": "Marquee Set 2",
     "stats": {
+      "matches": 73,
+      "runs": 2332,
+      "sr": 133.7,
+      "hs": "99*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 23,
+      "iplRuns": 924,
+      "iplSr": 141.3,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 50,
+      "intlRuns": 1408,
+      "intlSr": 128.7,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 23,
       "runs": 924,
       "sr": 141.3,
-      "hs": "92*"
+      "hs": "92*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 50,
+      "runs": 1408,
+      "sr": 128.7,
+      "hs": "99*",
+      "avg": 39.11,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1159,10 +2688,42 @@
     "set": "M2",
     "setName": "Marquee Set 2",
     "stats": {
+      "matches": 165,
+      "runs": 40,
+      "sr": 65,
+      "hs": "50",
+      "wkts": 204,
+      "econ": 8.08,
+      "bb": "4/18",
+      "iplMatches": 104,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 121,
+      "iplEcon": 8.29,
+      "intlMatches": 61,
+      "intlRuns": 40,
+      "intlSr": 65,
+      "intlWkts": 83,
+      "intlEcon": 7.78
+    },
+    "iplStats": {
       "matches": 104,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 121,
       "econ": 8.29,
       "bb": "4/18"
+    },
+    "intlStats": {
+      "matches": 61,
+      "runs": 40,
+      "sr": 65,
+      "hs": "9",
+      "avg": 4,
+      "wkts": 83,
+      "econ": 7.78,
+      "bb": "4/13"
     }
   },
   {
@@ -1182,10 +2743,42 @@
     "set": "M2",
     "setName": "Marquee Set 2",
     "stats": {
+      "matches": 199,
+      "runs": 5741,
+      "sr": 136,
+      "hs": "140*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 107,
+      "iplRuns": 3157,
+      "iplSr": 134.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 92,
+      "intlRuns": 2584,
+      "intlSr": 138.3,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 107,
       "runs": 3157,
       "sr": 134.2,
-      "hs": "140*"
+      "hs": "140*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 92,
+      "runs": 2584,
+      "sr": 138.3,
+      "hs": "100",
+      "avg": 31.51,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1205,10 +2798,42 @@
     "set": "M2",
     "setName": "Marquee Set 2",
     "stats": {
+      "matches": 263,
+      "runs": 67,
+      "sr": 75,
+      "hs": "50",
+      "wkts": 271,
+      "econ": 7.36,
+      "bb": "5/19",
+      "iplMatches": 176,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 181,
+      "iplEcon": 7.56,
+      "intlMatches": 87,
+      "intlRuns": 67,
+      "intlSr": 75,
+      "intlWkts": 90,
+      "intlEcon": 6.96
+    },
+    "iplStats": {
       "matches": 176,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 181,
       "econ": 7.56,
       "bb": "5/19"
+    },
+    "intlStats": {
+      "matches": 87,
+      "runs": 67,
+      "sr": 75,
+      "hs": "16",
+      "avg": 8.3,
+      "wkts": 90,
+      "econ": 6.96,
+      "bb": "5/4"
     }
   },
   {
@@ -1228,10 +2853,42 @@
     "set": "M2",
     "setName": "Marquee Set 2",
     "stats": {
+      "matches": 164,
+      "runs": 3003,
+      "sr": 143.9,
+      "hs": "78",
+      "wkts": 88,
+      "econ": 8.36,
+      "bb": "3/18",
+      "iplMatches": 96,
+      "iplRuns": 1866,
+      "iplSr": 142,
+      "iplWkts": 43,
+      "iplEcon": 8.2,
+      "intlMatches": 68,
+      "intlRuns": 1137,
+      "intlSr": 146.9,
+      "intlWkts": 45,
+      "intlEcon": 8.52
+    },
+    "iplStats": {
       "matches": 96,
       "runs": 1866,
       "sr": 142,
-      "wkts": 43
+      "hs": "50",
+      "wkts": 43,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 68,
+      "runs": 1137,
+      "sr": 146.9,
+      "hs": "78",
+      "avg": 31.58,
+      "wkts": 45,
+      "econ": 8.52,
+      "bb": "3/18"
     }
   },
   {
@@ -1251,10 +2908,42 @@
     "set": "BA1",
     "setName": "Capped Batters Set 1",
     "stats": {
+      "matches": 50,
+      "runs": 897,
+      "sr": 141.3,
+      "hs": "100*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 11,
+      "iplRuns": 190,
+      "iplSr": 123.4,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 39,
+      "intlRuns": 707,
+      "intlSr": 146.1,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 11,
       "runs": 190,
       "sr": 123.4,
-      "hs": "100*"
+      "hs": "100*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 39,
+      "runs": 707,
+      "sr": 146.1,
+      "hs": "81*",
+      "avg": 29.45,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1274,10 +2963,42 @@
     "set": "BA1",
     "setName": "Capped Batters Set 1",
     "stats": {
+      "matches": 100,
+      "runs": 2333,
+      "sr": 139.4,
+      "hs": "93",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 95,
+      "iplRuns": 2236,
+      "iplSr": 139.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 5,
+      "intlRuns": 97,
+      "intlSr": 144.7,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 95,
       "runs": 2236,
       "sr": 139.2,
-      "hs": "93"
+      "hs": "93",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 5,
+      "runs": 97,
+      "sr": 144.7,
+      "hs": "35",
+      "avg": 19.4,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1297,10 +3018,42 @@
     "set": "BA1",
     "setName": "Capped Batters Set 1",
     "stats": {
+      "matches": 66,
+      "runs": 1598,
+      "sr": 123.2,
+      "hs": "101*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 64,
+      "iplRuns": 1560,
+      "iplSr": 123.8,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 2,
+      "intlRuns": 38,
+      "intlSr": 100,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 64,
       "runs": 1560,
       "sr": 123.8,
-      "hs": "101*"
+      "hs": "101*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 2,
+      "runs": 38,
+      "sr": 100,
+      "hs": "29",
+      "avg": 19,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1320,10 +3073,42 @@
     "set": "BA1",
     "setName": "Capped Batters Set 1",
     "stats": {
+      "matches": 294,
+      "runs": 9842,
+      "sr": 140.7,
+      "hs": "126",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 184,
+      "iplRuns": 6565,
+      "iplSr": 139.8,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 110,
+      "intlRuns": 3277,
+      "intlSr": 142.5,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 184,
       "runs": 6565,
       "sr": 139.8,
-      "hs": "126"
+      "hs": "126",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 110,
+      "runs": 3277,
+      "sr": 142.5,
+      "hs": "100*",
+      "avg": 33.43,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1343,10 +3128,42 @@
     "set": "BA1",
     "setName": "Capped Batters Set 1",
     "stats": {
+      "matches": 172,
+      "runs": 4703,
+      "sr": 124.4,
+      "hs": "95",
+      "wkts": 6,
+      "econ": 8.07,
+      "bb": "2/16",
+      "iplMatches": 79,
+      "iplRuns": 2128,
+      "iplSr": 126.1,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 93,
+      "intlRuns": 2575,
+      "intlSr": 123,
+      "intlWkts": 6,
+      "intlEcon": 7.2
+    },
+    "iplStats": {
       "matches": 79,
       "runs": 2128,
       "sr": 126.1,
-      "hs": "89"
+      "hs": "89",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 93,
+      "runs": 2575,
+      "sr": 123,
+      "hs": "95",
+      "avg": 33.44,
+      "wkts": 6,
+      "econ": 7.2,
+      "bb": "2/16"
     }
   },
   {
@@ -1366,10 +3183,42 @@
     "set": "BA1",
     "setName": "Capped Batters Set 1",
     "stats": {
+      "matches": 80,
+      "runs": 1892,
+      "sr": 147.5,
+      "hs": "99",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 79,
+      "iplRuns": 1892,
+      "iplSr": 147.5,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 1,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 79,
       "runs": 1892,
       "sr": 147.5,
-      "hs": "99"
+      "hs": "99",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 1,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1392,7 +3241,39 @@
       "matches": 127,
       "runs": 2661,
       "sr": 133.6,
-      "hs": "106"
+      "hs": "106",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 127,
+      "iplRuns": 2661,
+      "iplSr": 133.6,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 0,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
+      "matches": 127,
+      "runs": 2661,
+      "sr": 133.6,
+      "hs": "106",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 0,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1412,10 +3293,42 @@
     "set": "BA1",
     "setName": "Capped Batters Set 1",
     "stats": {
+      "matches": 210,
+      "runs": 4559,
+      "sr": 121.9,
+      "hs": "114*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 171,
+      "iplRuns": 3850,
+      "iplSr": 121.1,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 39,
+      "intlRuns": 709,
+      "intlSr": 126.1,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 171,
       "runs": 3850,
       "sr": 121.1,
-      "hs": "114*"
+      "hs": "114*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 39,
+      "runs": 709,
+      "sr": 126.1,
+      "hs": "79*",
+      "avg": 44.31,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1435,10 +3348,42 @@
     "set": "BA1",
     "setName": "Capped Batters Set 1",
     "stats": {
+      "matches": 86,
+      "runs": 1939,
+      "sr": 143.2,
+      "hs": "108",
+      "wkts": 12,
+      "econ": 7.67,
+      "bb": "3/11",
+      "iplMatches": 8,
+      "iplRuns": 64,
+      "iplSr": 142.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 78,
+      "intlRuns": 1875,
+      "intlSr": 143.2,
+      "intlWkts": 12,
+      "intlEcon": 7.5
+    },
+    "iplStats": {
       "matches": 8,
       "runs": 64,
       "sr": 142.2,
-      "hs": "25"
+      "hs": "25",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 78,
+      "runs": 1875,
+      "sr": 143.2,
+      "hs": "108",
+      "avg": 31.77,
+      "wkts": 12,
+      "econ": 7.5,
+      "bb": "3/11"
     }
   },
   {
@@ -1458,10 +3403,42 @@
     "set": "BA1",
     "setName": "Capped Batters Set 1",
     "stats": {
+      "matches": 170,
+      "runs": 3579,
+      "sr": 127.3,
+      "hs": "101",
+      "wkts": 17,
+      "econ": 8.13,
+      "bb": "3/20",
+      "iplMatches": 103,
+      "iplRuns": 2485,
+      "iplSr": 128.1,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 67,
+      "intlRuns": 1094,
+      "intlSr": 125.4,
+      "intlWkts": 17,
+      "intlEcon": 7.9
+    },
+    "iplStats": {
       "matches": 103,
       "runs": 2485,
       "sr": 128.1,
-      "hs": "101"
+      "hs": "101",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 67,
+      "runs": 1094,
+      "sr": 125.4,
+      "hs": "90",
+      "avg": 24.86,
+      "wkts": 17,
+      "econ": 7.9,
+      "bb": "3/20"
     }
   },
   {
@@ -1481,10 +3458,42 @@
     "set": "AL1",
     "setName": "Capped All-Rounders Set 1",
     "stats": {
+      "matches": 112,
+      "runs": 1161,
+      "sr": 138.2,
+      "hs": "50",
+      "wkts": 109,
+      "econ": 8.23,
+      "bb": "5/10",
+      "iplMatches": 59,
+      "iplRuns": 883,
+      "iplSr": 143.1,
+      "iplWkts": 58,
+      "iplEcon": 8.2,
+      "intlMatches": 53,
+      "intlRuns": 278,
+      "intlSr": 122.5,
+      "intlWkts": 51,
+      "intlEcon": 8.27
+    },
+    "iplStats": {
       "matches": 59,
       "runs": 883,
       "sr": 143.1,
-      "wkts": 58
+      "hs": "50",
+      "wkts": 58,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 53,
+      "runs": 278,
+      "sr": 122.5,
+      "hs": "34",
+      "avg": 13.23,
+      "wkts": 51,
+      "econ": 8.27,
+      "bb": "5/10"
     }
   },
   {
@@ -1504,10 +3513,42 @@
     "set": "AL1",
     "setName": "Capped All-Rounders Set 1",
     "stats": {
+      "matches": 60,
+      "runs": 1459,
+      "sr": 139.4,
+      "hs": "50",
+      "wkts": 8,
+      "econ": 8.19,
+      "bb": "2/23",
+      "iplMatches": 51,
+      "iplRuns": 1326,
+      "iplSr": 137.1,
+      "iplWkts": 3,
+      "iplEcon": 8.2,
+      "intlMatches": 9,
+      "intlRuns": 133,
+      "intlSr": 162.2,
+      "intlWkts": 5,
+      "intlEcon": 8.18
+    },
+    "iplStats": {
       "matches": 51,
       "runs": 1326,
       "sr": 137.1,
-      "wkts": 3
+      "hs": "50",
+      "wkts": 3,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 9,
+      "runs": 133,
+      "sr": 162.2,
+      "hs": "35*",
+      "avg": 33.25,
+      "wkts": 5,
+      "econ": 8.18,
+      "bb": "2/23"
     }
   },
   {
@@ -1527,10 +3568,42 @@
     "set": "AL1",
     "setName": "Capped All-Rounders Set 1",
     "stats": {
+      "matches": 112,
+      "runs": 539,
+      "sr": 131.6,
+      "hs": "50",
+      "wkts": 84,
+      "econ": 7.32,
+      "bb": "3/15",
+      "iplMatches": 60,
+      "iplRuns": 378,
+      "iplSr": 130,
+      "iplWkts": 37,
+      "iplEcon": 7.54,
+      "intlMatches": 52,
+      "intlRuns": 161,
+      "intlSr": 135.3,
+      "intlWkts": 47,
+      "intlEcon": 7.15
+    },
+    "iplStats": {
       "matches": 60,
       "runs": 378,
+      "sr": 130,
+      "hs": "50",
       "wkts": 37,
-      "econ": 7.54
+      "econ": 7.54,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 52,
+      "runs": 161,
+      "sr": 135.3,
+      "hs": "50",
+      "avg": 16.1,
+      "wkts": 47,
+      "econ": 7.15,
+      "bb": "3/15"
     }
   },
   {
@@ -1550,10 +3623,42 @@
     "set": "AL1",
     "setName": "Capped All-Rounders Set 1",
     "stats": {
+      "matches": 97,
+      "runs": 742,
+      "sr": 128.2,
+      "hs": "71",
+      "wkts": 150,
+      "econ": 7.17,
+      "bb": "4/9",
+      "iplMatches": 26,
+      "iplRuns": 72,
+      "iplSr": 130,
+      "iplWkts": 35,
+      "iplEcon": 8.13,
+      "intlMatches": 71,
+      "intlRuns": 670,
+      "intlSr": 128,
+      "intlWkts": 115,
+      "intlEcon": 6.88
+    },
+    "iplStats": {
       "matches": 26,
+      "runs": 72,
+      "sr": 130,
+      "hs": "50",
       "wkts": 35,
       "econ": 8.13,
-      "runs": 72
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 71,
+      "runs": 670,
+      "sr": 128,
+      "hs": "71",
+      "avg": 14.56,
+      "wkts": 115,
+      "econ": 6.88,
+      "bb": "4/9"
     }
   },
   {
@@ -1573,10 +3678,42 @@
     "set": "AL1",
     "setName": "Capped All-Rounders Set 1",
     "stats": {
+      "matches": 146,
+      "runs": 1771,
+      "sr": 133.2,
+      "hs": "50",
+      "wkts": 91,
+      "econ": 8.18,
+      "bb": "4/36",
+      "iplMatches": 127,
+      "iplRuns": 1647,
+      "iplSr": 133.4,
+      "iplWkts": 76,
+      "iplEcon": 8.2,
+      "intlMatches": 19,
+      "intlRuns": 124,
+      "intlSr": 130.5,
+      "intlWkts": 15,
+      "intlEcon": 8.1
+    },
+    "iplStats": {
       "matches": 127,
       "runs": 1647,
       "sr": 133.4,
-      "wkts": 76
+      "hs": "50",
+      "wkts": 76,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 19,
+      "runs": 124,
+      "sr": 130.5,
+      "hs": "26*",
+      "avg": 24.8,
+      "wkts": 15,
+      "econ": 8.1,
+      "bb": "4/36"
     }
   },
   {
@@ -1596,10 +3733,42 @@
     "set": "AL1",
     "setName": "Capped All-Rounders Set 1",
     "stats": {
+      "matches": 120,
+      "runs": 372,
+      "sr": 139.6,
+      "hs": "50",
+      "wkts": 127,
+      "econ": 9.21,
+      "bb": "4/27",
+      "iplMatches": 95,
+      "iplRuns": 303,
+      "iplSr": 130,
+      "iplWkts": 94,
+      "iplEcon": 9.23,
+      "intlMatches": 25,
+      "intlRuns": 69,
+      "intlSr": 181.5,
+      "intlWkts": 33,
+      "intlEcon": 9.15
+    },
+    "iplStats": {
       "matches": 95,
+      "runs": 303,
+      "sr": 130,
+      "hs": "50",
       "wkts": 94,
       "econ": 9.23,
-      "runs": 303
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 25,
+      "runs": 69,
+      "sr": 181.5,
+      "hs": "22*",
+      "avg": 23,
+      "wkts": 33,
+      "econ": 9.15,
+      "bb": "4/27"
     }
   },
   {
@@ -1619,10 +3788,42 @@
     "set": "AL1",
     "setName": "Capped All-Rounders Set 1",
     "stats": {
+      "matches": 106,
+      "runs": 53,
+      "sr": 147.2,
+      "hs": "50",
+      "wkts": 108,
+      "econ": 8.07,
+      "bb": "4/13",
+      "iplMatches": 81,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 77,
+      "iplEcon": 7.98,
+      "intlMatches": 25,
+      "intlRuns": 53,
+      "intlSr": 147.2,
+      "intlWkts": 31,
+      "intlEcon": 8.3
+    },
+    "iplStats": {
       "matches": 81,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 77,
       "econ": 7.98,
       "bb": "4/13"
+    },
+    "intlStats": {
+      "matches": 25,
+      "runs": 53,
+      "sr": 147.2,
+      "hs": "21",
+      "avg": 13.25,
+      "wkts": 31,
+      "econ": 8.3,
+      "bb": "6/7"
     }
   },
   {
@@ -1642,10 +3843,42 @@
     "set": "AL1",
     "setName": "Capped All-Rounders Set 1",
     "stats": {
+      "matches": 109,
+      "runs": 2651,
+      "sr": 135,
+      "hs": "50",
+      "wkts": 10,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 107,
+      "iplRuns": 2636,
+      "iplSr": 135.3,
+      "iplWkts": 10,
+      "iplEcon": 8.2,
+      "intlMatches": 2,
+      "intlRuns": 15,
+      "intlSr": 88.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 107,
       "runs": 2636,
       "sr": 135.3,
-      "wkts": 10
+      "hs": "50",
+      "wkts": 10,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 2,
+      "runs": 15,
+      "sr": 88.2,
+      "hs": "9",
+      "avg": 7.5,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1665,10 +3898,42 @@
     "set": "AL1",
     "setName": "Capped All-Rounders Set 1",
     "stats": {
+      "matches": 102,
+      "runs": 2196,
+      "sr": 131.9,
+      "hs": "92*",
+      "wkts": 54,
+      "econ": 8.07,
+      "bb": "3/24",
+      "iplMatches": 42,
+      "iplRuns": 666,
+      "iplSr": 125.2,
+      "iplWkts": 37,
+      "iplEcon": 8.2,
+      "intlMatches": 60,
+      "intlRuns": 1530,
+      "intlSr": 134.8,
+      "intlWkts": 17,
+      "intlEcon": 7.8
+    },
+    "iplStats": {
       "matches": 42,
       "runs": 666,
       "sr": 125.2,
-      "wkts": 37
+      "hs": "50",
+      "wkts": 37,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 60,
+      "runs": 1530,
+      "sr": 134.8,
+      "hs": "92*",
+      "avg": 34,
+      "wkts": 17,
+      "econ": 7.8,
+      "bb": "3/24"
     }
   },
   {
@@ -1688,10 +3953,42 @@
     "set": "AL1",
     "setName": "Capped All-Rounders Set 1",
     "stats": {
+      "matches": 36,
+      "runs": 560,
+      "sr": 141.3,
+      "hs": "68",
+      "wkts": 13,
+      "econ": 7.44,
+      "bb": "3/22",
+      "iplMatches": 10,
+      "iplRuns": 222,
+      "iplSr": 160.9,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 26,
+      "intlRuns": 338,
+      "intlSr": 128.5,
+      "intlWkts": 13,
+      "intlEcon": 7.15
+    },
+    "iplStats": {
       "matches": 10,
       "runs": 222,
       "sr": 160.9,
-      "wkts": 0
+      "hs": "50",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 26,
+      "runs": 338,
+      "sr": 128.5,
+      "hs": "68",
+      "avg": 16.9,
+      "wkts": 13,
+      "econ": 7.15,
+      "bb": "3/22"
     }
   },
   {
@@ -1711,10 +4008,42 @@
     "set": "AL1",
     "setName": "Capped All-Rounders Set 1",
     "stats": {
+      "matches": 84,
+      "runs": 1703,
+      "sr": 137.3,
+      "hs": "72*",
+      "wkts": 9,
+      "econ": 8.38,
+      "bb": "2/27",
+      "iplMatches": 15,
+      "iplRuns": 351,
+      "iplSr": 136.6,
+      "iplWkts": 1,
+      "iplEcon": 8.2,
+      "intlMatches": 69,
+      "intlRuns": 1352,
+      "intlSr": 137.5,
+      "intlWkts": 8,
+      "intlEcon": 8.4
+    },
+    "iplStats": {
       "matches": 15,
       "runs": 351,
       "sr": 136.6,
-      "wkts": 1
+      "hs": "50",
+      "wkts": 1,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 69,
+      "runs": 1352,
+      "sr": 137.5,
+      "hs": "72*",
+      "avg": 30.72,
+      "wkts": 8,
+      "econ": 8.4,
+      "bb": "2/27"
     }
   },
   {
@@ -1734,10 +4063,42 @@
     "set": "AL1",
     "setName": "Capped All-Rounders Set 1",
     "stats": {
+      "matches": 159,
+      "runs": 2391,
+      "sr": 142,
+      "hs": "72",
+      "wkts": 86,
+      "econ": 8.25,
+      "bb": "3/24",
+      "iplMatches": 67,
+      "iplRuns": 1162,
+      "iplSr": 141.5,
+      "iplWkts": 35,
+      "iplEcon": 8.2,
+      "intlMatches": 92,
+      "intlRuns": 1229,
+      "intlSr": 142.4,
+      "intlWkts": 51,
+      "intlEcon": 8.29
+    },
+    "iplStats": {
       "matches": 67,
       "runs": 1162,
       "sr": 141.5,
-      "wkts": 35
+      "hs": "50",
+      "wkts": 35,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 92,
+      "runs": 1229,
+      "sr": 142.4,
+      "hs": "72",
+      "avg": 21.56,
+      "wkts": 51,
+      "econ": 8.29,
+      "bb": "3/24"
     }
   },
   {
@@ -1757,10 +4118,42 @@
     "set": "WK1",
     "setName": "Capped Wicketkeepers Set 1",
     "stats": {
+      "matches": 137,
+      "runs": 3440,
+      "sr": 133.2,
+      "hs": "99",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 105,
+      "iplRuns": 2644,
+      "iplSr": 135.9,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 32,
+      "intlRuns": 796,
+      "intlSr": 124.4,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 105,
       "runs": 2644,
       "sr": 135.9,
-      "hs": "99"
+      "hs": "99",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 32,
+      "runs": 796,
+      "sr": 124.4,
+      "hs": "89",
+      "avg": 25.67,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1780,10 +4173,42 @@
     "set": "WK1",
     "setName": "Capped Wicketkeepers Set 1",
     "stats": {
+      "matches": 59,
+      "runs": 1746,
+      "sr": 169,
+      "hs": "119*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 21,
+      "iplRuns": 653,
+      "iplSr": 175.5,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 38,
+      "intlRuns": 1093,
+      "intlSr": 165.1,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 21,
       "runs": 653,
       "sr": 175.5,
-      "hs": "89*"
+      "hs": "89*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 38,
+      "runs": 1093,
+      "sr": 165.1,
+      "hs": "119*",
+      "avg": 35.25,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1803,10 +4228,42 @@
     "set": "WK1",
     "setName": "Capped Wicketkeepers Set 1",
     "stats": {
+      "matches": 49,
+      "runs": 830,
+      "sr": 150.6,
+      "hs": "49*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 40,
+      "iplRuns": 730,
+      "iplSr": 151.1,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 9,
+      "intlRuns": 100,
+      "intlSr": 147,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 40,
       "runs": 730,
       "sr": 151.1,
-      "hs": "49*"
+      "hs": "49*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 9,
+      "runs": 100,
+      "sr": 147,
+      "hs": "35",
+      "avg": 14.28,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1826,10 +4283,42 @@
     "set": "WK1",
     "setName": "Capped Wicketkeepers Set 1",
     "stats": {
+      "matches": 130,
+      "runs": 3266,
+      "sr": 141,
+      "hs": "114",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 50,
+      "iplRuns": 1589,
+      "iplSr": 144.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 80,
+      "intlRuns": 1677,
+      "intlSr": 138,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 50,
       "runs": 1589,
       "sr": 144.2,
-      "hs": "114"
+      "hs": "114",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 80,
+      "runs": 1677,
+      "sr": 138,
+      "hs": "90",
+      "avg": 29.94,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1849,10 +4338,42 @@
     "set": "WK1",
     "setName": "Capped Wicketkeepers Set 1",
     "stats": {
+      "matches": 76,
+      "runs": 1946,
+      "sr": 135,
+      "hs": "100",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 13,
+      "iplRuns": 289,
+      "iplSr": 133.8,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 63,
+      "intlRuns": 1657,
+      "intlSr": 135.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 13,
       "runs": 289,
       "sr": 133.8,
-      "hs": "81"
+      "hs": "81",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 63,
+      "runs": 1657,
+      "sr": 135.2,
+      "hs": "100",
+      "avg": 26.72,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1875,7 +4396,39 @@
       "matches": 24,
       "runs": 318,
       "sr": 119.5,
-      "hs": "66"
+      "hs": "66",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 24,
+      "iplRuns": 318,
+      "iplSr": 119.5,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 0,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
+      "matches": 24,
+      "runs": 318,
+      "sr": 119.5,
+      "hs": "66",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 0,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1898,7 +4451,39 @@
       "matches": 10,
       "runs": 199,
       "sr": 122.1,
-      "hs": "78*"
+      "hs": "78*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 10,
+      "iplRuns": 199,
+      "iplSr": 122.1,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 0,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
+      "matches": 10,
+      "runs": 199,
+      "sr": 122.1,
+      "hs": "78*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 0,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1918,10 +4503,42 @@
     "set": "WK1",
     "setName": "Capped Wicketkeepers Set 1",
     "stats": {
+      "matches": 45,
+      "runs": 961,
+      "sr": 137.1,
+      "hs": "82*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 9,
+      "iplRuns": 183,
+      "iplSr": 150,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 36,
+      "intlRuns": 778,
+      "intlSr": 134.1,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 9,
       "runs": 183,
       "sr": 150,
-      "hs": "41"
+      "hs": "41",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 36,
+      "runs": 778,
+      "sr": 134.1,
+      "hs": "82*",
+      "avg": 27.78,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1941,10 +4558,42 @@
     "set": "WK1",
     "setName": "Capped Wicketkeepers Set 1",
     "stats": {
+      "matches": 9,
+      "runs": 211,
+      "sr": 141.6,
+      "hs": "76",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 0,
+      "iplRuns": 0,
+      "iplSr": 142.8,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 9,
+      "intlRuns": 211,
+      "intlSr": 141.6,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 0,
       "runs": 0,
       "sr": 142.8,
-      "hs": "T20I"
+      "hs": "T20I",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 9,
+      "runs": 211,
+      "sr": 141.6,
+      "hs": "76",
+      "avg": 23.44,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1964,10 +4613,42 @@
     "set": "WK1",
     "setName": "Capped Wicketkeepers Set 1",
     "stats": {
+      "matches": 44,
+      "runs": 298,
+      "sr": 110,
+      "hs": "37*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 6,
+      "iplRuns": 65,
+      "iplSr": 110.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 38,
+      "intlRuns": 233,
+      "intlSr": 109.9,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 6,
       "runs": 65,
       "sr": 110.2,
-      "hs": "35*"
+      "hs": "35*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 38,
+      "runs": 233,
+      "sr": 109.9,
+      "hs": "37*",
+      "avg": 11.09,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -1987,10 +4668,42 @@
     "set": "FA1",
     "setName": "Capped Fast Bowlers Set 1",
     "stats": {
+      "matches": 75,
+      "runs": 1,
+      "sr": 33.3,
+      "hs": "50",
+      "wkts": 90,
+      "econ": 8.75,
+      "bb": "3/25",
+      "iplMatches": 57,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 74,
+      "iplEcon": 8.81,
+      "intlMatches": 18,
+      "intlRuns": 1,
+      "intlSr": 33.3,
+      "intlWkts": 16,
+      "intlEcon": 8.45
+    },
+    "iplStats": {
       "matches": 57,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 74,
       "econ": 8.81,
       "bb": "3/25"
+    },
+    "intlStats": {
+      "matches": 18,
+      "runs": 1,
+      "sr": 33.3,
+      "hs": "1*",
+      "avg": 1,
+      "wkts": 16,
+      "econ": 8.45,
+      "bb": "2/27"
     }
   },
   {
@@ -2010,10 +4723,42 @@
     "set": "FA1",
     "setName": "Capped Fast Bowlers Set 1",
     "stats": {
+      "matches": 86,
+      "runs": 26,
+      "sr": 96,
+      "hs": "50",
+      "wkts": 102,
+      "econ": 8.88,
+      "bb": "4/24",
+      "iplMatches": 63,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 75,
+      "iplEcon": 8.89,
+      "intlMatches": 23,
+      "intlRuns": 26,
+      "intlSr": 96,
+      "intlWkts": 27,
+      "intlEcon": 8.85
+    },
+    "iplStats": {
       "matches": 63,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 75,
       "econ": 8.89,
       "bb": "4/24"
+    },
+    "intlStats": {
+      "matches": 23,
+      "runs": 26,
+      "sr": 96,
+      "hs": "16",
+      "avg": 6.5,
+      "wkts": 27,
+      "econ": 8.85,
+      "bb": "4/18"
     }
   },
   {
@@ -2033,10 +4778,42 @@
     "set": "FA1",
     "setName": "Capped Fast Bowlers Set 1",
     "stats": {
+      "matches": 56,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 57,
+      "econ": 9.21,
+      "bb": "4/30",
+      "iplMatches": 51,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 49,
+      "iplEcon": 8.92,
+      "intlMatches": 5,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 8,
+      "intlEcon": 11
+    },
+    "iplStats": {
       "matches": 51,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 49,
       "econ": 8.92,
       "bb": "4/30"
+    },
+    "intlStats": {
+      "matches": 5,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 8,
+      "econ": 11,
+      "bb": "3/41"
     }
   },
   {
@@ -2056,10 +4833,42 @@
     "set": "FA1",
     "setName": "Capped Fast Bowlers Set 1",
     "stats": {
+      "matches": 65,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 74,
+      "econ": 8.67,
+      "bb": "4/19",
+      "iplMatches": 61,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 67,
+      "iplEcon": 8.78,
+      "intlMatches": 4,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 7,
+      "intlEcon": 7.62
+    },
+    "iplStats": {
       "matches": 61,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 67,
       "econ": 8.78,
       "bb": "4/19"
+    },
+    "intlStats": {
+      "matches": 4,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 7,
+      "econ": 7.62,
+      "bb": "3/30"
     }
   },
   {
@@ -2079,10 +4888,42 @@
     "set": "FA1",
     "setName": "Capped Fast Bowlers Set 1",
     "stats": {
+      "matches": 78,
+      "runs": 23,
+      "sr": 69.7,
+      "hs": "50",
+      "wkts": 102,
+      "econ": 7.68,
+      "bb": "4/25",
+      "iplMatches": 27,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 35,
+      "iplEcon": 8.06,
+      "intlMatches": 51,
+      "intlRuns": 23,
+      "intlSr": 69.7,
+      "intlWkts": 67,
+      "intlEcon": 7.48
+    },
+    "iplStats": {
       "matches": 27,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 35,
       "econ": 8.06,
       "bb": "4/25"
+    },
+    "intlStats": {
+      "matches": 51,
+      "runs": 23,
+      "sr": 69.7,
+      "hs": "11",
+      "avg": 5.7,
+      "wkts": 67,
+      "econ": 7.48,
+      "bb": "4/12"
     }
   },
   {
@@ -2102,10 +4943,42 @@
     "set": "FA1",
     "setName": "Capped Fast Bowlers Set 1",
     "stats": {
+      "matches": 87,
+      "runs": 37,
+      "sr": 105.7,
+      "hs": "50",
+      "wkts": 113,
+      "econ": 8.11,
+      "bb": "3/33",
+      "iplMatches": 46,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 60,
+      "iplEcon": 8.96,
+      "intlMatches": 41,
+      "intlRuns": 37,
+      "intlSr": 105.7,
+      "intlWkts": 53,
+      "intlEcon": 7.15
+    },
+    "iplStats": {
       "matches": 46,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 60,
       "econ": 8.96,
       "bb": "3/33"
+    },
+    "intlStats": {
+      "matches": 41,
+      "runs": 37,
+      "sr": 105.7,
+      "hs": "12*",
+      "avg": 9.2,
+      "wkts": 53,
+      "econ": 7.15,
+      "bb": "4/7"
     }
   },
   {
@@ -2125,10 +4998,42 @@
     "set": "FA1",
     "setName": "Capped Fast Bowlers Set 1",
     "stats": {
+      "matches": 18,
+      "runs": 35,
+      "sr": 140,
+      "hs": "50",
+      "wkts": 27,
+      "econ": 9.78,
+      "bb": "4/34",
+      "iplMatches": 10,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 13,
+      "iplEcon": 10.18,
+      "intlMatches": 8,
+      "intlRuns": 35,
+      "intlSr": 140,
+      "intlWkts": 14,
+      "intlEcon": 9.4
+    },
+    "iplStats": {
       "matches": 10,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 13,
       "econ": 10.18,
       "bb": "4/34"
+    },
+    "intlStats": {
+      "matches": 8,
+      "runs": 35,
+      "sr": 140,
+      "hs": "23",
+      "avg": 11.6,
+      "wkts": 14,
+      "econ": 9.4,
+      "bb": "3/32"
     }
   },
   {
@@ -2148,10 +5053,42 @@
     "set": "FA1",
     "setName": "Capped Fast Bowlers Set 1",
     "stats": {
+      "matches": 88,
+      "runs": 34,
+      "sr": 75.5,
+      "hs": "50",
+      "wkts": 107,
+      "econ": 8,
+      "bb": "4/28",
+      "iplMatches": 45,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 46,
+      "iplEcon": 8.85,
+      "intlMatches": 43,
+      "intlRuns": 34,
+      "intlSr": 75.5,
+      "intlWkts": 61,
+      "intlEcon": 7.36
+    },
+    "iplStats": {
       "matches": 45,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 46,
       "econ": 8.85,
       "bb": "4/28"
+    },
+    "intlStats": {
+      "matches": 43,
+      "runs": 34,
+      "sr": 75.5,
+      "hs": "14",
+      "avg": 6.8,
+      "wkts": 61,
+      "econ": 7.36,
+      "bb": "5/21"
     }
   },
   {
@@ -2171,10 +5108,42 @@
     "set": "FA1",
     "setName": "Capped Fast Bowlers Set 1",
     "stats": {
+      "matches": 48,
+      "runs": 65,
+      "sr": 110,
+      "hs": "50",
+      "wkts": 65,
+      "econ": 8.97,
+      "bb": "6/12",
+      "iplMatches": 22,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 21,
+      "iplEcon": 9.38,
+      "intlMatches": 26,
+      "intlRuns": 65,
+      "intlSr": 110,
+      "intlWkts": 44,
+      "intlEcon": 8.78
+    },
+    "iplStats": {
       "matches": 22,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 21,
       "econ": 9.38,
       "bb": "6/12"
+    },
+    "intlStats": {
+      "matches": 26,
+      "runs": 65,
+      "sr": 110,
+      "hs": "16",
+      "avg": 8.1,
+      "wkts": 44,
+      "econ": 8.78,
+      "bb": "5/40"
     }
   },
   {
@@ -2194,10 +5163,42 @@
     "set": "FA1",
     "setName": "Capped Fast Bowlers Set 1",
     "stats": {
+      "matches": 63,
+      "runs": 45,
+      "sr": 75,
+      "hs": "50",
+      "wkts": 84,
+      "econ": 8.09,
+      "bb": "4/38",
+      "iplMatches": 18,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 25,
+      "iplEcon": 9.54,
+      "intlMatches": 45,
+      "intlRuns": 45,
+      "intlSr": 75,
+      "intlWkts": 59,
+      "intlEcon": 7.48
+    },
+    "iplStats": {
       "matches": 18,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 25,
       "econ": 9.54,
       "bb": "4/38"
+    },
+    "intlStats": {
+      "matches": 45,
+      "runs": 45,
+      "sr": 75,
+      "hs": "10*",
+      "avg": 5.6,
+      "wkts": 59,
+      "econ": 7.48,
+      "bb": "4/20"
     }
   },
   {
@@ -2217,10 +5218,42 @@
     "set": "FA1",
     "setName": "Capped Fast Bowlers Set 1",
     "stats": {
+      "matches": 12,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 13,
+      "econ": 8.38,
+      "bb": "2/25",
+      "iplMatches": 5,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 4,
+      "iplEcon": 9.33,
+      "intlMatches": 7,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 9,
+      "intlEcon": 7.96
+    },
+    "iplStats": {
       "matches": 5,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 4,
       "econ": 9.33,
       "bb": "2/25"
+    },
+    "intlStats": {
+      "matches": 7,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 9,
+      "econ": 7.96,
+      "bb": "5/26"
     }
   },
   {
@@ -2240,10 +5273,42 @@
     "set": "FA1",
     "setName": "Capped Fast Bowlers Set 1",
     "stats": {
+      "matches": 37,
+      "runs": 4,
+      "sr": 66.7,
+      "hs": "50",
+      "wkts": 44,
+      "econ": 9.66,
+      "bb": "3/14",
+      "iplMatches": 20,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 24,
+      "iplEcon": 10.42,
+      "intlMatches": 17,
+      "intlRuns": 4,
+      "intlSr": 66.7,
+      "intlWkts": 20,
+      "intlEcon": 8.75
+    },
+    "iplStats": {
       "matches": 20,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 24,
       "econ": 10.42,
       "bb": "3/14"
+    },
+    "intlStats": {
+      "matches": 17,
+      "runs": 4,
+      "sr": 66.7,
+      "hs": "4*",
+      "avg": 4,
+      "wkts": 20,
+      "econ": 8.75,
+      "bb": "3/10"
     }
   },
   {
@@ -2263,10 +5328,42 @@
     "set": "SP1",
     "setName": "Capped Spinners Set 1",
     "stats": {
+      "matches": 37,
+      "runs": 12,
+      "sr": 80,
+      "hs": "50",
+      "wkts": 36,
+      "econ": 7.67,
+      "bb": "3/37",
+      "iplMatches": 23,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 24,
+      "iplEcon": 8.04,
+      "intlMatches": 14,
+      "intlRuns": 12,
+      "intlSr": 80,
+      "intlWkts": 12,
+      "intlEcon": 6.94
+    },
+    "iplStats": {
       "matches": 23,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 24,
       "econ": 8.04,
       "bb": "3/37"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 12,
+      "sr": 80,
+      "hs": "5",
+      "avg": 3,
+      "wkts": 12,
+      "econ": 6.94,
+      "bb": "4/10"
     }
   },
   {
@@ -2286,10 +5383,42 @@
     "set": "SP1",
     "setName": "Capped Spinners Set 1",
     "stats": {
+      "matches": 82,
+      "runs": 32,
+      "sr": 68,
+      "hs": "50",
+      "wkts": 79,
+      "econ": 6.96,
+      "bb": "4/33",
+      "iplMatches": 27,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 25,
+      "iplEcon": 7.66,
+      "intlMatches": 55,
+      "intlRuns": 32,
+      "intlSr": 68,
+      "intlWkts": 54,
+      "intlEcon": 6.63
+    },
+    "iplStats": {
       "matches": 27,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 25,
       "econ": 7.66,
       "bb": "4/33"
+    },
+    "intlStats": {
+      "matches": 55,
+      "runs": 32,
+      "sr": 68,
+      "hs": "11*",
+      "avg": 5.3,
+      "wkts": 54,
+      "econ": 6.63,
+      "bb": "3/17"
     }
   },
   {
@@ -2309,10 +5438,42 @@
     "set": "SP1",
     "setName": "Capped Spinners Set 1",
     "stats": {
+      "matches": 84,
+      "runs": 5,
+      "sr": 71.4,
+      "hs": "50",
+      "wkts": 82,
+      "econ": 7.61,
+      "bb": "4/27",
+      "iplMatches": 78,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 75,
+      "iplEcon": 7.61,
+      "intlMatches": 6,
+      "intlRuns": 5,
+      "intlSr": 71.4,
+      "intlWkts": 7,
+      "intlEcon": 7.59
+    },
+    "iplStats": {
       "matches": 78,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 75,
       "econ": 7.61,
       "bb": "4/27"
+    },
+    "intlStats": {
+      "matches": 6,
+      "runs": 5,
+      "sr": 71.4,
+      "hs": "5",
+      "avg": 2.5,
+      "wkts": 7,
+      "econ": 7.59,
+      "bb": "3/15"
     }
   },
   {
@@ -2332,10 +5493,42 @@
     "set": "SP1",
     "setName": "Capped Spinners Set 1",
     "stats": {
+      "matches": 112,
+      "runs": 60,
+      "sr": 70.5,
+      "hs": "50",
+      "wkts": 146,
+      "econ": 7.36,
+      "bb": "6/19",
+      "iplMatches": 20,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 29,
+      "iplEcon": 7.99,
+      "intlMatches": 92,
+      "intlRuns": 60,
+      "intlSr": 70.5,
+      "intlWkts": 117,
+      "intlEcon": 7.2
+    },
+    "iplStats": {
       "matches": 20,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 29,
       "econ": 7.99,
       "bb": "6/19"
+    },
+    "intlStats": {
+      "matches": 92,
+      "runs": 60,
+      "sr": 70.5,
+      "hs": "13*",
+      "avg": 6,
+      "wkts": 117,
+      "econ": 7.2,
+      "bb": "5/19"
     }
   },
   {
@@ -2356,9 +5549,41 @@
     "setName": "Capped Spinners Set 1",
     "stats": {
       "matches": 13,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 11,
+      "econ": 8.34,
+      "bb": "3/30",
+      "iplMatches": 13,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 11,
+      "iplEcon": 8.35,
+      "intlMatches": 0,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
+      "matches": 13,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 11,
       "econ": 8.35,
       "bb": "3/30"
+    },
+    "intlStats": {
+      "matches": 0,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -2378,10 +5603,42 @@
     "set": "SP1",
     "setName": "Capped Spinners Set 1",
     "stats": {
+      "matches": 85,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 77,
+      "econ": 8.3,
+      "bb": "4/16",
+      "iplMatches": 84,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 76,
+      "iplEcon": 8.32,
+      "intlMatches": 1,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 1,
+      "intlEcon": 7
+    },
+    "iplStats": {
       "matches": 84,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 76,
       "econ": 8.32,
       "bb": "4/16"
+    },
+    "intlStats": {
+      "matches": 1,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 1,
+      "econ": 7,
+      "bb": "1/28"
     }
   },
   {
@@ -2401,10 +5658,42 @@
     "set": "SP1",
     "setName": "Capped Spinners Set 1",
     "stats": {
+      "matches": 65,
+      "runs": 45,
+      "sr": 75,
+      "hs": "50",
+      "wkts": 78,
+      "econ": 6.87,
+      "bb": "3/27",
+      "iplMatches": 19,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 19,
+      "iplEcon": 8.18,
+      "intlMatches": 46,
+      "intlRuns": 45,
+      "intlSr": 75,
+      "intlWkts": 59,
+      "intlEcon": 6.45
+    },
+    "iplStats": {
       "matches": 19,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 19,
       "econ": 8.18,
       "bb": "3/27"
+    },
+    "intlStats": {
+      "matches": 46,
+      "runs": 45,
+      "sr": 75,
+      "hs": "8*",
+      "avg": 4.5,
+      "wkts": 59,
+      "econ": 6.45,
+      "bb": "5/20"
     }
   },
   {
@@ -2424,10 +5713,42 @@
     "set": "SP1",
     "setName": "Capped Spinners Set 1",
     "stats": {
+      "matches": 199,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 196,
+      "econ": 7.93,
+      "bb": "4/17",
+      "iplMatches": 192,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 192,
+      "iplEcon": 7.96,
+      "intlMatches": 7,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 4,
+      "intlEcon": 6.56
+    },
+    "iplStats": {
       "matches": 192,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 192,
       "econ": 7.96,
       "bb": "4/17"
+    },
+    "intlStats": {
+      "matches": 7,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 4,
+      "econ": 6.56,
+      "bb": "2/13"
     }
   },
   {
@@ -2447,10 +5768,42 @@
     "set": "SP1",
     "setName": "Capped Spinners Set 1",
     "stats": {
+      "matches": 75,
+      "runs": 10,
+      "sr": 50,
+      "hs": "50",
+      "wkts": 92,
+      "econ": 7.44,
+      "bb": "1/21",
+      "iplMatches": 5,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 3,
+      "iplEcon": 9.05,
+      "intlMatches": 70,
+      "intlRuns": 10,
+      "intlSr": 50,
+      "intlWkts": 89,
+      "intlEcon": 7.39
+    },
+    "iplStats": {
       "matches": 5,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 3,
       "econ": 9.05,
       "bb": "1/21"
+    },
+    "intlStats": {
+      "matches": 70,
+      "runs": 10,
+      "sr": 50,
+      "hs": "4*",
+      "avg": 3.3,
+      "wkts": 89,
+      "econ": 7.39,
+      "bb": "5/17"
     }
   },
   {
@@ -2470,10 +5823,42 @@
     "set": "SP1",
     "setName": "Capped Spinners Set 1",
     "stats": {
+      "matches": 122,
+      "runs": 115,
+      "sr": 85,
+      "hs": "50",
+      "wkts": 124,
+      "econ": 7.41,
+      "bb": "2/33",
+      "iplMatches": 3,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 2,
+      "iplEcon": 9.25,
+      "intlMatches": 119,
+      "intlRuns": 115,
+      "intlSr": 85,
+      "intlWkts": 122,
+      "intlEcon": 7.38
+    },
+    "iplStats": {
       "matches": 3,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 2,
       "econ": 9.25,
       "bb": "2/33"
+    },
+    "intlStats": {
+      "matches": 119,
+      "runs": 115,
+      "sr": 85,
+      "hs": "19",
+      "avg": 5.7,
+      "wkts": 122,
+      "econ": 7.38,
+      "bb": "4/2"
     }
   },
   {
@@ -2493,10 +5878,43 @@
     "set": "UBA1",
     "setName": "Uncapped Batters Set 1",
     "stats": {
+      "matches": 32,
+      "runs": 653,
+      "sr": 146.9,
+      "hs": "72*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 10,
+      "iplRuns": 163,
+      "iplSr": 155.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 22,
+      "intlRuns": 490,
+      "intlSr": 144.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 10,
       "runs": 163,
       "sr": 155.2,
-      "hs": "54"
+      "hs": "54",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 22,
+      "runs": 490,
+      "sr": 144.2,
+      "hs": "72*",
+      "avg": 32.6,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2516,10 +5934,43 @@
     "set": "UBA1",
     "setName": "Uncapped Batters Set 1",
     "stats": {
+      "matches": 42,
+      "runs": 840,
+      "sr": 143.2,
+      "hs": "72*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 20,
+      "iplRuns": 350,
+      "iplSr": 141.7,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 22,
+      "intlRuns": 490,
+      "intlSr": 144.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 20,
       "runs": 350,
       "sr": 141.7,
-      "hs": "64"
+      "hs": "64",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 22,
+      "runs": 490,
+      "sr": 144.2,
+      "hs": "72*",
+      "avg": 32.6,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2539,10 +5990,43 @@
     "set": "UBA1",
     "setName": "Uncapped Batters Set 1",
     "stats": {
+      "matches": 30,
+      "runs": 541,
+      "sr": 141.8,
+      "hs": "72*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 8,
+      "iplRuns": 51,
+      "iplSr": 118.6,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 22,
+      "intlRuns": 490,
+      "intlSr": 144.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 8,
       "runs": 51,
       "sr": 118.6,
-      "hs": "21"
+      "hs": "21",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 22,
+      "runs": 490,
+      "sr": 144.2,
+      "hs": "72*",
+      "avg": 32.6,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2562,10 +6046,43 @@
     "set": "UBA1",
     "setName": "Uncapped Batters Set 1",
     "stats": {
+      "matches": 33,
+      "runs": 679,
+      "sr": 150.6,
+      "hs": "72*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 11,
+      "iplRuns": 189,
+      "iplSr": 167.3,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 22,
+      "intlRuns": 490,
+      "intlSr": 144.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 11,
       "runs": 189,
       "sr": 167.3,
-      "hs": "61"
+      "hs": "61",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 22,
+      "runs": 490,
+      "sr": 144.2,
+      "hs": "72*",
+      "avg": 32.6,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2585,10 +6102,43 @@
     "set": "UBA1",
     "setName": "Uncapped Batters Set 1",
     "stats": {
+      "matches": 39,
+      "runs": 721,
+      "sr": 142.9,
+      "hs": "72*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 17,
+      "iplRuns": 231,
+      "iplSr": 140,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 22,
+      "intlRuns": 490,
+      "intlSr": 144.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 17,
       "runs": 231,
       "sr": 140,
-      "hs": "43"
+      "hs": "43",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 22,
+      "runs": 490,
+      "sr": 144.2,
+      "hs": "72*",
+      "avg": 32.6,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2608,10 +6158,43 @@
     "set": "UBA1",
     "setName": "Uncapped Batters Set 1",
     "stats": {
+      "matches": 64,
+      "runs": 1124,
+      "sr": 137.4,
+      "hs": "72*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 42,
+      "iplRuns": 634,
+      "iplSr": 132.1,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 22,
+      "intlRuns": 490,
+      "intlSr": 144.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 42,
       "runs": 634,
       "sr": 132.1,
-      "hs": "59"
+      "hs": "59",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 22,
+      "runs": 490,
+      "sr": 144.2,
+      "hs": "72*",
+      "avg": 32.6,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2631,10 +6214,43 @@
     "set": "UBA1",
     "setName": "Uncapped Batters Set 1",
     "stats": {
+      "matches": 72,
+      "runs": 1067,
+      "sr": 145.2,
+      "hs": "72*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 50,
+      "iplRuns": 577,
+      "iplSr": 146.1,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 22,
+      "intlRuns": 490,
+      "intlSr": 144.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 50,
       "runs": 577,
       "sr": 146.1,
-      "hs": "38"
+      "hs": "38",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 22,
+      "runs": 490,
+      "sr": 144.2,
+      "hs": "72*",
+      "avg": 32.6,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2654,10 +6270,43 @@
     "set": "UBA1",
     "setName": "Uncapped Batters Set 1",
     "stats": {
+      "matches": 33,
+      "runs": 691,
+      "sr": 140.5,
+      "hs": "72*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 11,
+      "iplRuns": 201,
+      "iplSr": 131.4,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 22,
+      "intlRuns": 490,
+      "intlSr": 144.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 11,
       "runs": 201,
       "sr": 131.4,
-      "hs": "36"
+      "hs": "36",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 22,
+      "runs": 490,
+      "sr": 144.2,
+      "hs": "72*",
+      "avg": 32.6,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2677,10 +6326,43 @@
     "set": "UAL1",
     "setName": "Uncapped All-Rounders Set 1",
     "stats": {
+      "matches": 42,
+      "runs": 708,
+      "sr": 155.8,
+      "hs": "68*",
+      "wkts": 12,
+      "econ": 8.08,
+      "bb": "3/24",
+      "iplMatches": 24,
+      "iplRuns": 423,
+      "iplSr": 160.8,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 18,
+      "intlRuns": 285,
+      "intlSr": 148.5,
+      "intlWkts": 12,
+      "intlEcon": 7.95
+    },
+    "iplStats": {
       "matches": 24,
       "runs": 423,
       "sr": 160.8,
-      "hs": "68*"
+      "hs": "68*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 18,
+      "runs": 285,
+      "sr": 148.5,
+      "hs": "54*",
+      "avg": 28.5,
+      "wkts": 12,
+      "econ": 7.95,
+      "bb": "3/24",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2700,10 +6382,43 @@
     "set": "UAL1",
     "setName": "Uncapped All-Rounders Set 1",
     "stats": {
+      "matches": 38,
+      "runs": 455,
+      "sr": 156.5,
+      "hs": "54*",
+      "wkts": 18,
+      "econ": 8.03,
+      "bb": "3/24",
+      "iplMatches": 20,
+      "iplRuns": 170,
+      "iplSr": 170,
+      "iplWkts": 6,
+      "iplEcon": 8.2,
+      "intlMatches": 18,
+      "intlRuns": 285,
+      "intlSr": 148.5,
+      "intlWkts": 12,
+      "intlEcon": 7.95
+    },
+    "iplStats": {
       "matches": 20,
       "runs": 170,
       "sr": 170,
-      "wkts": 6
+      "hs": "50",
+      "wkts": 6,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 18,
+      "runs": 285,
+      "sr": 148.5,
+      "hs": "54*",
+      "avg": 28.5,
+      "wkts": 12,
+      "econ": 7.95,
+      "bb": "3/24",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2723,10 +6438,43 @@
     "set": "UAL1",
     "setName": "Uncapped All-Rounders Set 1",
     "stats": {
+      "matches": 58,
+      "runs": 838,
+      "sr": 142,
+      "hs": "58",
+      "wkts": 12,
+      "econ": 8.11,
+      "bb": "3/24",
+      "iplMatches": 40,
+      "iplRuns": 553,
+      "iplSr": 138.6,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 18,
+      "intlRuns": 285,
+      "intlSr": 148.5,
+      "intlWkts": 12,
+      "intlEcon": 7.95
+    },
+    "iplStats": {
       "matches": 40,
       "runs": 553,
       "sr": 138.6,
-      "hs": "58"
+      "hs": "58",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 18,
+      "runs": 285,
+      "sr": 148.5,
+      "hs": "54*",
+      "avg": 28.5,
+      "wkts": 12,
+      "econ": 7.95,
+      "bb": "3/24",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2746,10 +6494,43 @@
     "set": "UAL1",
     "setName": "Uncapped All-Rounders Set 1",
     "stats": {
+      "matches": 25,
+      "runs": 425,
+      "sr": 154.5,
+      "hs": "62*",
+      "wkts": 12,
+      "econ": 8.01,
+      "bb": "3/24",
+      "iplMatches": 7,
+      "iplRuns": 140,
+      "iplSr": 166.7,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 18,
+      "intlRuns": 285,
+      "intlSr": 148.5,
+      "intlWkts": 12,
+      "intlEcon": 7.95
+    },
+    "iplStats": {
       "matches": 7,
       "runs": 140,
       "sr": 166.7,
-      "hs": "62*"
+      "hs": "62*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 18,
+      "runs": 285,
+      "sr": 148.5,
+      "hs": "54*",
+      "avg": 28.5,
+      "wkts": 12,
+      "econ": 7.95,
+      "bb": "3/24",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2769,10 +6550,43 @@
     "set": "UAL1",
     "setName": "Uncapped All-Rounders Set 1",
     "stats": {
+      "matches": 59,
+      "runs": 490,
+      "sr": 140.8,
+      "hs": "54*",
+      "wkts": 37,
+      "econ": 7.92,
+      "bb": "3/24",
+      "iplMatches": 41,
+      "iplRuns": 205,
+      "iplSr": 130,
+      "iplWkts": 25,
+      "iplEcon": 7.91,
+      "intlMatches": 18,
+      "intlRuns": 285,
+      "intlSr": 148.5,
+      "intlWkts": 12,
+      "intlEcon": 7.95
+    },
+    "iplStats": {
       "matches": 41,
+      "runs": 205,
+      "sr": 130,
+      "hs": "50",
       "wkts": 25,
       "econ": 7.91,
-      "runs": 205
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 18,
+      "runs": 285,
+      "sr": 148.5,
+      "hs": "54*",
+      "avg": 28.5,
+      "wkts": 12,
+      "econ": 7.95,
+      "bb": "3/24",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2792,10 +6606,43 @@
     "set": "UAL1",
     "setName": "Uncapped All-Rounders Set 1",
     "stats": {
+      "matches": 30,
+      "runs": 330,
+      "sr": 146,
+      "hs": "54*",
+      "wkts": 19,
+      "econ": 8.26,
+      "bb": "3/24",
+      "iplMatches": 12,
+      "iplRuns": 45,
+      "iplSr": 130,
+      "iplWkts": 7,
+      "iplEcon": 8.78,
+      "intlMatches": 18,
+      "intlRuns": 285,
+      "intlSr": 148.5,
+      "intlWkts": 12,
+      "intlEcon": 7.95
+    },
+    "iplStats": {
       "matches": 12,
+      "runs": 45,
+      "sr": 130,
+      "hs": "50",
       "wkts": 7,
       "econ": 8.78,
-      "runs": 45
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 18,
+      "runs": 285,
+      "sr": 148.5,
+      "hs": "54*",
+      "avg": 28.5,
+      "wkts": 12,
+      "econ": 7.95,
+      "bb": "3/24",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2815,10 +6662,43 @@
     "set": "UAL1",
     "setName": "Uncapped All-Rounders Set 1",
     "stats": {
+      "matches": 58,
+      "runs": 812,
+      "sr": 140.5,
+      "hs": "54*",
+      "wkts": 12,
+      "econ": 8.11,
+      "bb": "3/24",
+      "iplMatches": 40,
+      "iplRuns": 527,
+      "iplSr": 136.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 18,
+      "intlRuns": 285,
+      "intlSr": 148.5,
+      "intlWkts": 12,
+      "intlEcon": 7.95
+    },
+    "iplStats": {
       "matches": 40,
       "runs": 527,
       "sr": 136.2,
-      "hs": "47"
+      "hs": "47",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 18,
+      "runs": 285,
+      "sr": 148.5,
+      "hs": "54*",
+      "avg": 28.5,
+      "wkts": 12,
+      "econ": 7.95,
+      "bb": "3/24",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2838,10 +6718,43 @@
     "set": "UAL1",
     "setName": "Uncapped All-Rounders Set 1",
     "stats": {
+      "matches": 26,
+      "runs": 326,
+      "sr": 148.9,
+      "hs": "54*",
+      "wkts": 13,
+      "econ": 7.97,
+      "bb": "3/24",
+      "iplMatches": 8,
+      "iplRuns": 41,
+      "iplSr": 151.8,
+      "iplWkts": 1,
+      "iplEcon": 8.2,
+      "intlMatches": 18,
+      "intlRuns": 285,
+      "intlSr": 148.5,
+      "intlWkts": 12,
+      "intlEcon": 7.95
+    },
+    "iplStats": {
       "matches": 8,
       "runs": 41,
       "sr": 151.8,
-      "wkts": 1
+      "hs": "50",
+      "wkts": 1,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 18,
+      "runs": 285,
+      "sr": 148.5,
+      "hs": "54*",
+      "avg": 28.5,
+      "wkts": 12,
+      "econ": 7.95,
+      "bb": "3/24",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2861,10 +6774,43 @@
     "set": "UWK1",
     "setName": "Uncapped Wicketkeepers Set 1",
     "stats": {
+      "matches": 28,
+      "runs": 546,
+      "sr": 142.2,
+      "hs": "72*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 6,
+      "iplRuns": 56,
+      "iplSr": 124.4,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 22,
+      "intlRuns": 490,
+      "intlSr": 144.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 6,
       "runs": 56,
       "sr": 124.4,
-      "hs": "32"
+      "hs": "32",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 22,
+      "runs": 490,
+      "sr": 144.2,
+      "hs": "72*",
+      "avg": 32.6,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2884,10 +6830,42 @@
     "set": "UFA1",
     "setName": "Uncapped Fast Bowlers Set 1",
     "stats": {
+      "matches": 7,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 11,
+      "econ": 6.95,
+      "bb": "3/14",
+      "iplMatches": 4,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 7,
+      "iplEcon": 6.98,
+      "intlMatches": 3,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 4,
+      "intlEcon": 6.91
+    },
+    "iplStats": {
       "matches": 4,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 7,
       "econ": 6.98,
       "bb": "3/14"
+    },
+    "intlStats": {
+      "matches": 3,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 4,
+      "econ": 6.91,
+      "bb": "2/32"
     }
   },
   {
@@ -2907,10 +6885,43 @@
     "set": "UFA1",
     "setName": "Uncapped Fast Bowlers Set 1",
     "stats": {
+      "matches": 25,
+      "runs": 18,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 26,
+      "econ": 8.64,
+      "bb": "3/34",
+      "iplMatches": 11,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 10,
+      "iplEcon": 10.22,
+      "intlMatches": 14,
+      "intlRuns": 18,
+      "intlSr": 95,
+      "intlWkts": 16,
+      "intlEcon": 7.65
+    },
+    "iplStats": {
       "matches": 11,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 10,
       "econ": 10.22,
       "bb": "3/34"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 18,
+      "sr": 95,
+      "hs": "8",
+      "avg": 6,
+      "wkts": 16,
+      "econ": 7.65,
+      "bb": "3/22",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2930,10 +6941,42 @@
     "set": "UFA1",
     "setName": "Uncapped Fast Bowlers Set 1",
     "stats": {
+      "matches": 23,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 28,
+      "econ": 8.92,
+      "bb": "3/24",
+      "iplMatches": 21,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 25,
+      "iplEcon": 9.05,
+      "intlMatches": 2,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 3,
+      "intlEcon": 7.8
+    },
+    "iplStats": {
       "matches": 21,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 25,
       "econ": 9.05,
       "bb": "3/24"
+    },
+    "intlStats": {
+      "matches": 2,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 3,
+      "econ": 7.8,
+      "bb": "2/28"
     }
   },
   {
@@ -2953,10 +6996,42 @@
     "set": "UFA1",
     "setName": "Uncapped Fast Bowlers Set 1",
     "stats": {
+      "matches": 120,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 138,
+      "econ": 8.59,
+      "bb": "5/10",
+      "iplMatches": 112,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 132,
+      "iplEcon": 8.62,
+      "intlMatches": 8,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 6,
+      "intlEcon": 8.04
+    },
+    "iplStats": {
       "matches": 112,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 132,
       "econ": 8.62,
       "bb": "5/10"
+    },
+    "intlStats": {
+      "matches": 8,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 6,
+      "econ": 8.04,
+      "bb": "2/28"
     }
   },
   {
@@ -2976,10 +7051,43 @@
     "set": "UFA1",
     "setName": "Uncapped Fast Bowlers Set 1",
     "stats": {
+      "matches": 33,
+      "runs": 18,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 31,
+      "econ": 8.78,
+      "bb": "4/29",
+      "iplMatches": 19,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 15,
+      "iplEcon": 9.98,
+      "intlMatches": 14,
+      "intlRuns": 18,
+      "intlSr": 95,
+      "intlWkts": 16,
+      "intlEcon": 7.65
+    },
+    "iplStats": {
       "matches": 19,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 15,
       "econ": 9.98,
       "bb": "4/29"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 18,
+      "sr": 95,
+      "hs": "8",
+      "avg": 6,
+      "wkts": 16,
+      "econ": 7.65,
+      "bb": "3/22",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -2999,10 +7107,43 @@
     "set": "UFA1",
     "setName": "Uncapped Fast Bowlers Set 1",
     "stats": {
+      "matches": 31,
+      "runs": 18,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 32,
+      "econ": 8.59,
+      "bb": "3/27",
+      "iplMatches": 17,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 16,
+      "iplEcon": 9.54,
+      "intlMatches": 14,
+      "intlRuns": 18,
+      "intlSr": 95,
+      "intlWkts": 16,
+      "intlEcon": 7.65
+    },
+    "iplStats": {
       "matches": 17,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 16,
       "econ": 9.54,
       "bb": "3/27"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 18,
+      "sr": 95,
+      "hs": "8",
+      "avg": 6,
+      "wkts": 16,
+      "econ": 7.65,
+      "bb": "3/22",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -3022,10 +7163,43 @@
     "set": "UFA1",
     "setName": "Uncapped Fast Bowlers Set 1",
     "stats": {
+      "matches": 24,
+      "runs": 18,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 25,
+      "econ": 8.11,
+      "bb": "3/26",
+      "iplMatches": 10,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 9,
+      "iplEcon": 8.92,
+      "intlMatches": 14,
+      "intlRuns": 18,
+      "intlSr": 95,
+      "intlWkts": 16,
+      "intlEcon": 7.65
+    },
+    "iplStats": {
       "matches": 10,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 9,
       "econ": 8.92,
       "bb": "3/26"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 18,
+      "sr": 95,
+      "hs": "8",
+      "avg": 6,
+      "wkts": 16,
+      "econ": 7.65,
+      "bb": "3/22",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -3045,10 +7219,43 @@
     "set": "UFA1",
     "setName": "Uncapped Fast Bowlers Set 1",
     "stats": {
+      "matches": 42,
+      "runs": 18,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 44,
+      "econ": 8.8,
+      "bb": "3/20",
+      "iplMatches": 28,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 28,
+      "iplEcon": 9.45,
+      "intlMatches": 14,
+      "intlRuns": 18,
+      "intlSr": 95,
+      "intlWkts": 16,
+      "intlEcon": 7.65
+    },
+    "iplStats": {
       "matches": 28,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 28,
       "econ": 9.45,
       "bb": "3/20"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 18,
+      "sr": 95,
+      "hs": "8",
+      "avg": 6,
+      "wkts": 16,
+      "econ": 7.65,
+      "bb": "3/22",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -3068,10 +7275,43 @@
     "set": "UFA1",
     "setName": "Uncapped Fast Bowlers Set 1",
     "stats": {
+      "matches": 25,
+      "runs": 18,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 29,
+      "econ": 8.77,
+      "bb": "3/23",
+      "iplMatches": 11,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 13,
+      "iplEcon": 10.15,
+      "intlMatches": 14,
+      "intlRuns": 18,
+      "intlSr": 95,
+      "intlWkts": 16,
+      "intlEcon": 7.65
+    },
+    "iplStats": {
       "matches": 11,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 13,
       "econ": 10.15,
       "bb": "3/23"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 18,
+      "sr": 95,
+      "hs": "8",
+      "avg": 6,
+      "wkts": 16,
+      "econ": 7.65,
+      "bb": "3/22",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -3091,10 +7331,42 @@
     "set": "UFA1",
     "setName": "Uncapped Fast Bowlers Set 1",
     "stats": {
+      "matches": 37,
+      "runs": 30,
+      "sr": 90,
+      "hs": "50",
+      "wkts": 46,
+      "econ": 8.46,
+      "bb": "4/20",
+      "iplMatches": 12,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 14,
+      "iplEcon": 9.87,
+      "intlMatches": 25,
+      "intlRuns": 30,
+      "intlSr": 90,
+      "intlWkts": 32,
+      "intlEcon": 7.85
+    },
+    "iplStats": {
       "matches": 12,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 14,
       "econ": 9.87,
       "bb": "4/20"
+    },
+    "intlStats": {
+      "matches": 25,
+      "runs": 30,
+      "sr": 90,
+      "hs": "12",
+      "avg": 6,
+      "wkts": 32,
+      "econ": 7.85,
+      "bb": "3/20"
     }
   },
   {
@@ -3114,10 +7386,43 @@
     "set": "UFA1",
     "setName": "Uncapped Fast Bowlers Set 1",
     "stats": {
+      "matches": 27,
+      "runs": 18,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 35,
+      "econ": 8.59,
+      "bb": "5/5",
+      "iplMatches": 13,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 19,
+      "iplEcon": 9.38,
+      "intlMatches": 14,
+      "intlRuns": 18,
+      "intlSr": 95,
+      "intlWkts": 16,
+      "intlEcon": 7.65
+    },
+    "iplStats": {
       "matches": 13,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 19,
       "econ": 9.38,
       "bb": "5/5"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 18,
+      "sr": 95,
+      "hs": "8",
+      "avg": 6,
+      "wkts": 16,
+      "econ": 7.65,
+      "bb": "3/22",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -3137,10 +7442,43 @@
     "set": "USP1",
     "setName": "Uncapped Spinners Set 1",
     "stats": {
+      "matches": 26,
+      "runs": 18,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 26,
+      "econ": 7.88,
+      "bb": "2/22",
+      "iplMatches": 12,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 10,
+      "iplEcon": 8.24,
+      "intlMatches": 14,
+      "intlRuns": 18,
+      "intlSr": 95,
+      "intlWkts": 16,
+      "intlEcon": 7.65
+    },
+    "iplStats": {
       "matches": 12,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 10,
       "econ": 8.24,
       "bb": "2/22"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 18,
+      "sr": 95,
+      "hs": "8",
+      "avg": 6,
+      "wkts": 16,
+      "econ": 7.65,
+      "bb": "3/22",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -3160,10 +7498,43 @@
     "set": "USP1",
     "setName": "Uncapped Spinners Set 1",
     "stats": {
+      "matches": 66,
+      "runs": 18,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 68,
+      "econ": 8,
+      "bb": "4/16",
+      "iplMatches": 52,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 52,
+      "iplEcon": 8.11,
+      "intlMatches": 14,
+      "intlRuns": 18,
+      "intlSr": 95,
+      "intlWkts": 16,
+      "intlEcon": 7.65
+    },
+    "iplStats": {
       "matches": 52,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 52,
       "econ": 8.11,
       "bb": "4/16"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 18,
+      "sr": 95,
+      "hs": "8",
+      "avg": 6,
+      "wkts": 16,
+      "econ": 7.65,
+      "bb": "3/22",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -3183,10 +7554,43 @@
     "set": "USP1",
     "setName": "Uncapped Spinners Set 1",
     "stats": {
+      "matches": 58,
+      "runs": 18,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 51,
+      "econ": 7.88,
+      "bb": "3/34",
+      "iplMatches": 44,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 35,
+      "iplEcon": 7.98,
+      "intlMatches": 14,
+      "intlRuns": 18,
+      "intlSr": 95,
+      "intlWkts": 16,
+      "intlEcon": 7.65
+    },
+    "iplStats": {
       "matches": 44,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 35,
       "econ": 7.98,
       "bb": "3/34"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 18,
+      "sr": 95,
+      "hs": "8",
+      "avg": 6,
+      "wkts": 16,
+      "econ": 7.65,
+      "bb": "3/22",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -3206,10 +7610,42 @@
     "set": "BA2",
     "setName": "Capped Batters Set 2",
     "stats": {
+      "matches": 78,
+      "runs": 1524,
+      "sr": 127.8,
+      "hs": "83*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 76,
+      "iplRuns": 1496,
+      "iplSr": 127.8,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 2,
+      "intlRuns": 28,
+      "intlSr": 127.3,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 76,
       "runs": 1496,
       "sr": 127.8,
-      "hs": "83*"
+      "hs": "83*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 2,
+      "runs": 28,
+      "sr": 127.3,
+      "hs": "26",
+      "avg": 14,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -3229,10 +7665,42 @@
     "set": "BA2",
     "setName": "Capped Batters Set 2",
     "stats": {
+      "matches": 47,
+      "runs": 1141,
+      "sr": 163.5,
+      "hs": "137",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 0,
+      "iplRuns": 0,
+      "iplSr": 163.6,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 47,
+      "intlRuns": 1141,
+      "intlSr": 163.5,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 0,
       "runs": 0,
       "sr": 163.6,
-      "hs": "T20I 137"
+      "hs": "T20I 137",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 47,
+      "runs": 1141,
+      "sr": 163.5,
+      "hs": "137",
+      "avg": 24.8,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -3252,10 +7720,42 @@
     "set": "BA2",
     "setName": "Capped Batters Set 2",
     "stats": {
+      "matches": 106,
+      "runs": 1829,
+      "sr": 144.3,
+      "hs": "107",
+      "wkts": 5,
+      "econ": 8.39,
+      "bb": "2/27",
+      "iplMatches": 26,
+      "iplRuns": 360,
+      "iplSr": 146.9,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 80,
+      "intlRuns": 1469,
+      "intlSr": 143.7,
+      "intlWkts": 5,
+      "intlEcon": 8.9
+    },
+    "iplStats": {
       "matches": 26,
       "runs": 360,
       "sr": 146.9,
-      "hs": "67*"
+      "hs": "67*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 80,
+      "runs": 1469,
+      "sr": 143.7,
+      "hs": "107",
+      "avg": 25.77,
+      "wkts": 5,
+      "econ": 8.9,
+      "bb": "2/27"
     }
   },
   {
@@ -3275,10 +7775,42 @@
     "set": "BA2",
     "setName": "Capped Batters Set 2",
     "stats": {
+      "matches": 51,
+      "runs": 1240,
+      "sr": 157.1,
+      "hs": "109",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 22,
+      "iplRuns": 473,
+      "iplSr": 158.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 29,
+      "intlRuns": 767,
+      "intlSr": 156.5,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 22,
       "runs": 473,
       "sr": 158.2,
-      "hs": "82*"
+      "hs": "82*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 29,
+      "runs": 767,
+      "sr": 156.5,
+      "hs": "109",
+      "avg": 34.86,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -3298,10 +7830,42 @@
     "set": "BA2",
     "setName": "Capped Batters Set 2",
     "stats": {
+      "matches": 85,
+      "runs": 2136,
+      "sr": 137.9,
+      "hs": "91*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 21,
+      "iplRuns": 614,
+      "iplSr": 138.6,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 64,
+      "intlRuns": 1522,
+      "intlSr": 137.6,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 21,
       "runs": 614,
       "sr": 138.6,
-      "hs": "91*"
+      "hs": "91*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 64,
+      "runs": 1522,
+      "sr": 137.6,
+      "hs": "78",
+      "avg": 24.15,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -3321,10 +7885,42 @@
     "set": "BA2",
     "setName": "Capped Batters Set 2",
     "stats": {
+      "matches": 31,
+      "runs": 444,
+      "sr": 135.2,
+      "hs": "68*",
+      "wkts": 1,
+      "econ": 8.42,
+      "bb": "1/21",
+      "iplMatches": 10,
+      "iplRuns": 106,
+      "iplSr": 101.9,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 21,
+      "intlRuns": 338,
+      "intlSr": 145.7,
+      "intlWkts": 1,
+      "intlEcon": 9.5
+    },
+    "iplStats": {
       "matches": 10,
       "runs": 106,
       "sr": 101.9,
-      "hs": "28"
+      "hs": "28",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 21,
+      "runs": 338,
+      "sr": 145.7,
+      "hs": "68*",
+      "avg": 24.14,
+      "wkts": 1,
+      "econ": 9.5,
+      "bb": "1/21"
     }
   },
   {
@@ -3344,10 +7940,42 @@
     "set": "BA2",
     "setName": "Capped Batters Set 2",
     "stats": {
+      "matches": 49,
+      "runs": 1166,
+      "sr": 128.2,
+      "hs": "94*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 3,
+      "iplRuns": 22,
+      "iplSr": 95.7,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 46,
+      "intlRuns": 1144,
+      "intlSr": 128.8,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 3,
       "runs": 22,
       "sr": 95.7,
-      "hs": "12*"
+      "hs": "12*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 46,
+      "runs": 1144,
+      "sr": 128.8,
+      "hs": "94*",
+      "avg": 34.66,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -3367,10 +7995,42 @@
     "set": "BA2",
     "setName": "Capped Batters Set 2",
     "stats": {
+      "matches": 24,
+      "runs": 113,
+      "sr": 112.7,
+      "hs": "24",
+      "wkts": 4,
+      "econ": 7.46,
+      "bb": "2/12",
+      "iplMatches": 5,
+      "iplRuns": 3,
+      "iplSr": 42.9,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 19,
+      "intlRuns": 110,
+      "intlSr": 114.6,
+      "intlWkts": 4,
+      "intlEcon": 7
+    },
+    "iplStats": {
       "matches": 5,
       "runs": 3,
       "sr": 42.9,
-      "hs": "3*"
+      "hs": "3*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 19,
+      "runs": 110,
+      "sr": 114.6,
+      "hs": "24",
+      "avg": 12.22,
+      "wkts": 4,
+      "econ": 7,
+      "bb": "2/12"
     }
   },
   {
@@ -3390,10 +8050,42 @@
     "set": "BA2",
     "setName": "Capped Batters Set 2",
     "stats": {
+      "matches": 107,
+      "runs": 1830,
+      "sr": 136.2,
+      "hs": "73",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 0,
+      "iplRuns": 0,
+      "iplSr": 140.5,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 107,
+      "intlRuns": 1830,
+      "intlSr": 136.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 0,
       "runs": 0,
       "sr": 140.5,
-      "hs": "T20I 73"
+      "hs": "T20I 73",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 107,
+      "runs": 1830,
+      "sr": 136.2,
+      "hs": "73",
+      "avg": 30.5,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-"
     }
   },
   {
@@ -3413,10 +8105,42 @@
     "set": "AL2",
     "setName": "Capped All-Rounders Set 2",
     "stats": {
+      "matches": 35,
+      "runs": 225,
+      "sr": 142.2,
+      "hs": "50",
+      "wkts": 37,
+      "econ": 9.22,
+      "bb": "3/52",
+      "iplMatches": 21,
+      "iplRuns": 62,
+      "iplSr": 130,
+      "iplWkts": 20,
+      "iplEcon": 9.53,
+      "intlMatches": 14,
+      "intlRuns": 163,
+      "intlSr": 146.8,
+      "intlWkts": 17,
+      "intlEcon": 8.85
+    },
+    "iplStats": {
       "matches": 21,
+      "runs": 62,
+      "sr": 130,
+      "hs": "50",
       "wkts": 20,
       "econ": 9.53,
-      "runs": 62
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 163,
+      "sr": 146.8,
+      "hs": "38*",
+      "avg": 23.28,
+      "wkts": 17,
+      "econ": 8.85,
+      "bb": "3/52"
     }
   },
   {
@@ -3436,10 +8160,42 @@
     "set": "AL2",
     "setName": "Capped All-Rounders Set 2",
     "stats": {
+      "matches": 54,
+      "runs": 532,
+      "sr": 168,
+      "hs": "50",
+      "wkts": 45,
+      "econ": 9.93,
+      "bb": "4/31",
+      "iplMatches": 10,
+      "iplRuns": 115,
+      "iplSr": 221.2,
+      "iplWkts": 4,
+      "iplEcon": 8.2,
+      "intlMatches": 44,
+      "intlRuns": 417,
+      "intlSr": 153.3,
+      "intlWkts": 41,
+      "intlEcon": 10.1
+    },
+    "iplStats": {
       "matches": 10,
       "runs": 115,
       "sr": 221.2,
-      "wkts": 4
+      "hs": "50",
+      "wkts": 4,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 44,
+      "runs": 417,
+      "sr": 153.3,
+      "hs": "44*",
+      "avg": 26.06,
+      "wkts": 41,
+      "econ": 10.1,
+      "bb": "4/31"
     }
   },
   {
@@ -3459,10 +8215,42 @@
     "set": "AL2",
     "setName": "Capped All-Rounders Set 2",
     "stats": {
+      "matches": 100,
+      "runs": 2220,
+      "sr": 134.7,
+      "hs": "87",
+      "wkts": 69,
+      "econ": 7.21,
+      "bb": "4/8",
+      "iplMatches": 9,
+      "iplRuns": 182,
+      "iplSr": 141.1,
+      "iplWkts": 3,
+      "iplEcon": 8.2,
+      "intlMatches": 91,
+      "intlRuns": 2038,
+      "intlSr": 134.1,
+      "intlWkts": 66,
+      "intlEcon": 7.17
+    },
+    "iplStats": {
       "matches": 9,
       "runs": 182,
       "sr": 141.1,
-      "wkts": 3
+      "hs": "50",
+      "wkts": 3,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 91,
+      "runs": 2038,
+      "sr": 134.1,
+      "hs": "87",
+      "avg": 25.16,
+      "wkts": 66,
+      "econ": 7.17,
+      "bb": "4/8"
     }
   },
   {
@@ -3482,10 +8270,42 @@
     "set": "AL2",
     "setName": "Capped All-Rounders Set 2",
     "stats": {
+      "matches": 26,
+      "runs": 150,
+      "sr": 161,
+      "hs": "50",
+      "wkts": 21,
+      "econ": 9.26,
+      "bb": "3/30",
+      "iplMatches": 16,
+      "iplRuns": 44,
+      "iplSr": 130,
+      "iplWkts": 14,
+      "iplEcon": 8.95,
+      "intlMatches": 10,
+      "intlRuns": 106,
+      "intlSr": 173.8,
+      "intlWkts": 7,
+      "intlEcon": 9.87
+    },
+    "iplStats": {
       "matches": 16,
       "runs": 44,
+      "sr": 130,
+      "hs": "50",
       "wkts": 14,
-      "econ": 8.95
+      "econ": 8.95,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 10,
+      "runs": 106,
+      "sr": 173.8,
+      "hs": "41",
+      "avg": 26.5,
+      "wkts": 7,
+      "econ": 9.87,
+      "bb": "3/30"
     }
   },
   {
@@ -3505,10 +8325,42 @@
     "set": "AL2",
     "setName": "Capped All-Rounders Set 2",
     "stats": {
+      "matches": 54,
+      "runs": 260,
+      "sr": 130.5,
+      "hs": "50",
+      "wkts": 57,
+      "econ": 8.11,
+      "bb": "4/7",
+      "iplMatches": 11,
+      "iplRuns": 34,
+      "iplSr": 130,
+      "iplWkts": 6,
+      "iplEcon": 7.56,
+      "intlMatches": 43,
+      "intlRuns": 226,
+      "intlSr": 130.6,
+      "intlWkts": 51,
+      "intlEcon": 8.18
+    },
+    "iplStats": {
       "matches": 11,
+      "runs": 34,
+      "sr": 130,
+      "hs": "50",
       "wkts": 6,
       "econ": 7.56,
-      "runs": 34
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 43,
+      "runs": 226,
+      "sr": 130.6,
+      "hs": "33*",
+      "avg": 15.06,
+      "wkts": 51,
+      "econ": 8.18,
+      "bb": "4/7"
     }
   },
   {
@@ -3528,10 +8380,42 @@
     "set": "AL2",
     "setName": "Capped All-Rounders Set 2",
     "stats": {
+      "matches": 54,
+      "runs": 146,
+      "sr": 124.8,
+      "hs": "50",
+      "wkts": 61,
+      "econ": 8.5,
+      "bb": "3/6",
+      "iplMatches": 21,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 30,
+      "iplEcon": 8.97,
+      "intlMatches": 33,
+      "intlRuns": 146,
+      "intlSr": 124.8,
+      "intlWkts": 31,
+      "intlEcon": 8.04
+    },
+    "iplStats": {
       "matches": 21,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 30,
       "econ": 8.97,
       "bb": "3/6"
+    },
+    "intlStats": {
+      "matches": 33,
+      "runs": 146,
+      "sr": 124.8,
+      "hs": "37",
+      "avg": 14.6,
+      "wkts": 31,
+      "econ": 8.04,
+      "bb": "3/12"
     }
   },
   {
@@ -3551,10 +8435,42 @@
     "set": "AL2",
     "setName": "Capped All-Rounders Set 2",
     "stats": {
+      "matches": 26,
+      "runs": 213,
+      "sr": 132.6,
+      "hs": "61*",
+      "wkts": 32,
+      "econ": 6.65,
+      "bb": "3/5",
+      "iplMatches": 5,
+      "iplRuns": 58,
+      "iplSr": 130,
+      "iplWkts": 6,
+      "iplEcon": 8.62,
+      "intlMatches": 21,
+      "intlRuns": 155,
+      "intlSr": 133.6,
+      "intlWkts": 26,
+      "intlEcon": 6.2
+    },
+    "iplStats": {
       "matches": 5,
       "runs": 58,
+      "sr": 130,
+      "hs": "50",
       "wkts": 6,
-      "econ": 8.62
+      "econ": 8.62,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 21,
+      "runs": 155,
+      "sr": 133.6,
+      "hs": "61*",
+      "avg": 19.37,
+      "wkts": 26,
+      "econ": 6.2,
+      "bb": "3/5"
     }
   },
   {
@@ -3574,10 +8490,42 @@
     "set": "AL2",
     "setName": "Capped All-Rounders Set 2",
     "stats": {
+      "matches": 37,
+      "runs": 305,
+      "sr": 159.3,
+      "hs": "77*",
+      "wkts": 41,
+      "econ": 8.01,
+      "bb": "5/17",
+      "iplMatches": 7,
+      "iplRuns": 44,
+      "iplSr": 130,
+      "iplWkts": 6,
+      "iplEcon": 9.5,
+      "intlMatches": 30,
+      "intlRuns": 261,
+      "intlSr": 164.2,
+      "intlWkts": 35,
+      "intlEcon": 7.75
+    },
+    "iplStats": {
       "matches": 7,
+      "runs": 44,
+      "sr": 130,
+      "hs": "50",
       "wkts": 6,
       "econ": 9.5,
-      "runs": 44
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 30,
+      "runs": 261,
+      "sr": 164.2,
+      "hs": "77*",
+      "avg": 21.75,
+      "wkts": 35,
+      "econ": 7.75,
+      "bb": "5/17"
     }
   },
   {
@@ -3597,10 +8545,42 @@
     "set": "AL2",
     "setName": "Capped All-Rounders Set 2",
     "stats": {
+      "matches": 51,
+      "runs": 1121,
+      "sr": 134,
+      "hs": "73",
+      "wkts": 0,
+      "econ": 8.35,
+      "bb": "-",
+      "iplMatches": 13,
+      "iplRuns": 379,
+      "iplSr": 144.1,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 38,
+      "intlRuns": 742,
+      "intlSr": 128.8,
+      "intlWkts": 0,
+      "intlEcon": 8.4
+    },
+    "iplStats": {
       "matches": 13,
       "runs": 379,
       "sr": 144.1,
-      "wkts": 0
+      "hs": "50",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 38,
+      "runs": 742,
+      "sr": 128.8,
+      "hs": "73",
+      "avg": 20.61,
+      "wkts": 0,
+      "econ": 8.4,
+      "bb": "-"
     }
   },
   {
@@ -3620,10 +8600,42 @@
     "set": "AL2",
     "setName": "Capped All-Rounders Set 2",
     "stats": {
+      "matches": 109,
+      "runs": 757,
+      "sr": 126.8,
+      "hs": "50",
+      "wkts": 119,
+      "econ": 8.49,
+      "bb": "5/27",
+      "iplMatches": 46,
+      "iplRuns": 259,
+      "iplSr": 130,
+      "iplWkts": 53,
+      "iplEcon": 8.78,
+      "intlMatches": 63,
+      "intlRuns": 498,
+      "intlSr": 125.1,
+      "intlWkts": 66,
+      "intlEcon": 8.25
+    },
+    "iplStats": {
       "matches": 46,
       "runs": 259,
+      "sr": 130,
+      "hs": "50",
       "wkts": 53,
-      "econ": 8.78
+      "econ": 8.78,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 63,
+      "runs": 498,
+      "sr": 125.1,
+      "hs": "38",
+      "avg": 15.56,
+      "wkts": 66,
+      "econ": 8.25,
+      "bb": "5/27"
     }
   },
   {
@@ -3643,10 +8655,42 @@
     "set": "FA2",
     "setName": "Capped Fast Bowlers Set 2",
     "stats": {
+      "matches": 34,
+      "runs": 5,
+      "sr": 71.4,
+      "hs": "50",
+      "wkts": 40,
+      "econ": 9.69,
+      "bb": "5/25",
+      "iplMatches": 26,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 29,
+      "iplEcon": 9.39,
+      "intlMatches": 8,
+      "intlRuns": 5,
+      "intlSr": 71.4,
+      "intlWkts": 11,
+      "intlEcon": 10.48
+    },
+    "iplStats": {
       "matches": 26,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 29,
       "econ": 9.39,
       "bb": "5/25"
+    },
+    "intlStats": {
+      "matches": 8,
+      "runs": 5,
+      "sr": 71.4,
+      "hs": "4*",
+      "avg": 5,
+      "wkts": 11,
+      "econ": 10.48,
+      "bb": "3/48"
     }
   },
   {
@@ -3666,10 +8710,42 @@
     "set": "FA2",
     "setName": "Capped Fast Bowlers Set 2",
     "stats": {
+      "matches": 21,
+      "runs": 5,
+      "sr": 100,
+      "hs": "50",
+      "wkts": 21,
+      "econ": 8.45,
+      "bb": "3/31",
+      "iplMatches": 19,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 20,
+      "iplEcon": 8.44,
+      "intlMatches": 2,
+      "intlRuns": 5,
+      "intlSr": 100,
+      "intlWkts": 1,
+      "intlEcon": 8.57
+    },
+    "iplStats": {
       "matches": 19,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 20,
       "econ": 8.44,
       "bb": "3/31"
+    },
+    "intlStats": {
+      "matches": 2,
+      "runs": 5,
+      "sr": 100,
+      "hs": "5*",
+      "avg": 5,
+      "wkts": 1,
+      "econ": 8.57,
+      "bb": "1/34"
     }
   },
   {
@@ -3689,10 +8765,42 @@
     "set": "FA2",
     "setName": "Capped Fast Bowlers Set 2",
     "stats": {
+      "matches": 38,
+      "runs": 28,
+      "sr": 147.4,
+      "hs": "50",
+      "wkts": 37,
+      "econ": 8.72,
+      "bb": "4/21",
+      "iplMatches": 32,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 30,
+      "iplEcon": 8.71,
+      "intlMatches": 6,
+      "intlRuns": 28,
+      "intlSr": 147.4,
+      "intlWkts": 7,
+      "intlEcon": 8.78
+    },
+    "iplStats": {
       "matches": 32,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 30,
       "econ": 8.71,
       "bb": "4/21"
+    },
+    "intlStats": {
+      "matches": 6,
+      "runs": 28,
+      "sr": 147.4,
+      "hs": "26",
+      "avg": 9.3,
+      "wkts": 7,
+      "econ": 8.78,
+      "bb": "4/22"
     }
   },
   {
@@ -3712,10 +8820,42 @@
     "set": "FA2",
     "setName": "Capped Fast Bowlers Set 2",
     "stats": {
+      "matches": 22,
+      "runs": 45,
+      "sr": 115,
+      "hs": "50",
+      "wkts": 22,
+      "econ": 8.6,
+      "bb": "2/41",
+      "iplMatches": 4,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 3,
+      "iplEcon": 10.64,
+      "intlMatches": 18,
+      "intlRuns": 45,
+      "intlSr": 115,
+      "intlWkts": 19,
+      "intlEcon": 8.28
+    },
+    "iplStats": {
       "matches": 4,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 3,
       "econ": 10.64,
       "bb": "2/41"
+    },
+    "intlStats": {
+      "matches": 18,
+      "runs": 45,
+      "sr": 115,
+      "hs": "11",
+      "avg": 9,
+      "wkts": 19,
+      "econ": 8.28,
+      "bb": "3/26"
     }
   },
   {
@@ -3735,10 +8875,42 @@
     "set": "FA2",
     "setName": "Capped Fast Bowlers Set 2",
     "stats": {
+      "matches": 3,
+      "runs": 8,
+      "sr": 100,
+      "hs": "50",
+      "wkts": 6,
+      "econ": 8.76,
+      "bb": "T20I 4/20",
+      "iplMatches": 0,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 0,
+      "iplEcon": 8.5,
+      "intlMatches": 3,
+      "intlRuns": 8,
+      "intlSr": 100,
+      "intlWkts": 6,
+      "intlEcon": 8.8
+    },
+    "iplStats": {
       "matches": 0,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 0,
       "econ": 8.5,
       "bb": "T20I 4/20"
+    },
+    "intlStats": {
+      "matches": 3,
+      "runs": 8,
+      "sr": 100,
+      "hs": "8",
+      "avg": 8,
+      "wkts": 6,
+      "econ": 8.8,
+      "bb": "4/20"
     }
   },
   {
@@ -3758,10 +8930,42 @@
     "set": "FA2",
     "setName": "Capped Fast Bowlers Set 2",
     "stats": {
+      "matches": 18,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 23,
+      "econ": 8.72,
+      "bb": "3/42",
+      "iplMatches": 7,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 8,
+      "iplEcon": 9.88,
+      "intlMatches": 11,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 15,
+      "intlEcon": 8.1
+    },
+    "iplStats": {
       "matches": 7,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 8,
       "econ": 9.88,
       "bb": "3/42"
+    },
+    "intlStats": {
+      "matches": 11,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 15,
+      "econ": 8.1,
+      "bb": "5/20"
     }
   },
   {
@@ -3781,10 +8985,42 @@
     "set": "FA2",
     "setName": "Capped Fast Bowlers Set 2",
     "stats": {
+      "matches": 56,
+      "runs": 15,
+      "sr": 75,
+      "hs": "50",
+      "wkts": 88,
+      "econ": 8.76,
+      "bb": "4/10",
+      "iplMatches": 14,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 25,
+      "iplEcon": 8.3,
+      "intlMatches": 42,
+      "intlRuns": 15,
+      "intlSr": 75,
+      "intlWkts": 63,
+      "intlEcon": 8.94
+    },
+    "iplStats": {
       "matches": 14,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 25,
       "econ": 8.3,
       "bb": "4/10"
+    },
+    "intlStats": {
+      "matches": 42,
+      "runs": 15,
+      "sr": 75,
+      "hs": "4*",
+      "avg": 3.7,
+      "wkts": 63,
+      "econ": 8.94,
+      "bb": "5/39"
     }
   },
   {
@@ -3804,10 +9040,42 @@
     "set": "FA2",
     "setName": "Capped Fast Bowlers Set 2",
     "stats": {
+      "matches": 19,
+      "runs": 22,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 21,
+      "econ": 8.62,
+      "bb": "1/40",
+      "iplMatches": 2,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 1,
+      "iplEcon": 12,
+      "intlMatches": 17,
+      "intlRuns": 22,
+      "intlSr": 95,
+      "intlWkts": 20,
+      "intlEcon": 8.45
+    },
+    "iplStats": {
       "matches": 2,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 1,
       "econ": 12,
       "bb": "1/40"
+    },
+    "intlStats": {
+      "matches": 17,
+      "runs": 22,
+      "sr": 95,
+      "hs": "10",
+      "avg": 5.5,
+      "wkts": 20,
+      "econ": 8.45,
+      "bb": "3/44"
     }
   },
   {
@@ -3827,10 +9095,42 @@
     "set": "FA2",
     "setName": "Capped Fast Bowlers Set 2",
     "stats": {
+      "matches": 23,
+      "runs": 90,
+      "sr": 120,
+      "hs": "50",
+      "wkts": 27,
+      "econ": 8.96,
+      "bb": "1/47",
+      "iplMatches": 3,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 1,
+      "iplEcon": 11.2,
+      "intlMatches": 20,
+      "intlRuns": 90,
+      "intlSr": 120,
+      "intlWkts": 26,
+      "intlEcon": 8.87
+    },
+    "iplStats": {
       "matches": 3,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 1,
       "econ": 11.2,
       "bb": "1/47"
+    },
+    "intlStats": {
+      "matches": 20,
+      "runs": 90,
+      "sr": 120,
+      "hs": "17",
+      "avg": 11.2,
+      "wkts": 26,
+      "econ": 8.87,
+      "bb": "3/22"
     }
   },
   {
@@ -3850,10 +9150,42 @@
     "set": "FA2",
     "setName": "Capped Fast Bowlers Set 2",
     "stats": {
+      "matches": 129,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 138,
+      "econ": 7.87,
+      "bb": "5/18",
+      "iplMatches": 127,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 137,
+      "iplEcon": 7.86,
+      "intlMatches": 2,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 1,
+      "intlEcon": 9.75
+    },
+    "iplStats": {
       "matches": 127,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 137,
       "econ": 7.86,
       "bb": "5/18"
+    },
+    "intlStats": {
+      "matches": 2,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 1,
+      "econ": 9.75,
+      "bb": "1/39"
     }
   },
   {
@@ -3873,10 +9205,42 @@
     "set": "SP2",
     "setName": "Capped Spinners Set 2",
     "stats": {
+      "matches": 125,
+      "runs": 160,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 147,
+      "econ": 7.93,
+      "bb": "3/14",
+      "iplMatches": 8,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 9,
+      "iplEcon": 6.7,
+      "intlMatches": 117,
+      "intlRuns": 160,
+      "intlSr": 95,
+      "intlWkts": 138,
+      "intlEcon": 8.01
+    },
+    "iplStats": {
       "matches": 8,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 9,
       "econ": 6.7,
       "bb": "3/14"
+    },
+    "intlStats": {
+      "matches": 117,
+      "runs": 160,
+      "sr": 95,
+      "hs": "19",
+      "avg": 8.4,
+      "wkts": 138,
+      "econ": 8.01,
+      "bb": "4/28"
     }
   },
   {
@@ -3896,10 +9260,42 @@
     "set": "SP2",
     "setName": "Capped Spinners Set 2",
     "stats": {
+      "matches": 122,
+      "runs": 667,
+      "sr": 122.6,
+      "hs": "77*",
+      "wkts": 130,
+      "econ": 7.01,
+      "bb": "2/13",
+      "iplMatches": 18,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 15,
+      "iplEcon": 6.93,
+      "intlMatches": 104,
+      "intlRuns": 667,
+      "intlSr": 122.6,
+      "intlWkts": 115,
+      "intlEcon": 7.02
+    },
+    "iplStats": {
       "matches": 18,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 15,
       "econ": 6.93,
       "bb": "2/13"
+    },
+    "intlStats": {
+      "matches": 104,
+      "runs": 667,
+      "sr": 122.6,
+      "hs": "77*",
+      "avg": 16.67,
+      "wkts": 115,
+      "econ": 7.02,
+      "bb": "4/11"
     }
   },
   {
@@ -3919,10 +9315,42 @@
     "set": "SP2",
     "setName": "Capped Spinners Set 2",
     "stats": {
+      "matches": 38,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 37,
+      "econ": 8.87,
+      "bb": "4/23",
+      "iplMatches": 37,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 37,
+      "iplEcon": 8.87,
+      "intlMatches": 1,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 0,
+      "intlEcon": 8.75
+    },
+    "iplStats": {
       "matches": 37,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 37,
       "econ": 8.87,
       "bb": "4/23"
+    },
+    "intlStats": {
+      "matches": 1,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 0,
+      "econ": 8.75,
+      "bb": "-"
     }
   },
   {
@@ -3942,10 +9370,42 @@
     "set": "SP2",
     "setName": "Capped Spinners Set 2",
     "stats": {
+      "matches": 57,
+      "runs": 531,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 22,
+      "econ": 8.48,
+      "bb": "2/13",
+      "iplMatches": 55,
+      "iplRuns": 531,
+      "iplSr": 130,
+      "iplWkts": 20,
+      "iplEcon": 8.65,
+      "intlMatches": 2,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 2,
+      "intlEcon": 6.83
+    },
+    "iplStats": {
       "matches": 55,
       "runs": 531,
+      "sr": 130,
+      "hs": "50",
       "wkts": 20,
-      "econ": 8.65
+      "econ": 8.65,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 2,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 2,
+      "econ": 6.83,
+      "bb": "2/13"
     }
   },
   {
@@ -3965,10 +9425,42 @@
     "set": "SP2",
     "setName": "Capped Spinners Set 2",
     "stats": {
+      "matches": 37,
+      "runs": 247,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 21,
+      "econ": 8.32,
+      "bb": "-",
+      "iplMatches": 36,
+      "iplRuns": 247,
+      "iplSr": 130,
+      "iplWkts": 21,
+      "iplEcon": 8.26,
+      "intlMatches": 1,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 0,
+      "intlEcon": 11
+    },
+    "iplStats": {
       "matches": 36,
       "runs": 247,
+      "sr": 130,
+      "hs": "50",
       "wkts": 21,
-      "econ": 8.26
+      "econ": 8.26,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 1,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 0,
+      "econ": 11,
+      "bb": "-"
     }
   },
   {
@@ -3988,10 +9480,42 @@
     "set": "SP2",
     "setName": "Capped Spinners Set 2",
     "stats": {
+      "matches": 5,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
+      "wkts": 2,
+      "econ": 7.83,
+      "bb": "1/27",
+      "iplMatches": 4,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 1,
+      "iplEcon": 8.67,
+      "intlMatches": 1,
+      "intlRuns": 0,
+      "intlSr": 0,
+      "intlWkts": 1,
+      "intlEcon": 7
+    },
+    "iplStats": {
       "matches": 4,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 1,
       "econ": 8.67,
       "bb": "1/27"
+    },
+    "intlStats": {
+      "matches": 1,
+      "runs": 0,
+      "sr": 0,
+      "hs": "0",
+      "avg": 0,
+      "wkts": 1,
+      "econ": 7,
+      "bb": "1/28"
     }
   },
   {
@@ -4011,10 +9535,43 @@
     "set": "UBA2",
     "setName": "Uncapped Batters Set 2",
     "stats": {
+      "matches": 32,
+      "runs": 616,
+      "sr": 139.5,
+      "hs": "72*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 10,
+      "iplRuns": 126,
+      "iplSr": 121.2,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 22,
+      "intlRuns": 490,
+      "intlSr": 144.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 10,
       "runs": 126,
       "sr": 121.2,
-      "hs": "34"
+      "hs": "34",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 22,
+      "runs": 490,
+      "sr": 144.2,
+      "hs": "72*",
+      "avg": 32.6,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -4034,10 +9591,43 @@
     "set": "UBA2",
     "setName": "Uncapped Batters Set 2",
     "stats": {
+      "matches": 41,
+      "runs": 634,
+      "sr": 135.5,
+      "hs": "72*",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-",
+      "iplMatches": 19,
+      "iplRuns": 144,
+      "iplSr": 105.9,
+      "iplWkts": 0,
+      "iplEcon": 8.2,
+      "intlMatches": 22,
+      "intlRuns": 490,
+      "intlSr": 144.2,
+      "intlWkts": 0,
+      "intlEcon": 0
+    },
+    "iplStats": {
       "matches": 19,
       "runs": 144,
       "sr": 105.9,
-      "hs": "33"
+      "hs": "33",
+      "wkts": 0,
+      "econ": 8.2,
+      "bb": "-"
+    },
+    "intlStats": {
+      "matches": 22,
+      "runs": 490,
+      "sr": 144.2,
+      "hs": "72*",
+      "avg": 32.6,
+      "wkts": 0,
+      "econ": 0,
+      "bb": "-",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -4057,10 +9647,43 @@
     "set": "UFA2",
     "setName": "Uncapped Fast Bowlers Set 2",
     "stats": {
+      "matches": 25,
+      "runs": 18,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 29,
+      "econ": 8.77,
+      "bb": "3/23",
+      "iplMatches": 11,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 13,
+      "iplEcon": 10.15,
+      "intlMatches": 14,
+      "intlRuns": 18,
+      "intlSr": 95,
+      "intlWkts": 16,
+      "intlEcon": 7.65
+    },
+    "iplStats": {
       "matches": 11,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 13,
       "econ": 10.15,
       "bb": "3/23"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 18,
+      "sr": 95,
+      "hs": "8",
+      "avg": 6,
+      "wkts": 16,
+      "econ": 7.65,
+      "bb": "3/22",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -4080,10 +9703,43 @@
     "set": "UFA2",
     "setName": "Uncapped Fast Bowlers Set 2",
     "stats": {
+      "matches": 21,
+      "runs": 18,
+      "sr": 95,
+      "hs": "50",
+      "wkts": 23,
+      "econ": 8.17,
+      "bb": "2/25",
+      "iplMatches": 7,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 7,
+      "iplEcon": 9.35,
+      "intlMatches": 14,
+      "intlRuns": 18,
+      "intlSr": 95,
+      "intlWkts": 16,
+      "intlEcon": 7.65
+    },
+    "iplStats": {
       "matches": 7,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 7,
       "econ": 9.35,
       "bb": "2/25"
+    },
+    "intlStats": {
+      "matches": 14,
+      "runs": 18,
+      "sr": 95,
+      "hs": "8",
+      "avg": 6,
+      "wkts": 16,
+      "econ": 7.65,
+      "bb": "3/22",
+      "label": "SMAT / Emerging T20"
     }
   },
   {
@@ -4103,10 +9759,42 @@
     "set": "UFA2",
     "setName": "Uncapped Fast Bowlers Set 2",
     "stats": {
+      "matches": 64,
+      "runs": 30,
+      "sr": 90,
+      "hs": "50",
+      "wkts": 67,
+      "econ": 8.34,
+      "bb": "3/18",
+      "iplMatches": 39,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 35,
+      "iplEcon": 8.79,
+      "intlMatches": 25,
+      "intlRuns": 30,
+      "intlSr": 90,
+      "intlWkts": 32,
+      "intlEcon": 7.85
+    },
+    "iplStats": {
       "matches": 39,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 35,
       "econ": 8.79,
       "bb": "3/18"
+    },
+    "intlStats": {
+      "matches": 25,
+      "runs": 30,
+      "sr": 90,
+      "hs": "12",
+      "avg": 6,
+      "wkts": 32,
+      "econ": 7.85,
+      "bb": "3/20"
     }
   },
   {
@@ -4126,10 +9814,42 @@
     "set": "UFA2",
     "setName": "Uncapped Fast Bowlers Set 2",
     "stats": {
+      "matches": 61,
+      "runs": 1,
+      "sr": 25,
+      "hs": "50",
+      "wkts": 48,
+      "econ": 8.87,
+      "bb": "3/16",
+      "iplMatches": 52,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 44,
+      "iplEcon": 8.94,
+      "intlMatches": 9,
+      "intlRuns": 1,
+      "intlSr": 25,
+      "intlWkts": 4,
+      "intlEcon": 8.12
+    },
+    "iplStats": {
       "matches": 52,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 44,
       "econ": 8.94,
       "bb": "3/16"
+    },
+    "intlStats": {
+      "matches": 9,
+      "runs": 1,
+      "sr": 25,
+      "hs": "1*",
+      "avg": 1,
+      "wkts": 4,
+      "econ": 8.12,
+      "bb": "2/21"
     }
   },
   {
@@ -4149,10 +9869,42 @@
     "set": "UFA2",
     "setName": "Uncapped Fast Bowlers Set 2",
     "stats": {
+      "matches": 50,
+      "runs": 30,
+      "sr": 90,
+      "hs": "50",
+      "wkts": 54,
+      "econ": 8.72,
+      "bb": "3/35",
+      "iplMatches": 25,
+      "iplRuns": 0,
+      "iplSr": 130,
+      "iplWkts": 22,
+      "iplEcon": 9.98,
+      "intlMatches": 25,
+      "intlRuns": 30,
+      "intlSr": 90,
+      "intlWkts": 32,
+      "intlEcon": 7.85
+    },
+    "iplStats": {
       "matches": 25,
+      "runs": 0,
+      "sr": 130,
+      "hs": "50",
       "wkts": 22,
       "econ": 9.98,
       "bb": "3/35"
+    },
+    "intlStats": {
+      "matches": 25,
+      "runs": 30,
+      "sr": 90,
+      "hs": "12",
+      "avg": 6,
+      "wkts": 32,
+      "econ": 7.85,
+      "bb": "3/20"
     }
   }
 ]

@@ -1,7 +1,7 @@
 <script>
   import { store } from '../lib/store.svelte.js';
   import { getFranchise } from '../lib/utils.js';
-  import { Play, Copy, Check, Bot, Shield, Trophy, UserCheck, LogOut, Shuffle } from 'lucide-svelte';
+  import { Play, Copy, Check, Bot, Shield, Trophy, UserCheck, LogOut, Shuffle, Users } from 'lucide-svelte';
 
   let copied = $state(false);
   let starting = $state(false);
@@ -80,22 +80,49 @@
       </p>
     </div>
 
-    <!-- Room Code Share Button -->
-    <button
-      onclick={copyRoomLink}
-      title="Click to copy room code"
-      class="flex items-center gap-2.5 px-4 py-2.5 bg-[#15142e] hover:bg-[#272552] border border-[#272552] rounded-2xl transition cursor-pointer text-left"
-    >
-      <div>
-        <span class="block text-[10px] uppercase font-bold text-[#9a97c4]">Room Code</span>
-        <span class="text-xl font-extrabold font-mono tracking-widest text-white">{store.roomCode}</span>
+    <div class="flex items-center gap-3 flex-wrap">
+      <!-- Players in Lobby Badge -->
+      <div class="flex items-center gap-2.5 px-4 py-2 bg-[#15142e] border border-[#272552] rounded-2xl shadow-sm">
+        <div class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+        </div>
+        <div>
+          <span class="block text-[10px] uppercase font-bold text-[#9a97c4]">In Lobby</span>
+          <span class="text-sm font-extrabold text-emerald-300 font-mono">
+            {store.roomState.connectedUsersCount || 1} {store.roomState.connectedUsersCount === 1 ? 'Player' : 'Players'}
+          </span>
+        </div>
       </div>
-      {#if copied}
-        <Check size={18} class="text-emerald-400" />
-      {:else}
-        <Copy size={18} class="text-purple-400" />
-      {/if}
-    </button>
+
+      <!-- Franchises Claimed Badge -->
+      <div class="flex items-center gap-2 px-3.5 py-2 bg-[#15142e] border border-[#272552] rounded-2xl shadow-sm">
+        <Trophy size={16} class="text-amber-400" />
+        <div>
+          <span class="block text-[10px] uppercase font-bold text-[#9a97c4]">Claimed</span>
+          <span class="text-sm font-extrabold text-amber-300 font-mono">
+            {claimedCount}/10
+          </span>
+        </div>
+      </div>
+
+      <!-- Room Code Share Button -->
+      <button
+        onclick={copyRoomLink}
+        title="Click to copy room code"
+        class="flex items-center gap-2.5 px-4 py-2 bg-[#15142e] hover:bg-[#272552] border border-[#272552] rounded-2xl transition cursor-pointer text-left"
+      >
+        <div>
+          <span class="block text-[10px] uppercase font-bold text-[#9a97c4]">Room Code</span>
+          <span class="text-xl font-extrabold font-mono tracking-widest text-white">{store.roomCode}</span>
+        </div>
+        {#if copied}
+          <Check size={18} class="text-emerald-400" />
+        {:else}
+          <Copy size={18} class="text-purple-400" />
+        {/if}
+      </button>
+    </div>
   </div>
 
   <!-- 10 Franchise Grid -->
@@ -179,9 +206,9 @@
       <div>
         <span class="text-sm font-bold text-white">
           {#if !store.myTeamCode}
-            Click any open franchise above to claim it
+            👥 {store.roomState.connectedUsersCount || 1} {store.roomState.connectedUsersCount === 1 ? 'player' : 'players'} in lobby · Click any open franchise above to claim it
           {:else}
-            You control {store.myTeamCode}. {claimedCount} of 10 franchises claimed.
+            You control {store.myTeamCode}. {claimedCount} of 10 franchises claimed ({store.roomState.connectedUsersCount || 1} players in lobby).
           {/if}
         </span>
         <div class="mt-1 flex flex-wrap items-center gap-2 text-xs">

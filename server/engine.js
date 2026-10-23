@@ -108,15 +108,22 @@ export class AuctionEngine {
 
     // Check if claimed by someone else
     if (team.userToken && team.userToken !== userToken) {
-      return { success: false, reason: `Team is already claimed by ${team.userName}` };
+      const isSameName = userName && team.userName && team.userName.trim().toLowerCase() === userName.trim().toLowerCase();
+      if (!isSameName) {
+        return { success: false, reason: `Team is already claimed by ${team.userName}` };
+      }
     }
 
     // Vacate any previous team this user owned in this room
+    const vacatedTeams = [];
     for (const [code, t] of this.teams.entries()) {
-      if (t.userToken === userToken && code !== teamCode) {
+      const isMatchToken = t.userToken && t.userToken === userToken;
+      const isMatchName = userName && t.userName && t.userName.trim().toLowerCase() === userName.trim().toLowerCase();
+      if ((isMatchToken || isMatchName) && code !== teamCode) {
         t.userToken = null;
         t.userName = null;
         t.isBot = false;
+        vacatedTeams.push(t);
       }
     }
 
@@ -124,21 +131,42 @@ export class AuctionEngine {
     team.userName = userName;
     team.isBot = false;
 
+    // Persist all modified teams to database
+    if (this.db) {
+      for (const vt of vacatedTeams) {
+        this.db.saveTeam(this.roomCode, vt);
+      }
+      this.db.saveTeam(this.roomCode, team);
+    }
     this.persist();
+
+    // Broadcast updates for all vacated teams so other clients unlock them immediately
+    for (const vt of vacatedTeams) {
+      this.emit('team_updated', { team: this.sanitizeTeam(vt) });
+    }
+
     this.emit('team_updated', { team: this.sanitizeTeam(team) });
+    this.emit('state_sync', this.getStateSnapshot());
     return { success: true, team: this.sanitizeTeam(team) };
   }
 
-  leaveTeam(teamCode, { userToken }) {
+  leaveTeam(teamCode, { userToken, userName } = {}) {
     const team = this.teams.get(teamCode);
     if (!team) return { success: false, reason: 'Team does not exist' };
 
-    if (team.userToken === userToken) {
+    const matchesToken = team.userToken && team.userToken === userToken;
+    const matchesName = userName && team.userName && team.userName.trim().toLowerCase() === userName.trim().toLowerCase();
+
+    if (matchesToken || matchesName) {
       team.userToken = null;
       team.userName = null;
       team.isBot = false;
+      if (this.db) {
+        this.db.saveTeam(this.roomCode, team);
+      }
       this.persist();
       this.emit('team_updated', { team: this.sanitizeTeam(team) });
+      this.emit('state_sync', this.getStateSnapshot());
       return { success: true };
     }
     return { success: false, reason: 'Unauthorized' };
