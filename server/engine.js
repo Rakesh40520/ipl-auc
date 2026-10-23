@@ -67,10 +67,12 @@ export class AuctionEngine {
     }
 
     // Auction stage state
+    this.timerDuration = this.config.timerDuration || 10;
     this.currentBid = 0;
     this.leadTeam = null;
     this.leadUser = null;
-    this.timer = this.config.timerDuration;
+    this.timer = this.timerDuration;
+    this.timerEndsAt = 0;
     this.timerInterval = null;
     this.bidHistory = [];
     this.lastBidSnapshot = null;
@@ -86,16 +88,27 @@ export class AuctionEngine {
     this.transitionTimeout = null;
     this.isTransitioning = false;
 
-    // Post-Auction Tournament Fixtures & Playoffs
+    // Post-Auction Tournament Fixtures & Multi-Stage Progression
     this.activeBattle = null;
+    this.tournamentStage = 'league'; // 'league' | 'playoffs' | 'finals'
     this.fixtures = [];
+    this.leagueFixtures = [];
+    this.playoffFixtures = [];
+    this.finalFixtures = [];
+    this.q1Winner = null;
+    this.q1Loser = null;
+    this.elimWinner = null;
+    this.q2Winner = null;
+    this.finalist1 = null;
+    this.finalist2 = null;
     this.tournamentWinner = null;
     this.championTeam = null;
 
-    // Spectator voting & Playing XI selection window
+    // Spectator voting & Playing XI selection window (Strict 2 minutes = 120s)
     this.config.spectatorsCanVote = this.config.spectatorsCanVote ?? true;
-    this.config.xiSelectionTime = this.config.xiSelectionTime ?? 90;
+    this.config.xiSelectionTime = this.config.xiSelectionTime ?? 120;
     this.xiTimer = this.config.xiSelectionTime;
+    this.xiTimerEndsAt = 0;
     this.xiTimerInterval = null;
 
     this.spectatorCount = 0;
@@ -222,8 +235,10 @@ export class AuctionEngine {
   pauseAuction() {
     if (this.status !== 'active') return { success: false, reason: 'Auction is not active' };
     this.status = 'paused';
+    const remaining = Math.max(0, (this.timerEndsAt - Date.now()) / 1000);
+    this.timer = remaining;
     this.stopTimer();
-    this.emit('auction_status_changed', { status: this.status });
+    this.emit('auction_status_changed', { status: this.status, timer: Math.ceil(this.timer) });
     this.persist();
     return { success: true };
   }
@@ -231,8 +246,9 @@ export class AuctionEngine {
   resumeAuction() {
     if (this.status !== 'paused') return { success: false, reason: 'Auction is not paused' };
     this.status = 'active';
+    this.timerEndsAt = Date.now() + Math.round(this.timer * 1000);
     this.startTimer();
-    this.emit('auction_status_changed', { status: this.status });
+    this.emit('auction_status_changed', { status: this.status, timer: Math.ceil(this.timer), timerEndsAt: this.timerEndsAt });
     this.persist();
     return { success: true };
   }
@@ -277,31 +293,40 @@ export class AuctionEngine {
       }
     }
 
-    // Auto-plan tournament fixtures
+    // Auto-plan tournament league fixtures
     this.generateFixtures();
 
-    // Start XI selection countdown timer (default 90s)
+    // Start XI selection countdown timer (Strict 2 minutes = 120s)
     this.startXITimer();
 
     this.emit('auction_status_changed', { status: this.status });
     this.emit('xi_selection_started', {
       status: this.status,
       timer: this.xiTimer,
+      xiTimerEndsAt: this.xiTimerEndsAt,
       teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t)),
       fixtures: this.fixtures
     });
     this.emit('state_sync', this.getStateSnapshot());
     this.persist();
-    return { success: true, status: this.status, timer: this.xiTimer };
+    return { success: true, status: this.status, timer: this.xiTimer, xiTimerEndsAt: this.xiTimerEndsAt };
   }
 
   startXITimer() {
     this.stopXITimer();
-    this.xiTimer = this.config.xiSelectionTime || 90;
+    this.xiTimer = this.config.xiSelectionTime || 120;
+    this.xiTimerEndsAt = Date.now() + this.xiTimer * 1000;
+
+    this.emit('xi_timer_tick', { timer: this.xiTimer, xiTimerEndsAt: this.xiTimerEndsAt });
+
     this.xiTimerInterval = setInterval(() => {
-      this.xiTimer -= 1;
-      this.emit('xi_timer_tick', { timer: this.xiTimer });
-      if (this.xiTimer <= 0) {
+      const remainingMs = this.xiTimerEndsAt - Date.now();
+      const remainingSec = Math.max(0, Math.ceil(remainingMs / 1000));
+      this.xiTimer = remainingSec;
+
+      this.emit('xi_timer_tick', { timer: this.xiTimer, xiTimerEndsAt: this.xiTimerEndsAt });
+
+      if (remainingMs <= 0) {
         this.stopXITimer();
         this.advanceToFixtures();
       }
@@ -324,6 +349,7 @@ export class AuctionEngine {
   advanceToFixtures() {
     this.stopXITimer();
     this.status = 'completed';
+    this.tournamentStage = 'league';
 
     // Auto-confirm any unconfirmed squads
     for (const team of this.teams.values()) {
@@ -333,11 +359,14 @@ export class AuctionEngine {
       team.isXIConfirmed = true;
     }
 
-    if (!this.fixtures || this.fixtures.length === 0) {
+    if (!this.fixtures || this.fixtures.length === 0 || !this.leagueFixtures || this.leagueFixtures.length === 0) {
       this.generateFixtures();
+    } else {
+      this.fixtures = this.leagueFixtures;
     }
 
     this.emit('auction_status_changed', { status: this.status });
+    this.emit('tournament_stage_changed', { stage: this.tournamentStage });
     this.emit('auction_completed', {
       results: this.results,
       teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t)),
@@ -579,9 +608,6 @@ export class AuctionEngine {
   // --- TOURNAMENT FIXTURES & STANDINGS ---
 
   generateFixtures() {
-    // Participating franchises:
-    // If AI bots enabled, all 10 franchises participate.
-    // Otherwise, all franchises that have a manager or have acquired squad players.
     let participatingTeams = [];
     if (this.config.botsEnabled) {
       participatingTeams = Array.from(this.teams.values()).map(t => this.sanitizeTeam(t));
@@ -591,9 +617,9 @@ export class AuctionEngine {
         .map(t => this.sanitizeTeam(t));
     }
 
-    // Rule: Minimum 2 teams required to plan tournament match fixtures
     if (participatingTeams.length < 2) {
       this.fixtures = [];
+      this.leagueFixtures = [];
       const reason = `At least 2 teams are required to plan tournament match fixtures (currently ${participatingTeams.length} team).`;
       this.emit('fixtures_updated', {
         fixtures: [],
@@ -629,7 +655,7 @@ export class AuctionEngine {
             stageLabel: `League Match #${matchNumber}`,
             teamA: team1.code,
             teamB: team2.code,
-            status: 'scheduled', // 'scheduled' | 'live' | 'completed'
+            status: 'scheduled',
             scoreA: null,
             scoreB: null,
             winner: null,
@@ -641,7 +667,6 @@ export class AuctionEngine {
         }
       }
 
-      // Rotate round robin (keep first fixed, rotate remaining)
       const fixed = rotating[0];
       const rest = rotating.slice(1);
       const last = rest.pop();
@@ -649,35 +674,57 @@ export class AuctionEngine {
       rotating = [fixed, ...rest];
     }
 
-    this.fixtures = fixtures;
-    this.emit('fixtures_updated', { fixtures: this.fixtures });
+    this.leagueFixtures = fixtures;
+    this.playoffFixtures = [];
+    this.finalFixtures = [];
+    this.tournamentStage = 'league';
+    this.fixtures = this.leagueFixtures;
+    this.emit('tournament_stage_changed', { stage: this.tournamentStage });
+    this.emit('fixtures_updated', { fixtures: this.fixtures, tournamentStage: this.tournamentStage });
     this.emit('state_sync', this.getStateSnapshot());
     this.persist();
     return { success: true, fixtures: this.fixtures };
   }
 
-  planPlayoffs() {
+  advanceToPlayoffs() {
     const standings = this.getTournamentStandings();
-    if (standings.length < 2) return;
-
-    // Check if playoffs are already planned
-    if (this.fixtures.some(f => f.stage === 'semifinal' || f.stage === 'final')) {
-      return;
+    if (standings.length < 2) {
+      return { success: false, reason: 'At least 2 teams required to plan playoffs' };
     }
 
-    let nextMatchNum = this.fixtures.length + 1;
-    const playoffFixtures = [];
+    this.tournamentStage = 'playoffs';
+    let nextMatchNum = (this.leagueFixtures ? this.leagueFixtures.length : 0) + 1;
+    this.playoffFixtures = [];
 
     if (standings.length >= 4) {
-      // 4+ teams: Top 4 qualify for Playoffs!
-      // Semi-Final 1: 1st vs 4th
-      const sf1 = {
-        id: `fixture-${nextMatchNum}`,
+      // Authentic IPL Playoff Format: Top 4 qualify!
+      // 1. Qualifier 1: 1st vs 2nd
+      const q1 = {
+        id: 'fixture-q1',
         matchNumber: nextMatchNum++,
         round: 'Playoffs',
-        stage: 'semifinal',
-        stageLabel: `Semi-Final 1: ${standings[0].code} (1st) vs ${standings[3].code} (4th)`,
+        stage: 'playoffs',
+        playoffType: 'qualifier1',
+        stageLabel: `⚔️ QUALIFIER 1: ${standings[0].code} (1st) vs ${standings[1].code} (2nd)`,
         teamA: standings[0].code,
+        teamB: standings[1].code,
+        status: 'scheduled',
+        scoreA: null,
+        scoreB: null,
+        winner: null,
+        scorecard: null,
+        completedAt: null
+      };
+
+      // 2. Eliminator: 3rd vs 4th (Knockout)
+      const elim = {
+        id: 'fixture-elim',
+        matchNumber: nextMatchNum++,
+        round: 'Playoffs',
+        stage: 'playoffs',
+        playoffType: 'eliminator',
+        stageLabel: `🔥 ELIMINATOR: ${standings[2].code} (3rd) vs ${standings[3].code} (4th - Knockout)`,
+        teamA: standings[2].code,
         teamB: standings[3].code,
         status: 'scheduled',
         scoreA: null,
@@ -687,30 +734,14 @@ export class AuctionEngine {
         completedAt: null
       };
 
-      // Semi-Final 2: 2nd vs 3rd
-      const sf2 = {
-        id: `fixture-${nextMatchNum}`,
+      // 3. Qualifier 2: Loser Q1 vs Winner Eliminator (TBD until Q1 & Eliminator are done)
+      const q2 = {
+        id: 'fixture-q2',
         matchNumber: nextMatchNum++,
         round: 'Playoffs',
-        stage: 'semifinal',
-        stageLabel: `Semi-Final 2: ${standings[1].code} (2nd) vs ${standings[2].code} (3rd)`,
-        teamA: standings[1].code,
-        teamB: standings[2].code,
-        status: 'scheduled',
-        scoreA: null,
-        scoreB: null,
-        winner: null,
-        scorecard: null,
-        completedAt: null
-      };
-
-      // Grand Final
-      const grandFinal = {
-        id: `fixture-${nextMatchNum}`,
-        matchNumber: nextMatchNum++,
-        round: 'Playoffs',
-        stage: 'final',
-        stageLabel: '🏆 IPL Grand Final (Championship)',
+        stage: 'playoffs',
+        playoffType: 'qualifier2',
+        stageLabel: '⚔️ QUALIFIER 2: Loser Q1 vs Winner Eliminator (Winner to Final)',
         teamA: 'TBD',
         teamB: 'TBD',
         status: 'scheduled',
@@ -721,15 +752,16 @@ export class AuctionEngine {
         completedAt: null
       };
 
-      playoffFixtures.push(sf1, sf2, grandFinal);
+      this.playoffFixtures = [q1, elim, q2];
     } else {
-      // 2 or 3 teams: Direct Grand Final between Top 2
+      // 2 or 3 teams: Direct final
       const grandFinal = {
-        id: `fixture-${nextMatchNum}`,
+        id: 'fixture-final',
         matchNumber: nextMatchNum++,
         round: 'Playoffs',
-        stage: 'final',
-        stageLabel: `🏆 IPL Grand Final: ${standings[0].code} vs ${standings[1].code}`,
+        stage: 'finals',
+        playoffType: 'final',
+        stageLabel: `🏆 IPL GRAND FINAL: ${standings[0].code} vs ${standings[1].code}`,
         teamA: standings[0].code,
         teamB: standings[1].code,
         status: 'scheduled',
@@ -739,14 +771,62 @@ export class AuctionEngine {
         scorecard: null,
         completedAt: null
       };
-      playoffFixtures.push(grandFinal);
+      this.playoffFixtures = [grandFinal];
     }
 
-    this.fixtures.push(...playoffFixtures);
-    this.emit('fixtures_updated', { fixtures: this.fixtures });
+    // Strict rule: Remove league fixtures from active view; show ONLY playoff fixtures
+    this.fixtures = this.playoffFixtures;
+    this.emit('tournament_stage_changed', { stage: this.tournamentStage });
+    this.emit('fixtures_updated', { fixtures: this.fixtures, tournamentStage: this.tournamentStage });
     this.emit('state_sync', this.getStateSnapshot());
     this.persist();
-    return { success: true, fixtures: this.fixtures };
+    return { success: true, stage: this.tournamentStage, fixtures: this.fixtures };
+  }
+
+  advanceToFinals() {
+    this.tournamentStage = 'finals';
+    const standings = this.getTournamentStandings();
+    const tA = this.finalist1 || standings[0]?.code || 'CSK';
+    const tB = this.finalist2 || standings[1]?.code || 'MI';
+
+    const grandFinal = {
+      id: 'fixture-final',
+      matchNumber: ((this.leagueFixtures?.length || 0) + (this.playoffFixtures?.length || 0) + 1),
+      round: 'Finals',
+      stage: 'finals',
+      playoffType: 'final',
+      stageLabel: `🏆 IPL GRAND FINAL: ${tA} vs ${tB}`,
+      teamA: tA,
+      teamB: tB,
+      status: 'scheduled',
+      scoreA: null,
+      scoreB: null,
+      winner: null,
+      scorecard: null,
+      completedAt: null
+    };
+
+    this.finalFixtures = [grandFinal];
+    // Strict rule: Remove playoff fixtures from active view; show ONLY the Grand Final
+    this.fixtures = this.finalFixtures;
+    this.emit('tournament_stage_changed', { stage: this.tournamentStage });
+    this.emit('fixtures_updated', { fixtures: this.fixtures, tournamentStage: this.tournamentStage });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return { success: true, stage: this.tournamentStage, fixtures: this.fixtures };
+  }
+
+  advanceTournamentStage() {
+    if (this.tournamentStage === 'league') {
+      return this.advanceToPlayoffs();
+    } else if (this.tournamentStage === 'playoffs') {
+      return this.advanceToFinals();
+    }
+    return { success: false, reason: 'Already at finals' };
+  }
+
+  planPlayoffs() {
+    return this.advanceToPlayoffs();
   }
 
   startFixtureBattle({ fixtureId, userToken }) {
@@ -920,33 +1000,45 @@ export class AuctionEngine {
       this.emit('battle_updated', { battle: null });
     }
 
-    // 1. Check if all league matches are done -> Plan Playoffs (Semifinals & Final)
-    const leagueMatches = this.fixtures.filter(f => !f.stage || f.stage === 'league');
-    const allLeagueDone = leagueMatches.every(f => f.status === 'completed');
-    if (allLeagueDone && !this.fixtures.some(f => f.stage === 'semifinal' || f.stage === 'final')) {
-      this.planPlayoffs();
-    }
+    // 1. Playoff stage progression (Qualifier 1, Eliminator, Qualifier 2)
+    if (this.tournamentStage === 'playoffs' || fixture.stage === 'playoffs') {
+      const q1 = this.playoffFixtures.find(f => f.id === 'fixture-q1');
+      const elim = this.playoffFixtures.find(f => f.id === 'fixture-elim');
+      const q2 = this.playoffFixtures.find(f => f.id === 'fixture-q2');
 
-    // 2. Check if Semi-Finals are completed -> Update Grand Final teams
-    const sfMatches = this.fixtures.filter(f => f.stage === 'semifinal');
-    if (sfMatches.length === 2 && sfMatches.every(f => f.status === 'completed' && f.winner)) {
-      const grandFinal = this.fixtures.find(f => f.stage === 'final');
-      if (grandFinal && (grandFinal.teamA === 'TBD' || grandFinal.teamB === 'TBD')) {
-        grandFinal.teamA = sfMatches[0].winner;
-        grandFinal.teamB = sfMatches[1].winner;
-        grandFinal.stageLabel = `🏆 IPL Grand Final: ${grandFinal.teamA} vs ${grandFinal.teamB}`;
+      if (q1 && q1.status === 'completed' && q1.winner) {
+        this.q1Winner = q1.winner;
+        this.q1Loser = q1.winner === q1.teamA ? q1.teamB : q1.teamA;
+        this.finalist1 = this.q1Winner;
+      }
+
+      if (elim && elim.status === 'completed' && elim.winner) {
+        this.elimWinner = elim.winner;
+      }
+
+      // If both Q1 and Eliminator are done, populate Qualifier 2
+      if (q2 && (q2.teamA === 'TBD' || q2.teamB === 'TBD') && this.q1Loser && this.elimWinner) {
+        q2.teamA = this.q1Loser;
+        q2.teamB = this.elimWinner;
+        q2.stageLabel = `⚔️ QUALIFIER 2: ${this.q1Loser} vs ${this.elimWinner} (Winner to Final)`;
+      }
+
+      if (q2 && q2.status === 'completed' && q2.winner) {
+        this.q2Winner = q2.winner;
+        this.finalist2 = this.q2Winner;
       }
     }
 
-    // 3. Check if Grand Final is completed -> Declare IPL Champion!
-    const finalMatch = this.fixtures.find(f => f.stage === 'final');
-    if (finalMatch && finalMatch.status === 'completed' && finalMatch.winner) {
-      this.tournamentWinner = finalMatch.winner;
-      this.championTeam = this.sanitizeTeam(this.teams.get(finalMatch.winner));
-      this.emit('tournament_winner_declared', {
-        winner: this.tournamentWinner,
-        champion: this.championTeam
-      });
+    // 2. Grand Final stage completion -> Declare IPL Champion!
+    if (this.tournamentStage === 'finals' || fixture.stage === 'final' || fixture.stage === 'finals') {
+      if (fixture.status === 'completed' && fixture.winner) {
+        this.tournamentWinner = fixture.winner;
+        this.championTeam = this.sanitizeTeam(this.teams.get(fixture.winner));
+        this.emit('tournament_winner_declared', {
+          winner: this.tournamentWinner,
+          champion: this.championTeam
+        });
+      }
     }
 
     this.emit('fixture_simulated', { fixture, scorecard });
@@ -1107,11 +1199,12 @@ export class AuctionEngine {
 
   getTournamentStandings() {
     const standingsMap = new Map();
+    const sourceFixtures = (this.leagueFixtures && this.leagueFixtures.length > 0) ? this.leagueFixtures : (this.fixtures || []);
 
     const teamCodes = new Set();
-    for (const f of this.fixtures) {
-      teamCodes.add(f.teamA);
-      teamCodes.add(f.teamB);
+    for (const f of sourceFixtures) {
+      if (f.teamA && f.teamA !== 'BYE' && f.teamA !== 'TBD') teamCodes.add(f.teamA);
+      if (f.teamB && f.teamB !== 'BYE' && f.teamB !== 'TBD') teamCodes.add(f.teamB);
     }
 
     if (teamCodes.size === 0) {
@@ -1141,7 +1234,7 @@ export class AuctionEngine {
       });
     }
 
-    for (const f of this.fixtures) {
+    for (const f of sourceFixtures) {
       if (f.stage && f.stage !== 'league') continue; // Only league matches count toward the points table
       if (f.status !== 'completed' || !f.winner) continue;
 
@@ -1252,8 +1345,10 @@ export class AuctionEngine {
     this.leadUser = null;
     this.bidHistory = [];
     this.lastBidSnapshot = null;
-    this.timer = this.config.timerDuration;
+    this.timer = this.timerDuration;
+    this.timerEndsAt = Date.now() + this.timer * 1000;
     this.lastEmittedTimer = this.timer;
+    this.lastTickTime = Date.now();
     this.nextBotBidTime = Date.now() + 2500 + Math.random() * 2000;
 
     // Reset Bot Max Willingness for this player
@@ -1267,6 +1362,7 @@ export class AuctionEngine {
       isAcceleratedRound: this.isAcceleratedRound,
       currentBid: this.currentBid,
       timer: this.timer,
+      timerEndsAt: this.timerEndsAt,
       teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t))
     });
 
@@ -1336,9 +1432,11 @@ export class AuctionEngine {
     this.leadTeam = team.code;
     this.leadUser = userName || team.userName || team.code;
 
-    // Reset countdown timer (back to at least 7 seconds or full duration)
-    this.timer = Math.max(this.timer, Math.min(this.config.timerDuration, 8.0));
-    this.lastEmittedTimer = Math.ceil(this.timer);
+    // Strict auction countdown reset: reset to full timerDuration for EVERYONE
+    this.timer = this.timerDuration;
+    this.timerEndsAt = Date.now() + this.timer * 1000;
+    this.lastEmittedTimer = this.timer;
+    this.lastTickTime = Date.now();
     this.nextBotBidTime = Date.now() + 2500 + Math.random() * 2000;
 
     const bidRecord = {
@@ -1366,7 +1464,13 @@ export class AuctionEngine {
       leadUser: this.leadUser,
       bidHistory: this.bidHistory,
       timer: Math.ceil(this.timer),
+      timerEndsAt: this.timerEndsAt,
       teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t))
+    });
+
+    this.emit('timer_tick', {
+      timer: this.timer,
+      timerEndsAt: this.timerEndsAt
     });
 
     return { success: true, amount: proposedBid };
@@ -1458,24 +1562,28 @@ export class AuctionEngine {
   startTimer() {
     this.stopTimer();
     this.lastTickTime = Date.now();
+    this.timerEndsAt = Date.now() + Math.round(this.timer * 1000);
     this.lastEmittedTimer = Math.ceil(this.timer);
 
-    this.timerInterval = setInterval(() => {
-      const now = Date.now();
-      const deltaSec = (now - this.lastTickTime) / 1000;
-      this.lastTickTime = now;
+    // Strict rule: emit immediately so every client starts counting synchronously
+    this.emit('timer_tick', {
+      timer: this.lastEmittedTimer,
+      timerEndsAt: this.timerEndsAt
+    });
 
+    this.timerInterval = setInterval(() => {
       if (this.status !== 'active') return;
 
-      this.timer = Math.max(0, this.timer - deltaSec);
-      const currentCeil = Math.ceil(this.timer);
+      const remainingMs = this.timerEndsAt - Date.now();
+      const remainingSec = Math.max(0, Math.ceil(remainingMs / 1000));
+      this.timer = Math.max(0, remainingMs / 1000);
 
-      // Emit strictly once per second to avoid WebSocket message jitter
-      if (currentCeil !== this.lastEmittedTimer) {
-        this.lastEmittedTimer = currentCeil;
+      // Emit strictly once per second to all connected clients
+      if (remainingSec !== this.lastEmittedTimer) {
+        this.lastEmittedTimer = remainingSec;
         this.emit('timer_tick', {
-          timer: currentCeil,
-          precise: parseFloat(this.timer.toFixed(1))
+          timer: remainingSec,
+          timerEndsAt: this.timerEndsAt
         });
       }
 
@@ -1484,7 +1592,7 @@ export class AuctionEngine {
         this.evaluateBotBids();
       }
 
-      if (this.timer <= 0) {
+      if (remainingMs <= 0) {
         this.stopTimer();
         if (this.leadTeam) {
           this.finalizePlayer(true, 'sold');
@@ -1492,7 +1600,7 @@ export class AuctionEngine {
           this.finalizePlayer(false, 'unsold');
         }
       }
-    }, 200);
+    }, 100);
   }
 
   stopTimer() {
@@ -1745,9 +1853,11 @@ export class AuctionEngine {
       leadTeam: this.leadTeam,
       leadUser: this.leadUser,
       leadTeamDetails: this.leadTeam ? this.sanitizeTeam(this.teams.get(this.leadTeam)) : null,
-      timer: Math.ceil(this.timer),
+      timer: this.timerEndsAt > 0 ? Math.max(0, Math.ceil((this.timerEndsAt - Date.now()) / 1000)) : Math.ceil(this.timer),
+      timerEndsAt: this.timerEndsAt,
       timerPrecise: parseFloat(this.timer.toFixed(1)),
-      xiTimer: Math.ceil(this.xiTimer || 0),
+      xiTimer: this.xiTimerEndsAt > 0 ? Math.max(0, Math.ceil((this.xiTimerEndsAt - Date.now()) / 1000)) : Math.ceil(this.xiTimer || 0),
+      xiTimerEndsAt: this.xiTimerEndsAt,
       spectatorsCanVote: this.config.spectatorsCanVote ?? true,
       spectatorCount: this.spectatorCount || 0,
       connectedUsersCount: this.connectedUsersCount || 0,
@@ -1757,7 +1867,12 @@ export class AuctionEngine {
       results: this.results,
       canUndo: Boolean(this.lastBidSnapshot),
       activeBattle: this.activeBattle,
+      tournamentStage: this.tournamentStage || 'league',
       fixtures: this.fixtures || [],
+      leagueFixtures: this.leagueFixtures || [],
+      playoffFixtures: this.playoffFixtures || [],
+      finalFixtures: this.finalFixtures || [],
+      allTournamentFixtures: [...(this.leagueFixtures || []), ...(this.playoffFixtures || []), ...(this.finalFixtures || [])],
       standings: this.getTournamentStandings(),
       tournamentWinner: this.tournamentWinner,
       championTeam: this.championTeam ? this.sanitizeTeam(this.championTeam) : null,

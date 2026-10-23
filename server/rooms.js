@@ -368,6 +368,16 @@ export class RoomManager {
         case 'advance_to_fixtures':
           res = engine.advanceToFixtures();
           break;
+        case 'advance_to_playoffs':
+        case 'plan_playoffs':
+          res = engine.advanceToPlayoffs();
+          break;
+        case 'advance_to_finals':
+          res = engine.advanceToFinals();
+          break;
+        case 'advance_tournament_stage':
+          res = engine.advanceTournamentStage();
+          break;
         case 'toggle_spectator_voting':
           res = engine.toggleSpectatorVoting();
           break;

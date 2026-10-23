@@ -61,7 +61,8 @@ export const HostControlSchema = z.object({
     'clear_bots', 'toggle_bots', 'close_room', 'release_team',
     'plan_fixtures', 'conclude_battle', 'reset_fixtures',
     'toggle_spectator_voting', 'advance_to_fixtures', 'start_super_over',
-    'jumble_players', 'set_match_mode', 'simulate_fixture', 'simulate_all_fixtures'
+    'jumble_players', 'set_match_mode', 'simulate_fixture', 'simulate_all_fixtures',
+    'advance_to_playoffs', 'advance_to_finals', 'advance_tournament_stage'
   ]),
   configUpdate: RoomConfigSchema.partial().optional().nullable()
 });

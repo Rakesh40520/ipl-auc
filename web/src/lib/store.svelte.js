@@ -90,8 +90,10 @@ export class AuctionStore {
     leadUser: null,
     leadTeamDetails: null,
     timer: 10,
+    timerEndsAt: 0,
     timerPrecise: 10.0,
-    xiTimer: 90,
+    xiTimer: 120,
+    xiTimerEndsAt: 0,
     spectatorsCanVote: true,
     allTeamsXIConfirmed: false,
     bidHistory: [],
@@ -99,9 +101,15 @@ export class AuctionStore {
     results: [],
     canUndo: false,
     activeBattle: null,
+    tournamentStage: 'league',
     fixtures: [],
+    leagueFixtures: [],
+    playoffFixtures: [],
+    finalFixtures: [],
     standings: [],
-    matchMode: 'voting'
+    tournamentWinner: null,
+    championTeam: null,
+    matchMode: 'ai_simulation'
   });
 
   // Sold/Unsold Celebration overlay state
@@ -244,6 +252,7 @@ export class AuctionStore {
       this.roomState.isAcceleratedRound = payload.isAcceleratedRound;
       this.roomState.currentBid = payload.currentBid;
       this.roomState.timer = payload.timer;
+      this.roomState.timerEndsAt = payload.timerEndsAt || (Date.now() + payload.timer * 1000);
       this.roomState.timerPrecise = payload.timer;
       this.roomState.leadTeam = null;
       this.roomState.leadUser = null;
@@ -262,9 +271,10 @@ export class AuctionStore {
       playGavel();
     });
 
-    this.socket.on('timer_tick', ({ timer, precise }) => {
+    this.socket.on('timer_tick', ({ timer, timerEndsAt, precise }) => {
       this.roomState.timer = timer;
-      this.roomState.timerPrecise = precise;
+      if (timerEndsAt) this.roomState.timerEndsAt = timerEndsAt;
+      this.roomState.timerPrecise = precise || timer;
 
       if (timer <= 3 && timer > 0) {
         playCountdownBeep(true);
@@ -278,6 +288,7 @@ export class AuctionStore {
       this.roomState.leadUser = payload.leadUser;
       this.roomState.bidHistory = payload.bidHistory;
       this.roomState.timer = payload.timer;
+      this.roomState.timerEndsAt = payload.timerEndsAt || (Date.now() + payload.timer * 1000);
       this.roomState.timerPrecise = payload.timer;
       this.roomState.canUndo = true;
 
@@ -295,6 +306,7 @@ export class AuctionStore {
       this.roomState.leadUser = payload.leadUser;
       this.roomState.bidHistory = payload.bidHistory;
       this.roomState.timer = payload.timer;
+      this.roomState.timerEndsAt = payload.timerEndsAt || (Date.now() + payload.timer * 1000);
       this.roomState.timerPrecise = payload.timer;
       this.roomState.canUndo = false;
     });
@@ -372,15 +384,17 @@ export class AuctionStore {
 
     this.socket.on('xi_selection_started', (payload) => {
       this.roomState.status = payload.status || 'playing_xi_selection';
-      this.roomState.xiTimer = payload.timer || 90;
+      this.roomState.xiTimer = payload.timer || 120;
+      this.roomState.xiTimerEndsAt = payload.xiTimerEndsAt || (Date.now() + (payload.timer || 120) * 1000);
       if (payload.teams) this.roomState.teams = payload.teams;
       if (payload.fixtures) this.roomState.fixtures = payload.fixtures;
       this.view = 'results';
-      this.notify('Auction ended! Select and lock in your franchise Playing XI!');
+      this.notify('Auction ended! 2-Minute Playing 11 selection window opened.');
     });
 
-    this.socket.on('xi_timer_tick', ({ timer }) => {
+    this.socket.on('xi_timer_tick', ({ timer, xiTimerEndsAt }) => {
       this.roomState.xiTimer = timer;
+      if (xiTimerEndsAt) this.roomState.xiTimerEndsAt = xiTimerEndsAt;
     });
 
     this.socket.on('all_teams_ready', () => {
@@ -399,6 +413,10 @@ export class AuctionStore {
       if (config.spectatorsCanVote !== undefined) {
         this.roomState.spectatorsCanVote = config.spectatorsCanVote;
       }
+    });
+
+    this.socket.on('tournament_stage_changed', ({ stage }) => {
+      this.roomState.tournamentStage = stage;
     });
 
     this.socket.on('auction_completed', (payload) => {
@@ -457,13 +475,23 @@ export class AuctionStore {
       this.notify(`Match #${fixture.matchNumber}: ${scorecard.margin}! POTM: ${scorecard.playerOfTheMatch?.name}`);
     });
 
+    this.socket.on('tournament_winner_declared', ({ winner, champion }) => {
+      this.roomState.tournamentWinner = winner;
+      this.roomState.championTeam = champion;
+      this.notify(`🏆 CHAMPION DECLARED: ${champion?.name || winner} wins the IPL Cup!`);
+      triggerConfetti('#f4c20d');
+    });
+
     this.socket.on('all_fixtures_simulated', ({ count }) => {
       this.notify(`All ${count} remaining match fixtures simulated by AI!`);
     });
 
-    this.socket.on('fixtures_updated', ({ fixtures, error }) => {
+    this.socket.on('fixtures_updated', ({ fixtures, tournamentStage, error }) => {
       if (fixtures) {
         this.roomState.fixtures = fixtures;
+      }
+      if (tournamentStage) {
+        this.roomState.tournamentStage = tournamentStage;
       }
       if (error) {
         this.notify(error);
@@ -474,6 +502,18 @@ export class AuctionStore {
       this.notify(reason || 'The auction room was closed by the host.');
       this.leaveRoom(false);
     });
+
+    // High-frequency client clock synchronization loop
+    setInterval(() => {
+      if (this.roomState.status === 'active' && this.roomState.timerEndsAt > 0) {
+        const remaining = Math.max(0, Math.ceil((this.roomState.timerEndsAt - Date.now()) / 1000));
+        this.roomState.timer = remaining;
+      }
+      if (this.roomState.status === 'playing_xi_selection' && this.roomState.xiTimerEndsAt > 0) {
+        const remaining = Math.max(0, Math.ceil((this.roomState.xiTimerEndsAt - Date.now()) / 1000));
+        this.roomState.xiTimer = remaining;
+      }
+    }, 100);
   }
 
   notify(msg) {
@@ -949,6 +989,18 @@ export class AuctionStore {
         resolve(res);
       });
     });
+  }
+
+  advanceToPlayoffs() {
+    return this.hostControl('advance_to_playoffs');
+  }
+
+  advanceToFinals() {
+    return this.hostControl('advance_to_finals');
+  }
+
+  advanceTournamentStage() {
+    return this.hostControl('advance_tournament_stage');
   }
 
   requestSync() {

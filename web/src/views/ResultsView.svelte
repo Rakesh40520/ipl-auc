@@ -23,14 +23,16 @@
     Crown,
     Star,
     BarChart2,
-    RotateCcw
+    RotateCcw,
+    Clock,
+    ArrowRight,
+    Flame,
+    Swords,
+    History
   } from 'lucide-svelte';
 
-  // Sub-navigation tab: 'xi' | 'fixtures' | 'standings' | 'overview'
-  let activeTab = $state(
-    store.roomState.status === 'playing_xi_selection' ? 'xi' : 'fixtures'
-  );
-  let stageFilter = $state('all'); // 'all' | 'league' | 'playoffs'
+  // Sub-navigation tab when in tournament mode: 'fixtures' | 'standings' | 'history'
+  let activeTournamentTab = $state('fixtures');
   let copied = $state(false);
 
   // IPL Trophy Presentation Ceremony State
@@ -43,7 +45,14 @@
 
   // Playing XI Phase status & readiness
   const isXISelectionPhase = $derived(store.roomState.status === 'playing_xi_selection');
-  const xiTimer = $derived(store.roomState.xiTimer ?? 90);
+  const xiTimer = $derived(store.roomState.xiTimer ?? 120);
+
+  function formatTime(totalSec) {
+    const sec = Math.max(0, Math.floor(totalSec || 0));
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
 
   const humanTeams = $derived(
     store.roomState.teams?.filter(t => t.userToken && !t.isBot) || []
@@ -58,17 +67,12 @@
     (humanTeams.length > 0 && confirmedHumanTeams.length === humanTeams.length)
   );
 
-  // Auto-switch to fixtures tab when all teams are confirmed or when tournament starts
-  $effect(() => {
-    if (store.roomState.status === 'completed' && activeTab === 'xi') {
-      activeTab = 'fixtures';
-    }
-  });
-
   // Automatically trigger Trophy Celebration when Grand Final is completed
   $effect(() => {
-    const finalFixture = store.roomState.fixtures?.find(f => f.stage === 'final' && f.status === 'completed');
-    if (finalFixture && !hasAutoTriggeredTrophy && !showTrophyModal) {
+    const finalFixture = store.roomState.fixtures?.find(
+      f => (f.stage === 'final' || f.stage === 'finals' || f.id === 'fixture-final') && f.status === 'completed'
+    );
+    if ((finalFixture || store.roomState.tournamentWinner) && !hasAutoTriggeredTrophy && !showTrophyModal) {
       hasAutoTriggeredTrophy = true;
       showTrophyModal = true;
     }
@@ -181,42 +185,32 @@
     const res = await store.hostControl('generate_default_xi', { teamCode: selectedTeam.code });
     if (res.success && res.playingXI) {
       localXI = [...res.playingXI];
-      store.notify('Auto-balanced balanced Playing XI generated.');
+      store.notify('Auto-balanced Playing XI generated.');
     }
   }
 
   async function handleProceedToTournament() {
-    if (!allTeamsConfirmed && !confirm('Some managers have not confirmed their Playing XI yet. Do you want to auto-confirm and start tournament fixtures?')) {
-      return;
-    }
     await store.hostControl('advance_to_fixtures');
-    activeTab = 'fixtures';
     store.notify('Tournament Fixtures Live!');
   }
 
-  // --- FIXTURES & STANDINGS STATE ---
-  const fixtures = $derived(store.roomState.fixtures || []);
+  // --- TOURNAMENT FIXTURES & STAGE LOGIC ---
+  const tournamentStage = $derived(store.roomState.tournamentStage || 'league');
+  const activeFixtures = $derived(store.roomState.fixtures || []);
+  const allTournamentFixtures = $derived(store.roomState.allTournamentFixtures || activeFixtures);
   const standings = $derived(store.roomState.standings || []);
-  const completedFixturesCount = $derived(fixtures.filter(f => f.status === 'completed').length);
-  const totalFixturesCount = $derived(fixtures.length);
 
-  const filteredFixtures = $derived.by(() => {
-    if (stageFilter === 'league') {
-      return fixtures.filter(f => !f.stage || f.stage === 'league');
-    }
-    if (stageFilter === 'playoffs') {
-      return fixtures.filter(f => f.stage === 'semifinal' || f.stage === 'final');
-    }
-    return fixtures;
-  });
+  const completedActiveCount = $derived(activeFixtures.filter(f => f.status === 'completed').length);
+  const totalActiveCount = $derived(activeFixtures.length);
+  const areAllActiveFixturesDone = $derived(totalActiveCount > 0 && completedActiveCount === totalActiveCount);
 
   const nextScheduledFixture = $derived(
-    fixtures.find(f => f.status === 'scheduled' && f.teamA !== 'TBD' && f.teamB !== 'TBD')
+    activeFixtures.find(f => f.status === 'scheduled' && f.teamA !== 'TBD' && f.teamB !== 'TBD')
   );
 
   // Grand Final Fixture
   const grandFinalFixture = $derived(
-    fixtures.find(f => f.stage === 'final')
+    allTournamentFixtures.find(f => f.stage === 'final' || f.stage === 'finals' || f.id === 'fixture-final')
   );
 
   const championTeam = $derived.by(() => {
@@ -247,25 +241,50 @@
   async function handleSimulateAll() {
     const res = await store.simulateAllFixtures();
     if (res.success) {
-      store.notify(`All remaining tournament fixtures simulated! Champion declared.`);
+      store.notify(`Matches simulated!`);
       if (championTeam) {
         showTrophyModal = true;
       }
     }
   }
 
-  // Helper to get stage badge styling
+  async function handleAdvanceToPlayoffs() {
+    const res = await store.advanceToPlayoffs();
+    if (res.success) {
+      store.notify('IPL Playoffs Stage Live! Qualifier 1 & Eliminator planned.');
+    }
+  }
+
+  async function handleAdvanceToFinals() {
+    const res = await store.advanceToFinals();
+    if (res.success) {
+      store.notify('IPL Grand Final Stage Live!');
+    }
+  }
+
   function getStageBadge(fixture) {
-    if (fixture.stage === 'final') {
+    if (fixture.stage === 'final' || fixture.stage === 'finals' || fixture.playoffType === 'final') {
       return {
         label: '🏆 IPL GRAND FINAL',
         bg: 'bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 border-amber-500/40 ring-1 ring-amber-500/30 font-extrabold'
       };
     }
-    if (fixture.stage === 'semifinal') {
+    if (fixture.playoffType === 'qualifier1') {
       return {
-        label: fixture.stageLabel || '⚔️ SEMI-FINAL',
-        bg: 'bg-purple-500/20 text-purple-300 border-purple-500/30 font-bold'
+        label: '⚔️ QUALIFIER 1 (1st vs 2nd)',
+        bg: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30 font-bold'
+      };
+    }
+    if (fixture.playoffType === 'eliminator') {
+      return {
+        label: '🔥 ELIMINATOR (3rd vs 4th)',
+        bg: 'bg-rose-500/20 text-rose-300 border-rose-500/30 font-bold'
+      };
+    }
+    if (fixture.playoffType === 'qualifier2') {
+      return {
+        label: '⚔️ QUALIFIER 2 (Winner to Final)',
+        bg: 'bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold'
       };
     }
     return {
@@ -282,125 +301,62 @@
 
 <div class="max-w-6xl mx-auto px-3 sm:px-6 py-6 space-y-6">
 
-  <!-- TOP HERO HEADER -->
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-    <div class="space-y-1">
-      <div class="flex items-center gap-2">
-        <Trophy class="text-amber-400" size={24} />
-        <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
-          IPL Tournament &amp; Fixtures
-        </h1>
-      </div>
-      <p class="text-slate-400 text-xs sm:text-sm">
-        Authentic cricket match simulation based on real player stats &amp; mathematical ball-by-ball probability.
-      </p>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <div class="flex items-center gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800 self-stretch sm:self-auto overflow-x-auto">
-      {#if isXISelectionPhase || !allTeamsConfirmed}
-        <button
-          onclick={() => activeTab = 'xi'}
-          class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap cursor-pointer {activeTab === 'xi' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}"
-        >
-          <Lock size={14} />
-          <span>Playing 11</span>
-          {#if !allTeamsConfirmed}
-            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-          {/if}
-        </button>
-      {/if}
-
-      <button
-        onclick={() => activeTab = 'fixtures'}
-        class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap cursor-pointer {activeTab === 'fixtures' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}"
-      >
-        <Calendar size={14} />
-        <span>Fixtures</span>
-        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">
-          {completedFixturesCount}/{totalFixturesCount}
-        </span>
-      </button>
-
-      <button
-        onclick={() => activeTab = 'standings'}
-        class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap cursor-pointer {activeTab === 'standings' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}"
-      >
-        <TableProperties size={14} />
-        <span>Standings</span>
-      </button>
-
-      {#if championTeam}
-        <button
-          onclick={() => showTrophyModal = true}
-          class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition whitespace-nowrap cursor-pointer shadow-sm animate-pulse"
-        >
-          <Crown size={14} class="text-amber-400" />
-          <span>IPL Winner!</span>
-        </button>
-      {/if}
-    </div>
-  </div>
-
-  <!-- CHAMPION CELEBRATION BANNER (If Grand Final Completed) -->
-  {#if championTeam}
-    <div class="bg-gradient-to-r from-amber-950/60 via-slate-900 to-amber-950/60 border-2 border-amber-500/60 rounded-2xl p-6 sm:p-8 text-center shadow-2xl relative overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-b from-amber-500/10 to-transparent pointer-events-none"></div>
-      <div class="relative z-10 max-w-2xl mx-auto space-y-3">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-black uppercase tracking-widest">
-          <Crown size={14} /> IPL 2026 Champions Declared
-        </span>
-
-        <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight font-heading">
-          {championTeam.name}
-        </h2>
-
-        <p class="text-amber-200 text-sm sm:text-base font-medium">
-          Champions of the 2026 Tournament! Managed by <strong class="text-white">{championTeam.userName || championTeam.code}</strong>.
-          {#if runnerUpTeam}
-            Runner-up: <strong class="text-slate-300">{runnerUpTeam.name}</strong>.
-          {/if}
-        </p>
-
-        <div class="pt-2 flex items-center justify-center gap-3">
-          <button
-            onclick={() => showTrophyModal = true}
-            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs sm:text-sm shadow-xl flex items-center gap-2 cursor-pointer transition"
-          >
-            <Trophy size={16} />
-            <span>View Trophy Presentation</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  {/if}
-
-  <!-- TAB 1: PLAYING 11 SELECTION WINDOW -->
-  {#if activeTab === 'xi'}
+  <!-- ========================================================================= -->
+  <!-- PHASE 1: STRICT 2-MINUTE PLAYING 11 BUILDER WINDOW                        -->
+  <!-- When active, this window is shown to everyone for 2 minutes.              -->
+  <!-- When 2 minutes expire (or host advances), this window is COMPLETELY REMOVED! -->
+  <!-- ========================================================================= -->
+  {#if isXISelectionPhase}
     <div class="space-y-6">
-      <!-- Status Notice -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div class="space-y-1">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full {allTeamsConfirmed ? 'bg-emerald-400' : 'bg-amber-400 animate-ping'}"></span>
-            <h3 class="text-base font-bold text-white">
-              {allTeamsConfirmed ? 'All Franchises Ready!' : 'Step 1: Pick and Confirm Playing 11'}
-            </h3>
+      <!-- 2-Minute Selection Banner & Live Synchronized Timer -->
+      <div class="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border-2 border-indigo-500/40 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-4">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex items-center gap-2.5">
+              <span class="px-2.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                Mandatory Stage
+              </span>
+              <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight font-heading">
+                Playing 11 Builder &amp; Squad Review
+              </h2>
+            </div>
+            <p class="text-slate-300 text-xs sm:text-sm max-w-2xl">
+              Strict <strong>2-minute window</strong>. Review all franchise squads, swap bench players, and lock in your Playing 11. When time expires, this window will automatically close and tournament fixtures will begin!
+            </p>
           </div>
-          <p class="text-xs text-slate-400">
-            {confirmedHumanTeams.length} of {humanTeams.length} human managers confirmed. Minimum 1 WK, maximum 4 overseas players.
-          </p>
+
+          <!-- Synchronized Countdown Clock -->
+          <div class="flex items-center gap-4 bg-slate-950/80 border border-slate-800 px-5 py-3 rounded-2xl shadow-inner self-stretch md:self-auto justify-between md:justify-start">
+            <div class="flex items-center gap-3">
+              <Clock size={24} class={xiTimer <= 20 ? 'text-rose-400 animate-spin' : 'text-amber-400 animate-pulse'} />
+              <div>
+                <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Window Closes In</span>
+                <span class="text-3xl font-black font-mono tracking-tight {xiTimer <= 20 ? 'text-rose-400 animate-ping' : 'text-amber-300'}">
+                  {formatTime(xiTimer)}
+                </span>
+              </div>
+            </div>
+
+            {#if store.isHost}
+              <button
+                onclick={handleProceedToTournament}
+                class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer ml-2"
+                title="Advance to tournament fixtures immediately"
+              >
+                <span>Proceed Now</span>
+                <ArrowRight size={14} />
+              </button>
+            {/if}
+          </div>
         </div>
 
-        {#if store.isHost}
-          <button
-            onclick={handleProceedToTournament}
-            class="px-4 py-2.5 rounded-xl font-black text-xs transition cursor-pointer flex items-center gap-2 {allTeamsConfirmed ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg' : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-md'}"
-          >
-            <Play size={14} />
-            <span>Proceed to Tournament Fixtures</span>
-          </button>
-        {/if}
+        <!-- 2-Minute Progress Bar -->
+        <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden border border-slate-800">
+          <div
+            class="h-full bg-gradient-to-r from-indigo-500 to-amber-400 transition-all duration-300 ease-linear rounded-full"
+            style="width: {Math.max(0, Math.min(100, (xiTimer / 120) * 100))}%;"
+          ></div>
+        </div>
       </div>
 
       <!-- Franchise Selector Tabs -->
@@ -410,7 +366,7 @@
           {@const isMine = store.myTeamCode === team.code}
           <button
             onclick={() => selectedTeamCode = team.code}
-            class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer border
+            class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer border
               {isSelected
                 ? 'bg-slate-800 text-white border-indigo-500 ring-2 ring-indigo-500/30 shadow-md'
                 : 'bg-slate-900 text-slate-400 hover:text-white border-slate-800'}"
@@ -418,7 +374,7 @@
             <span class="w-3 h-3 rounded-full" style="background: {team.primaryColor};"></span>
             <span>{team.code}</span>
             {#if isMine}
-              <span class="text-[10px] text-amber-300">(You)</span>
+              <span class="text-[10px] text-amber-300 font-black">(You)</span>
             {/if}
             {#if team.isXIConfirmed}
               <Check size={12} class="text-emerald-400" />
@@ -427,17 +383,20 @@
         {/each}
       </div>
 
-      <!-- Playing 11 Slot Editor -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-6">
+      <!-- Playing 11 Slot Editor for Selected Franchise -->
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-7 space-y-6 shadow-xl">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
           <div>
-            <h2 class="text-xl font-black text-white font-heading">
-              {selectedTeam?.name} — Playing 11
-            </h2>
-            <p class="text-xs text-slate-400 mt-0.5">
-              Managed by <strong class="text-slate-200">{selectedTeam?.userName || 'AI Bot'}</strong> ·
-              <span class={overseasInXI <= 4 ? 'text-emerald-400' : 'text-rose-400 font-bold'}>{overseasInXI}/4 Overseas</span> ·
-              <span class={wksInXI >= 1 ? 'text-emerald-400' : 'text-amber-400 font-bold'}>{wksInXI} Keeper</span>
+            <div class="flex items-center gap-2.5">
+              <span class="w-3.5 h-3.5 rounded-full" style="background: {selectedTeam?.primaryColor};"></span>
+              <h3 class="text-xl sm:text-2xl font-black text-white font-heading">
+                {selectedTeam?.name} ({selectedTeam?.code}) — Official Playing 11
+              </h3>
+            </div>
+            <p class="text-xs text-slate-300 mt-1">
+              Managed by <strong class="text-white">{selectedTeam?.userName || 'AI Bot'}</strong> ·
+              <span class={overseasInXI <= 4 ? 'text-emerald-400 font-bold' : 'text-rose-400 font-black'}>{overseasInXI}/4 Overseas Players</span> ·
+              <span class={wksInXI >= 1 ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}>{wksInXI} Wicketkeeper</span>
             </p>
           </div>
 
@@ -445,7 +404,7 @@
             {#if isMyTeamOrHost && !isCurrentTeamConfirmed}
               <button
                 onclick={handleAutoBalanceXI}
-                class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition cursor-pointer"
+                class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer border border-slate-700"
               >
                 Auto-Fill 11
               </button>
@@ -457,7 +416,7 @@
                 <span>Lock Playing 11</span>
               </button>
             {:else if isCurrentTeamConfirmed}
-              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold">
+              <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold">
                 <CheckCircle2 size={14} /> Playing 11 Locked
               </span>
             {/if}
@@ -472,11 +431,11 @@
             <button
               type="button"
               onclick={() => handleSlotClick(idx)}
-              class="p-3.5 rounded-xl border transition cursor-pointer relative flex items-center justify-between gap-3 text-left w-full
-                {isSelectedSlot ? 'bg-indigo-950/60 border-indigo-500 ring-2 ring-indigo-500/40 shadow-lg' : 'bg-slate-950 border-slate-800/80 hover:border-slate-700'}"
+              class="p-3.5 rounded-2xl border transition cursor-pointer relative flex items-center justify-between gap-3 text-left w-full
+                {isSelectedSlot ? 'bg-indigo-950/70 border-indigo-500 ring-2 ring-indigo-500/40 shadow-lg' : 'bg-slate-950 border-slate-800/80 hover:border-slate-700'}"
             >
               <div class="flex items-center gap-3 min-w-0">
-                <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center font-bold text-xs text-indigo-400 shrink-0">
+                <div class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center font-bold text-xs text-indigo-400 shrink-0">
                   {idx + 1}
                 </div>
                 <div class="min-w-0">
@@ -504,7 +463,7 @@
         {#if benchPlayers.length > 0 && isMyTeamOrHost && !isCurrentTeamConfirmed}
           <div class="pt-4 border-t border-slate-800 space-y-3">
             <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Available Bench Reserves ({benchPlayers.length} players) — Click a slot above then click below to swap
+              Bench Reserves ({benchPlayers.length} players) — Select a slot above then click below to swap
             </h4>
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
               {#each benchPlayers as bPlayer}
@@ -524,238 +483,520 @@
         {/if}
       </div>
     </div>
-  {/if}
 
-  <!-- TAB 2: TOURNAMENT FIXTURES & SCORECARDS -->
-  {#if activeTab === 'fixtures'}
-    <div class="space-y-6">
-      <!-- Fixtures Action Strip -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
-        <!-- Stage Filters -->
-        <div class="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
-          <button
-            onclick={() => stageFilter = 'all'}
-            class="px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer {stageFilter === 'all' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}"
-          >
-            All Matches ({fixtures.length})
-          </button>
-          <button
-            onclick={() => stageFilter = 'league'}
-            class="px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer {stageFilter === 'league' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}"
-          >
-            League Stage
-          </button>
-          <button
-            onclick={() => stageFilter = 'playoffs'}
-            class="px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer {stageFilter === 'playoffs' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}"
-          >
-            ⚔️ Playoffs &amp; Finals
-          </button>
+  <!-- ========================================================================= -->
+  <!-- PHASE 2: TOURNAMENT FIXTURES, PROGRESSION & GRAND FINAL                   -->
+  <!-- Shown when playing 11 window is closed and status is completed.            -->
+  <!-- ========================================================================= -->
+  {:else}
+
+    <!-- TOP HERO HEADER -->
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <Trophy class="text-amber-400" size={24} />
+          <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            IPL Tournament Arena
+          </h1>
         </div>
+        <p class="text-slate-400 text-xs sm:text-sm">
+          Stage-by-stage authentic match simulation with real player stats &amp; mathematical ball-by-ball probability.
+        </p>
+      </div>
 
-        <!-- Simulation Controls -->
-        <div class="flex items-center gap-2 self-stretch sm:self-auto">
-          {#if nextScheduledFixture}
-            <button
-              onclick={() => handleSimulateFixture(nextScheduledFixture.id)}
-              class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer"
-            >
-              <Play size={13} />
-              <span>Simulate Match #{nextScheduledFixture.matchNumber}</span>
-            </button>
-          {/if}
+      <!-- Navigation Tabs & Stage Indicator -->
+      <div class="flex items-center gap-1.5 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 self-stretch sm:self-auto overflow-x-auto">
+        <button
+          onclick={() => activeTournamentTab = 'fixtures'}
+          class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer {activeTournamentTab === 'fixtures' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}"
+        >
+          <Calendar size={14} />
+          <span>Active Fixtures</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">
+            {completedActiveCount}/{totalActiveCount}
+          </span>
+        </button>
 
-          {#if completedFixturesCount < totalFixturesCount}
-            <button
-              onclick={handleSimulateAll}
-              class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer"
-            >
-              <Zap size={13} />
-              <span>Simulate All ({totalFixturesCount - completedFixturesCount})</span>
-            </button>
-          {/if}
+        <button
+          onclick={() => activeTournamentTab = 'standings'}
+          class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer {activeTournamentTab === 'standings' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}"
+        >
+          <TableProperties size={14} />
+          <span>Points Table</span>
+        </button>
+
+        {#if championTeam}
+          <button
+            onclick={() => showTrophyModal = true}
+            class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition whitespace-nowrap cursor-pointer shadow-sm animate-pulse"
+          >
+            <Crown size={14} class="text-amber-400" />
+            <span>IPL Champions!</span>
+          </button>
+        {/if}
+      </div>
+    </div>
+
+    <!-- STAGE PROGRESS ROADMAP PILLS -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <!-- 1. League Stage Pill -->
+      <div class="p-3 rounded-2xl border transition flex items-center gap-3
+        {tournamentStage === 'league'
+          ? 'bg-indigo-950/40 border-indigo-500/60 ring-1 ring-indigo-500/30'
+          : 'bg-slate-900/80 border-slate-800'}"
+      >
+        <div class="w-8 h-8 rounded-xl grid place-items-center font-bold text-xs shrink-0
+          {tournamentStage === 'league' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400'}">
+          1
+        </div>
+        <div class="min-w-0">
+          <span class="text-xs font-bold text-white block">League Stage</span>
+          <span class="text-[10px] text-slate-400 block truncate">
+            {tournamentStage === 'league' ? 'In Progress' : 'Concluded'}
+          </span>
         </div>
       </div>
 
-      <!-- Fixtures Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {#each filteredFixtures as fixture (fixture.id)}
-          {@const tA = store.roomState.teams?.find(t => t.code === fixture.teamA)}
-          {@const tB = store.roomState.teams?.find(t => t.code === fixture.teamB)}
-          {@const isDone = fixture.status === 'completed'}
-          {@const stageBadge = getStageBadge(fixture)}
-          {@const potm = fixture.scorecard?.playerOfTheMatch}
+      <!-- 2. Playoffs Stage Pill -->
+      <div class="p-3 rounded-2xl border transition flex items-center gap-3
+        {tournamentStage === 'playoffs'
+          ? 'bg-purple-950/40 border-purple-500/60 ring-1 ring-purple-500/30'
+          : 'bg-slate-900/80 border-slate-800'}"
+      >
+        <div class="w-8 h-8 rounded-xl grid place-items-center font-bold text-xs shrink-0
+          {tournamentStage === 'playoffs' ? 'bg-purple-600 text-white' : 'bg-slate-800 text-slate-400'}">
+          2
+        </div>
+        <div class="min-w-0">
+          <span class="text-xs font-bold text-white block">IPL Playoffs</span>
+          <span class="text-[10px] text-slate-400 block truncate">
+            {tournamentStage === 'playoffs' ? 'In Progress (Top 4)' : (tournamentStage === 'finals' ? 'Concluded' : 'Upcoming')}
+          </span>
+        </div>
+      </div>
 
-          <div class="bg-slate-900 border rounded-2xl p-5 transition space-y-4 shadow-lg
-            {fixture.stage === 'final' ? 'border-amber-500/50 bg-gradient-to-b from-slate-900 to-amber-950/30' : 'border-slate-800'}"
-          >
-            <!-- Top: Stage badge & Match Number -->
-            <div class="flex items-center justify-between text-xs">
-              <span class="px-2.5 py-1 rounded-lg border text-[11px] {stageBadge.bg}">
-                {stageBadge.label}
-              </span>
+      <!-- 3. Grand Final Pill -->
+      <div class="p-3 rounded-2xl border transition flex items-center gap-3
+        {tournamentStage === 'finals'
+          ? 'bg-amber-950/40 border-amber-500/60 ring-1 ring-amber-500/30'
+          : 'bg-slate-900/80 border-slate-800'}"
+      >
+        <div class="w-8 h-8 rounded-xl grid place-items-center font-bold text-xs shrink-0
+          {tournamentStage === 'finals' ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'}">
+          3
+        </div>
+        <div class="min-w-0">
+          <span class="text-xs font-bold text-white block">Grand Final &amp; Trophy</span>
+          <span class="text-[10px] text-slate-400 block truncate">
+            {championTeam ? 'Champion Crowned!' : (tournamentStage === 'finals' ? 'Clash Live' : 'Upcoming')}
+          </span>
+        </div>
+      </div>
+    </div>
 
-              {#if isDone}
-                <span class="inline-flex items-center gap-1 text-emerald-400 font-bold text-xs">
-                  <Check size={13} /> Completed
+    <!-- CHAMPION CELEBRATION BANNER (If Grand Final Completed) -->
+    {#if championTeam}
+      <div class="bg-gradient-to-r from-amber-950/60 via-slate-900 to-amber-950/60 border-2 border-amber-500/60 rounded-3xl p-6 sm:p-8 text-center shadow-2xl relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-amber-500/10 to-transparent pointer-events-none"></div>
+        <div class="relative z-10 max-w-2xl mx-auto space-y-3">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-black uppercase tracking-widest">
+            <Crown size={14} /> IPL 2026 Champions Declared
+          </span>
+
+          <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight font-heading">
+            {championTeam.name}
+          </h2>
+
+          <p class="text-amber-200 text-sm sm:text-base font-medium">
+            Champions of the 2026 Tournament! Managed by <strong class="text-white">{championTeam.userName || championTeam.code}</strong>.
+            {#if runnerUpTeam}
+              Runner-up: <strong class="text-slate-300">{runnerUpTeam.name}</strong>.
+            {/if}
+          </p>
+
+          <div class="pt-2 flex items-center justify-center gap-3">
+            <button
+              onclick={() => showTrophyModal = true}
+              class="px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-sm shadow-xl flex items-center gap-2 cursor-pointer transition transform hover:scale-105"
+            >
+              <Trophy size={18} />
+              <span>View Trophy Presentation</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    {/if}
+
+    <!-- TAB: ACTIVE FIXTURES -->
+    {#if activeTournamentTab === 'fixtures'}
+      <div class="space-y-6">
+
+        <!-- Stage Header & Simulation Controls Strip -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
+          <div>
+            <div class="flex items-center gap-2">
+              {#if tournamentStage === 'league'}
+                <span class="px-2.5 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-wider border border-indigo-500/30">
+                  Stage 1: League Stage
                 </span>
-              {:else}
-                <span class="text-slate-400 text-xs font-mono">Scheduled</span>
+              {:else if tournamentStage === 'playoffs'}
+                <span class="px-2.5 py-0.5 rounded-md bg-purple-500/20 text-purple-300 text-xs font-bold uppercase tracking-wider border border-purple-500/30">
+                  Stage 2: IPL Playoffs
+                </span>
+              {:else if tournamentStage === 'finals'}
+                <span class="px-2.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-wider border border-amber-500/30">
+                  Stage 3: Grand Final
+                </span>
               {/if}
+              <span class="text-xs text-slate-400 font-mono">
+                {completedActiveCount} / {totalActiveCount} Completed
+              </span>
+            </div>
+            <h3 class="text-lg font-black text-white font-heading mt-1">
+              {#if tournamentStage === 'league'}
+                Round-Robin League Matches
+              {:else if tournamentStage === 'playoffs'}
+                IPL Playoff Eliminators &amp; Qualifiers (Top 4)
+              {:else}
+                The IPL Grand Final Match
+              {/if}
+            </h3>
+          </div>
+
+          <!-- Simulation Actions -->
+          <div class="flex items-center gap-2 self-stretch sm:self-auto flex-wrap">
+            {#if nextScheduledFixture}
+              <button
+                onclick={() => handleSimulateFixture(nextScheduledFixture.id)}
+                class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <Play size={13} />
+                <span>Simulate Next: Match #{nextScheduledFixture.matchNumber}</span>
+              </button>
+            {/if}
+
+            {#if !areAllActiveFixturesDone}
+              <button
+                onclick={handleSimulateAll}
+                class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <Zap size={13} />
+                <span>Simulate All ({totalActiveCount - completedActiveCount})</span>
+              </button>
+            {/if}
+          </div>
+        </div>
+
+        <!-- STAGE 1: LEAGUE STAGE COMPLETE -> ADVANCE TO PLAYOFFS CALLOUT -->
+        {#if tournamentStage === 'league' && areAllActiveFixturesDone}
+          <div class="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-indigo-950/80 border-2 border-indigo-500/60 rounded-3xl p-6 sm:p-7 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+            <div class="space-y-1.5">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-black uppercase tracking-wider">
+                <CheckCircle2 size={13} /> League Stage Completed
+              </span>
+              <h3 class="text-xl sm:text-2xl font-black text-white font-heading">
+                Top 4 Franchises Have Qualified for IPL Playoffs!
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-300 max-w-xl">
+                {#if standings.length >= 4}
+                  <strong>Qualifier 1:</strong> {standings[0]?.code} (1st) vs {standings[1]?.code} (2nd) ·
+                  <strong>Eliminator:</strong> {standings[2]?.code} (3rd) vs {standings[3]?.code} (4th)
+                {:else}
+                  Top franchises advance to the playoff matches.
+                {/if}
+              </p>
             </div>
 
-            <!-- Teams Clashing Display -->
-            <div class="grid grid-cols-2 gap-3 items-center py-2">
-              <!-- Team A -->
-              <div class="flex items-center gap-3 {fixture.winner === fixture.teamA ? 'font-black text-white' : 'text-slate-300'}">
-                <div
-                  class="w-10 h-10 rounded-xl grid place-items-center font-black text-sm shadow-md shrink-0"
-                  style="background: {tA?.primaryColor || '#334155'}; color: {tA?.textColor || '#fff'};"
-                >
-                  {fixture.teamA}
-                </div>
-                <div class="min-w-0">
-                  <span class="font-bold text-sm block truncate">{tA?.name || fixture.teamA}</span>
-                  {#if fixture.scorecard?.innings1?.teamCode === fixture.teamA}
-                    <span class="text-xs font-mono text-amber-300 block font-bold">
-                      {fixture.scorecard.innings1.runs}/{fixture.scorecard.innings1.wickets} ({fixture.scorecard.innings1.overs} ov)
-                    </span>
-                  {:else if fixture.scorecard?.innings2?.teamCode === fixture.teamA}
-                    <span class="text-xs font-mono text-amber-300 block font-bold">
-                      {fixture.scorecard.innings2.runs}/{fixture.scorecard.innings2.wickets} ({fixture.scorecard.innings2.overs} ov)
-                    </span>
-                  {/if}
-                </div>
-              </div>
+            {#if store.isHost}
+              <button
+                onclick={handleAdvanceToPlayoffs}
+                class="px-5 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-black text-xs sm:text-sm shadow-xl flex items-center gap-2 cursor-pointer transition transform hover:scale-105 shrink-0"
+              >
+                <span>Next: Plan IPL Playoffs (Top 4)</span>
+                <ArrowRight size={16} />
+              </button>
+            {:else}
+              <span class="text-xs text-slate-400 italic">Waiting for host to advance to IPL Playoffs…</span>
+            {/if}
+          </div>
+        {/if}
 
-              <!-- Team B -->
-              <div class="flex items-center gap-3 justify-end text-right {fixture.winner === fixture.teamB ? 'font-black text-white' : 'text-slate-300'}">
-                <div class="min-w-0">
-                  <span class="font-bold text-sm block truncate">{tB?.name || fixture.teamB}</span>
-                  {#if fixture.scorecard?.innings1?.teamCode === fixture.teamB}
-                    <span class="text-xs font-mono text-amber-300 block font-bold">
-                      {fixture.scorecard.innings1.runs}/{fixture.scorecard.innings1.wickets} ({fixture.scorecard.innings1.overs} ov)
-                    </span>
-                  {:else if fixture.scorecard?.innings2?.teamCode === fixture.teamB}
-                    <span class="text-xs font-mono text-amber-300 block font-bold">
-                      {fixture.scorecard.innings2.runs}/{fixture.scorecard.innings2.wickets} ({fixture.scorecard.innings2.overs} ov)
-                    </span>
-                  {/if}
-                </div>
-                <div
-                  class="w-10 h-10 rounded-xl grid place-items-center font-black text-sm shadow-md shrink-0"
-                  style="background: {tB?.primaryColor || '#334155'}; color: {tB?.textColor || '#fff'};"
-                >
-                  {fixture.teamB}
-                </div>
-              </div>
+        <!-- STAGE 2: PLAYOFFS COMPLETE -> ADVANCE TO GRAND FINAL CALLOUT -->
+        {#if tournamentStage === 'playoffs' && areAllActiveFixturesDone}
+          <div class="bg-gradient-to-r from-purple-950/80 via-slate-900 to-purple-950/80 border-2 border-purple-500/60 rounded-3xl p-6 sm:p-7 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+            <div class="space-y-1.5">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-black uppercase tracking-wider">
+                <CheckCircle2 size={13} /> IPL Playoffs Completed
+              </span>
+              <h3 class="text-xl sm:text-2xl font-black text-white font-heading">
+                Grand Finalists Are Confirmed!
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-300 max-w-xl">
+                The winners have emerged from the Eliminator and Qualifiers. Ready for the ultimate IPL Grand Final showdown!
+              </p>
             </div>
 
-            <!-- Result Summary / Scorecard Action -->
-            <div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
-              {#if isDone}
-                <div class="min-w-0">
-                  <span class="text-xs font-bold text-emerald-300 block truncate">
-                    {fixture.scorecard?.margin || `${fixture.winner} won`}
+            {#if store.isHost}
+              <button
+                onclick={handleAdvanceToFinals}
+                class="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs sm:text-sm shadow-xl flex items-center gap-2 cursor-pointer transition transform hover:scale-105 shrink-0"
+              >
+                <span>Next: Proceed to Grand Final</span>
+                <ArrowRight size={16} />
+              </button>
+            {:else}
+              <span class="text-xs text-slate-400 italic">Waiting for host to proceed to Grand Final…</span>
+            {/if}
+          </div>
+        {/if}
+
+        <!-- Active Fixtures Grid (Strict Stage Isolation: Only matches for this stage are shown) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {#each activeFixtures as fixture (fixture.id)}
+            {@const tA = store.roomState.teams?.find(t => t.code === fixture.teamA)}
+            {@const tB = store.roomState.teams?.find(t => t.code === fixture.teamB)}
+            {@const isDone = fixture.status === 'completed'}
+            {@const stageBadge = getStageBadge(fixture)}
+            {@const potm = fixture.scorecard?.playerOfTheMatch}
+
+            <div class="bg-slate-900 border rounded-3xl p-5 transition space-y-4 shadow-lg
+              {fixture.stage === 'final' || fixture.stage === 'finals' || fixture.playoffType === 'final'
+                ? 'border-amber-500/50 bg-gradient-to-b from-slate-900 to-amber-950/30 ring-1 ring-amber-500/30'
+                : 'border-slate-800'}"
+            >
+              <!-- Top: Stage badge & Status -->
+              <div class="flex items-center justify-between text-xs">
+                <span class="px-2.5 py-1 rounded-lg border text-[11px] {stageBadge.bg}">
+                  {stageBadge.label}
+                </span>
+
+                {#if isDone}
+                  <span class="inline-flex items-center gap-1 text-emerald-400 font-bold text-xs">
+                    <Check size={13} /> Completed
                   </span>
-                  {#if potm}
-                    <span class="text-[11px] text-amber-400 block truncate font-medium">
-                      POTM: {potm.name} ({potm.summary})
-                    </span>
-                  {/if}
+                {:else}
+                  <span class="text-slate-400 text-xs font-mono">Scheduled</span>
+                {/if}
+              </div>
+
+              <!-- Teams Clashing Display -->
+              <div class="grid grid-cols-2 gap-3 items-center py-2">
+                <!-- Team A -->
+                <div class="flex items-center gap-3 {fixture.winner === fixture.teamA ? 'font-black text-white' : 'text-slate-300'}">
+                  <div
+                    class="w-10 h-10 rounded-2xl grid place-items-center font-black text-sm shadow-md shrink-0"
+                    style="background: {tA?.primaryColor || '#334155'}; color: {tA?.textColor || '#fff'};"
+                  >
+                    {fixture.teamA}
+                  </div>
+                  <div class="min-w-0">
+                    <span class="font-bold text-sm block truncate">{tA?.name || fixture.teamA}</span>
+                    {#if fixture.scorecard?.innings1?.teamCode === fixture.teamA}
+                      <span class="text-xs font-mono text-amber-300 block font-bold">
+                        {fixture.scorecard.innings1.runs}/{fixture.scorecard.innings1.wickets} ({fixture.scorecard.innings1.overs} ov)
+                      </span>
+                    {:else if fixture.scorecard?.innings2?.teamCode === fixture.teamA}
+                      <span class="text-xs font-mono text-amber-300 block font-bold">
+                        {fixture.scorecard.innings2.runs}/{fixture.scorecard.innings2.wickets} ({fixture.scorecard.innings2.overs} ov)
+                      </span>
+                    {/if}
+                  </div>
                 </div>
 
-                <button
-                  onclick={() => {
-                    selectedScorecardFixture = fixture;
-                    scorecardInningsTab = 'inn1';
-                  }}
-                  class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 shrink-0 cursor-pointer shadow-sm"
-                >
-                  <BarChart2 size={13} />
-                  <span>Scorecard</span>
-                </button>
-              {:else if fixture.teamA !== 'TBD' && fixture.teamB !== 'TBD'}
-                <span class="text-xs text-slate-400">Match Scheduled</span>
-                <button
-                  onclick={() => handleSimulateFixture(fixture.id)}
-                  class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition flex items-center gap-1 shrink-0 cursor-pointer shadow-sm"
-                >
-                  <Play size={12} />
-                  <span>Simulate</span>
-                </button>
-              {:else}
-                <span class="text-xs text-slate-500 italic">Waiting for preceding semi-finalists</span>
-              {/if}
+                <!-- Team B -->
+                <div class="flex items-center gap-3 justify-end text-right {fixture.winner === fixture.teamB ? 'font-black text-white' : 'text-slate-300'}">
+                  <div class="min-w-0">
+                    <span class="font-bold text-sm block truncate">{tB?.name || fixture.teamB}</span>
+                    {#if fixture.scorecard?.innings1?.teamCode === fixture.teamB}
+                      <span class="text-xs font-mono text-amber-300 block font-bold">
+                        {fixture.scorecard.innings1.runs}/{fixture.scorecard.innings1.wickets} ({fixture.scorecard.innings1.overs} ov)
+                      </span>
+                    {:else if fixture.scorecard?.innings2?.teamCode === fixture.teamB}
+                      <span class="text-xs font-mono text-amber-300 block font-bold">
+                        {fixture.scorecard.innings2.runs}/{fixture.scorecard.innings2.wickets} ({fixture.scorecard.innings2.overs} ov)
+                      </span>
+                    {/if}
+                  </div>
+                  <div
+                    class="w-10 h-10 rounded-2xl grid place-items-center font-black text-sm shadow-md shrink-0"
+                    style="background: {tB?.primaryColor || '#334155'}; color: {tB?.textColor || '#fff'};"
+                  >
+                    {fixture.teamB}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Result Summary / Scorecard Action -->
+              <div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+                {#if isDone}
+                  <div class="min-w-0">
+                    <span class="text-xs font-bold text-emerald-300 block truncate">
+                      {fixture.scorecard?.margin || `${fixture.winner} won`}
+                    </span>
+                    {#if potm}
+                      <span class="text-[11px] text-amber-400 block truncate font-medium">
+                        POTM: {potm.name} ({potm.summary})
+                      </span>
+                    {/if}
+                  </div>
+
+                  <button
+                    onclick={() => {
+                      selectedScorecardFixture = fixture;
+                      scorecardInningsTab = 'inn1';
+                    }}
+                    class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 shrink-0 cursor-pointer shadow-sm border border-slate-700"
+                  >
+                    <BarChart2 size={13} />
+                    <span>Scorecard</span>
+                  </button>
+                {:else if fixture.teamA !== 'TBD' && fixture.teamB !== 'TBD'}
+                  <span class="text-xs text-slate-400">Match Scheduled</span>
+                  <button
+                    onclick={() => handleSimulateFixture(fixture.id)}
+                    class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition flex items-center gap-1 shrink-0 cursor-pointer shadow-sm"
+                  >
+                    <Play size={12} />
+                    <span>Simulate</span>
+                  </button>
+                {:else}
+                  <span class="text-xs text-slate-500 italic">Waiting for preceding playoff match results</span>
+                {/if}
+              </div>
+            </div>
+          {/each}
+        </div>
+
+        <!-- Standings Quick View Below League Fixtures -->
+        {#if tournamentStage === 'league' && standings.length > 0}
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div>
+                <h3 class="text-base font-black text-white font-heading">
+                  IPL League Points Table
+                </h3>
+                <p class="text-xs text-slate-400">
+                  Top 4 franchises qualify for Qualifier 1 and the Eliminator.
+                </p>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs text-left">
+                <thead class="text-slate-400 bg-slate-950/80 border-b border-slate-800 font-bold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th class="py-2.5 px-3">#</th>
+                    <th class="py-2.5 px-3">Team</th>
+                    <th class="py-2.5 px-2 text-center">P</th>
+                    <th class="py-2.5 px-2 text-center">W</th>
+                    <th class="py-2.5 px-2 text-center">L</th>
+                    <th class="py-2.5 px-2 text-center font-bold text-white">Pts</th>
+                    <th class="py-2.5 px-3 text-center">Form</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 font-mono">
+                  {#each standings as team, rank}
+                    {@const isTop4 = rank < 4}
+                    <tr class="hover:bg-slate-800/40 transition {isTop4 ? 'bg-indigo-950/15' : ''}">
+                      <td class="py-2.5 px-3 font-bold text-slate-400">
+                        <span class="w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] {isTop4 ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-400'}">
+                          {rank + 1}
+                        </span>
+                      </td>
+                      <td class="py-2.5 px-3 font-sans font-bold text-white flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full" style="background: {team.primaryColor};"></span>
+                        <span>{team.name} ({team.code})</span>
+                        {#if isTop4}
+                          <span class="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono">Q</span>
+                        {/if}
+                      </td>
+                      <td class="py-2.5 px-2 text-center text-slate-300">{team.played}</td>
+                      <td class="py-2.5 px-2 text-center text-emerald-400 font-bold">{team.won}</td>
+                      <td class="py-2.5 px-2 text-center text-rose-400 font-bold">{team.lost}</td>
+                      <td class="py-2.5 px-2 text-center font-black text-white text-sm">{team.points}</td>
+                      <td class="py-2.5 px-3 text-center font-sans">
+                        <div class="flex items-center justify-center gap-1">
+                          {#each (team.form || []) as res}
+                            <span class="w-4 h-4 rounded text-[9px] font-bold flex items-center justify-center {res === 'W' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}">
+                              {res}
+                            </span>
+                          {/each}
+                        </div>
+                      </td>
+                    </tr>
+                  {/each}
+                </tbody>
+              </table>
             </div>
           </div>
-        {/each}
+        {/if}
       </div>
-    </div>
-  {/if}
+    {/if}
 
-  <!-- TAB 3: STANDINGS & POINTS TABLE -->
-  {#if activeTab === 'standings'}
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-4 shadow-xl">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-        <div>
-          <h3 class="text-lg font-black text-white font-heading">
-            IPL League Stage Standings
-          </h3>
-          <p class="text-xs text-slate-400 mt-0.5">
-            Top 4 franchises qualify for Semi-Finals and the IPL Grand Final.
-          </p>
+    <!-- TAB: POINTS TABLE STANDINGS -->
+    {#if activeTournamentTab === 'standings'}
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div>
+            <h3 class="text-lg font-black text-white font-heading">
+              Official IPL League Standings
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Top 4 franchises qualify for IPL Playoffs (Qualifier 1 &amp; Eliminator).
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="text-slate-400 bg-slate-950/80 border-b border-slate-800 font-bold uppercase tracking-wider text-[10px]">
+              <tr>
+                <th class="py-3 px-3">#</th>
+                <th class="py-3 px-3">Team</th>
+                <th class="py-3 px-2 text-center">P</th>
+                <th class="py-3 px-2 text-center">W</th>
+                <th class="py-3 px-2 text-center">L</th>
+                <th class="py-3 px-2 text-center font-bold text-white">Pts</th>
+                <th class="py-3 px-3 text-center">Form</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 font-mono">
+              {#each standings as team, rank}
+                {@const isTop4 = rank < 4}
+                <tr class="hover:bg-slate-800/40 transition {isTop4 ? 'bg-indigo-950/15' : ''}">
+                  <td class="py-3 px-3 font-bold text-slate-400">
+                    <span class="w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] {isTop4 ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-400'}">
+                      {rank + 1}
+                    </span>
+                  </td>
+                  <td class="py-3 px-3 font-sans font-bold text-white flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full" style="background: {team.primaryColor};"></span>
+                    <span>{team.name} ({team.code})</span>
+                    {#if isTop4}
+                      <span class="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono">Q</span>
+                    {/if}
+                  </td>
+                  <td class="py-3 px-2 text-center text-slate-300">{team.played}</td>
+                  <td class="py-3 px-2 text-center text-emerald-400 font-bold">{team.won}</td>
+                  <td class="py-3 px-2 text-center text-rose-400 font-bold">{team.lost}</td>
+                  <td class="py-3 px-2 text-center font-black text-white text-sm">{team.points}</td>
+                  <td class="py-3 px-3 text-center font-sans">
+                    <div class="flex items-center justify-center gap-1">
+                      {#each (team.form || []) as res}
+                        <span class="w-4 h-4 rounded text-[9px] font-bold flex items-center justify-center {res === 'W' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}">
+                          {res}
+                        </span>
+                      {/each}
+                    </div>
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
         </div>
       </div>
+    {/if}
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-xs text-left">
-          <thead class="text-slate-400 bg-slate-950/80 border-b border-slate-800 font-bold uppercase tracking-wider text-[10px]">
-            <tr>
-              <th class="py-3 px-3">#</th>
-              <th class="py-3 px-3">Team</th>
-              <th class="py-3 px-2 text-center">P</th>
-              <th class="py-3 px-2 text-center">W</th>
-              <th class="py-3 px-2 text-center">L</th>
-              <th class="py-3 px-2 text-center font-bold text-white">Pts</th>
-              <th class="py-3 px-3 text-center">Form</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-800/60 font-mono">
-            {#each standings as team, rank}
-              {@const isTop4 = rank < 4}
-              <tr class="hover:bg-slate-800/40 transition {isTop4 ? 'bg-indigo-950/10' : ''}">
-                <td class="py-3 px-3 font-bold text-slate-400">
-                  <span class="w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] {isTop4 ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-400'}">
-                    {rank + 1}
-                  </span>
-                </td>
-                <td class="py-3 px-3 font-sans font-bold text-white flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full" style="background: {team.primaryColor};"></span>
-                  <span>{team.name} ({team.code})</span>
-                  {#if isTop4}
-                    <span class="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono">Q</span>
-                  {/if}
-                </td>
-                <td class="py-3 px-2 text-center text-slate-300">{team.played}</td>
-                <td class="py-3 px-2 text-center text-emerald-400 font-bold">{team.won}</td>
-                <td class="py-3 px-2 text-center text-rose-400 font-bold">{team.lost}</td>
-                <td class="py-3 px-2 text-center font-black text-white text-sm">{team.points}</td>
-                <td class="py-3 px-3 text-center font-sans">
-                  <div class="flex items-center justify-center gap-1">
-                    {#each (team.form || []) as res}
-                      <span class="w-4 h-4 rounded text-[9px] font-bold flex items-center justify-center {res === 'W' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}">
-                        {res}
-                      </span>
-                    {/each}
-                  </div>
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    </div>
   {/if}
 </div>
 
@@ -898,6 +1139,6 @@
   champion={championTeam}
   runnerUp={runnerUpTeam}
   standings={standings}
-  fixtures={fixtures}
+  fixtures={allTournamentFixtures}
   onClose={() => showTrophyModal = false}
 />

@@ -504,11 +504,34 @@ describe('AuctionEngine State Machine Tests', () => {
     assert.ok(f1.scorecard.innings2.batting.length > 0);
     assert.ok(f1.scorecard.innings2.bowling.length > 0);
 
-    // 4. Simulate remaining fixtures in one go (league + playoffs + final)
+    // 4. Simulate remaining league fixtures
     const simAllRes = engine.simulateAllFixtures({ userToken: 'host-1' });
     assert.equal(simAllRes.success, true);
-    assert.ok(simAllRes.simulatedCount >= 5, 'Should simulate remaining league and playoff fixtures');
+    assert.equal(simAllRes.simulatedCount, 5, 'Should simulate remaining 5 league fixtures');
     assert.ok(engine.fixtures.every(f => f.status === 'completed' && f.scorecard));
+
+    // Host advances to IPL Playoffs (Qualifier 1, Eliminator, Qualifier 2)
+    const playoffRes = engine.advanceToPlayoffs();
+    assert.equal(playoffRes.success, true);
+    assert.equal(engine.tournamentStage, 'playoffs');
+    assert.equal(engine.fixtures.length, 3);
+
+    // Simulate playoff fixtures
+    const simPlayoffsRes = engine.simulateAllFixtures({ userToken: 'host-1' });
+    assert.equal(simPlayoffsRes.success, true);
+    assert.equal(simPlayoffsRes.simulatedCount, 3);
+    assert.ok(engine.fixtures.every(f => f.status === 'completed' && f.scorecard));
+
+    // Host advances to IPL Grand Final
+    const finalRes = engine.advanceToFinals();
+    assert.equal(finalRes.success, true);
+    assert.equal(engine.tournamentStage, 'finals');
+    assert.equal(engine.fixtures.length, 1);
+
+    // Simulate Grand Final & verify champion declaration
+    const simFinalRes = engine.simulateAllFixtures({ userToken: 'host-1' });
+    assert.equal(simFinalRes.success, true);
+    assert.equal(simFinalRes.simulatedCount, 1);
     assert.ok(engine.tournamentWinner, 'Tournament winner should be declared after grand final');
 
     // 5. Standings are populated for all 4 teams
