@@ -189,7 +189,7 @@
 
           <button
             onclick={() => {
-              if (confirm('Are you sure you want to END the Auction now?\n\nEvery franchise will be auto-completed to 11 players if needed, and all players will immediately advance to the Playing XI Builder and Tournament Fixtures.')) {
+              if (confirm('Are you sure you want to END the Auction now?\n\nAny franchise with fewer than 11 players will be DISQUALIFIED from tournament fixtures. All qualified franchises with 11+ players will advance to the Playing XI Builder.')) {
                 store.hostControl('end_auction');
               }
             }}

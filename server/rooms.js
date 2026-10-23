@@ -312,6 +312,11 @@ export class RoomManager {
         case 'start':
           res = engine.startAuction();
           break;
+        case 'reset':
+        case 'reset_auction':
+        case 'restart_auction':
+          res = engine.resetAuction();
+          break;
         case 'pause':
           res = engine.pauseAuction();
           break;

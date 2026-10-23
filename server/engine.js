@@ -216,8 +216,21 @@ export class AuctionEngine {
   // --- AUCTION CONTROLS ---
 
   startAuction() {
-    if (this.status !== 'lobby' && this.status !== 'paused') {
-      return { success: false, reason: `Cannot start auction in ${this.status} state` };
+    // Idempotent: If already active, return success so double-clicks never fail
+    if (this.status === 'active') {
+      return { success: true, status: this.status, alreadyStarted: true };
+    }
+
+    // If paused, seamlessly resume
+    if (this.status === 'paused') {
+      return this.resumeAuction();
+    }
+
+    if (this.status !== 'lobby') {
+      return {
+        success: false,
+        reason: `Cannot start auction in "${this.status}" state. The auction has already progressed past the lobby.`
+      };
     }
 
     // Only fill bots if explicitly enabled in room config
@@ -232,6 +245,50 @@ export class AuctionEngine {
     this.presentNextPlayer();
     this.persist();
     return { success: true };
+  }
+
+  resetAuction() {
+    this.stopTimer();
+    this.stopXITimer();
+    this.clearTransition();
+    this.status = 'lobby';
+    this.round = 1;
+    this.isAcceleratedRound = false;
+    this.currentPlayerIndex = 0;
+    this.currentPlayer = null;
+    this.currentBid = 0;
+    this.leadTeam = null;
+    this.leadUser = null;
+    this.unsoldQueue = [];
+    this.results = [];
+    this.fixtures = [];
+    this.leagueFixtures = [];
+    this.playoffFixtures = [];
+    this.finalFixtures = [];
+    this.tournamentStage = 'league';
+    this.tournamentWinner = null;
+    this.championTeam = null;
+    this.activeBattle = null;
+
+    // Reset squad, purse, and eligibility for every team
+    for (const team of this.teams.values()) {
+      team.purse = this.config.defaultPurse;
+      team.squad = [];
+      team.playingXI = [];
+      team.squadCount = 0;
+      team.overseasCount = 0;
+      team.isXIConfirmed = false;
+      team.isDisqualified = false;
+      team.disqualificationReason = null;
+      if (this.db) {
+        this.db.saveTeam(this.roomCode, team);
+      }
+    }
+
+    this.emit('auction_status_changed', { status: this.status });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return { success: true, status: this.status };
   }
 
   pauseAuction() {

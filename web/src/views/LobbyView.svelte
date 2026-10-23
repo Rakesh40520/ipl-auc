@@ -49,6 +49,16 @@
   );
 
   async function handleStart() {
+    if (store.roomState.status === 'active') {
+      store.view = 'auction';
+      return;
+    }
+
+    if (store.roomState.status === 'playing_xi_selection' || store.roomState.status === 'completed') {
+      store.view = 'results';
+      return;
+    }
+
     if (!store.myTeamCode) {
       // If host hasn't selected a team yet, automatically claim the first open franchise
       const firstOpen = store.roomState.teams?.find(t => !t.isClaimed);
@@ -63,8 +73,11 @@
     }
 
     starting = true;
-    await store.hostControl('start');
+    const res = await store.hostControl('start');
     starting = false;
+    if (res?.success) {
+      store.view = 'auction';
+    }
   }
 </script>
 
