@@ -19,21 +19,28 @@ describe('Auction Rules & Solvency Tests', () => {
   });
 
   test('getBidIncrement applies tiered increments correctly', () => {
-    assert.equal(getBidIncrement(30), 5);
+    // Below 6 Cr (< 600 L): +10 L
+    assert.equal(getBidIncrement(30), 10);
     assert.equal(getBidIncrement(75), 10);
-    assert.equal(getBidIncrement(150), 20);
-    assert.equal(getBidIncrement(350), 25);
-    assert.equal(getBidIncrement(500), 50);
-    assert.equal(getBidIncrement(1200), 50);
+    assert.equal(getBidIncrement(150), 10);
+    assert.equal(getBidIncrement(350), 10);
+    assert.equal(getBidIncrement(590), 10);
+    // 6 Cr and above (>= 600 L): +25 L
+    assert.equal(getBidIncrement(600), 25);
+    assert.equal(getBidIncrement(625), 25);
+    assert.equal(getBidIncrement(1200), 25);
   });
 
   test('calculateNextBid starts with base price and then increments', () => {
     // Opening bid is base price
     assert.equal(calculateNextBid(0, 200, false), 200);
-    // Subsequent bids add increment
-    assert.equal(calculateNextBid(200, 200, true), 225); // +25 for >= 200
-    assert.equal(calculateNextBid(475, 200, true), 500); // +25
-    assert.equal(calculateNextBid(500, 200, true), 550); // +50
+    // Subsequent bids below 6 Cr add +10 L
+    assert.equal(calculateNextBid(200, 200, true), 210);
+    assert.equal(calculateNextBid(475, 200, true), 485);
+    assert.equal(calculateNextBid(590, 200, true), 600);
+    // Subsequent bids at or above 6 Cr add +25 L
+    assert.equal(calculateNextBid(600, 200, true), 625);
+    assert.equal(calculateNextBid(625, 200, true), 650);
   });
 
   test('calculateMaxPermissibleBid reserves enough purse for min squad', () => {

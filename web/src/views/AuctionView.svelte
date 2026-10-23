@@ -327,6 +327,21 @@
 
       <!-- Big Primary BID Button -->
       <div class="w-full space-y-2">
+        <!-- Bid Increment Rule Badge -->
+        <div class="flex items-center justify-between text-xs px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300">
+          <span class="flex items-center gap-1.5 font-medium">
+            <Zap size={13} class="text-amber-400" />
+            <span>Bid Increment:</span>
+          </span>
+          <span class="font-bold font-mono px-2 py-0.5 rounded-md {currentBid < 600 ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
+            {#if currentBid < 600}
+              +₹10 Lakhs (&lt; ₹6 Cr)
+            {:else}
+              +₹25 Lakhs (≥ ₹6 Cr)
+            {/if}
+          </span>
+        </div>
+
         <button
           onclick={handleBid}
           disabled={!bidEligibility.canBid || placingBid}
@@ -374,9 +389,14 @@
                   <span class="font-bold text-white">{bid.teamCode}</span>
                   <span class="text-slate-400 truncate max-w-[120px]">{bid.userName}</span>
                 </div>
-                <strong class="font-heading font-bold text-indigo-300">
-                  {formatLakhs(bid.amount)}
-                </strong>
+                <div class="text-right">
+                  <strong class="font-heading font-bold text-indigo-300 block text-xs">
+                    {formatLakhs(bid.amount)}
+                  </strong>
+                  {#if bid.increment}
+                    <span class="text-[10px] text-emerald-400 font-mono font-semibold">+₹{bid.increment}L</span>
+                  {/if}
+                </div>
               </div>
             {/each}
           {:else}

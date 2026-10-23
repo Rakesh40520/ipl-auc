@@ -87,10 +87,10 @@ describe('AuctionEngine State Machine Tests', () => {
     const bid2 = engine.placeBid({ teamCode: 'CSK', userToken: 'user-1' });
     assert.equal(bid2.success, false);
 
-    // RCB bids -> incremented to 225
+    // RCB bids -> incremented to 210 (+10L since below 6 Cr)
     const bid3 = engine.placeBid({ teamCode: 'RCB', userToken: 'user-2' });
     assert.equal(bid3.success, true);
-    assert.equal(bid3.amount, 225);
+    assert.equal(bid3.amount, 210);
     assert.equal(engine.leadTeam, 'RCB');
 
     // Test Undo Last Bid

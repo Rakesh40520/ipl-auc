@@ -1483,11 +1483,13 @@ export class AuctionEngine {
     this.lastTickTime = Date.now();
     this.nextBotBidTime = Date.now() + 2500 + Math.random() * 2000;
 
+    const bidIncrement = hasExistingBid ? (proposedBid - this.lastBidSnapshot.currentBid) : 0;
     const bidRecord = {
       teamCode: team.code,
       teamName: team.name,
       userName: this.leadUser,
       amount: proposedBid,
+      increment: bidIncrement,
       timestamp: Date.now()
     };
     this.bidHistory.unshift(bidRecord);

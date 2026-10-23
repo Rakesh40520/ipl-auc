@@ -18,18 +18,15 @@ export const DEFAULT_CONFIG = {
 };
 
 /**
- * Standard IPL Tiered Bid Increments
- * - Under 1 Cr (< 100L): +5L (for under 50L) or +10L
- * - 1 Cr to 2 Cr (100L - 200L): +20L
- * - 2 Cr to 5 Cr (200L - 500L): +25L
- * - 5 Cr and above (>= 500L): +50L
+ * Official IPL Bid Increments:
+ * - Below 6 Cr (< 600 Lakhs): +10 Lakhs increment
+ * - 6 Cr and above (>= 600 Lakhs): +25 Lakhs increment
  */
 export function getBidIncrement(currentBidAmount) {
-  if (currentBidAmount < 50) return 5;
-  if (currentBidAmount < 100) return 10;
-  if (currentBidAmount < 200) return 20;
-  if (currentBidAmount < 500) return 25;
-  return 50;
+  if (currentBidAmount < 600) {
+    return 10;
+  }
+  return 25;
 }
 
 /**
