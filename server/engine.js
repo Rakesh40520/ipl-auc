@@ -7,6 +7,7 @@ import {
   formatLakhs
 } from './rules.js';
 import { simulateMatchFixture, REAL_RESERVE_POOL } from './simulator.js';
+import { computeAuctionVerdict } from './verdict.js';
 
 export class AuctionEngine {
   constructor({
@@ -57,12 +58,13 @@ export class AuctionEngine {
       });
     }
 
-    // Initialize Players & Queues
-    this.allPlayers = [...playersData];
-    this.playerQueue = [...playersData];
+    // Initialize Players & Queues (Grouped strictly by auction sets)
+    this.allPlayers = this.groupPlayersBySets(playersData);
+    this.playerQueue = [...this.allPlayers];
     this.unsoldQueue = [];
     this.currentPlayerIndex = 0;
     this.currentPlayer = null;
+    this.verdict = null;
 
     if (this.config.jumblePlayers) {
       this.jumblePlayers();
@@ -215,7 +217,7 @@ export class AuctionEngine {
 
   // --- AUCTION CONTROLS ---
 
-  startAuction() {
+  startAuction({ forceReset = false } = {}) {
     // Idempotent: If already active, return success so double-clicks never fail
     if (this.status === 'active') {
       return { success: true, status: this.status, alreadyStarted: true };
@@ -226,15 +228,14 @@ export class AuctionEngine {
       return this.resumeAuction();
     }
 
-    if (this.status !== 'lobby') {
-      return {
-        success: false,
-        reason: `Cannot start auction in "${this.status}" state. The auction has already progressed past the lobby.`
-      };
+    // If completed or forced, cleanly reset and start fresh so the host is never blocked
+    if (this.status === 'completed' || this.status === 'playing_xi_selection' || forceReset) {
+      this.resetAuction();
     }
 
-    // Only fill bots if explicitly enabled in room config
-    if (this.config.botsEnabled) {
+    // Ensure at least 2 teams participate (auto-fill bots if unclaimed or bots enabled)
+    const claimedCount = Array.from(this.teams.values()).filter(t => t.userToken).length;
+    if (this.config.botsEnabled || claimedCount < 2) {
       this.fillBots();
     } else {
       this.clearBots();
@@ -261,6 +262,7 @@ export class AuctionEngine {
     this.leadUser = null;
     this.unsoldQueue = [];
     this.results = [];
+    this.verdict = null;
     this.fixtures = [];
     this.leagueFixtures = [];
     this.playoffFixtures = [];
@@ -269,6 +271,9 @@ export class AuctionEngine {
     this.tournamentWinner = null;
     this.championTeam = null;
     this.activeBattle = null;
+
+    // Regroup player queue strictly by sets
+    this.playerQueue = this.groupPlayersBySets(this.allPlayers);
 
     // Reset squad, purse, and eligibility for every team
     for (const team of this.teams.values()) {
@@ -314,8 +319,9 @@ export class AuctionEngine {
 
   endAuction() {
     this.stopTimer();
+    this.stopXITimer();
     this.clearTransition();
-    this.status = 'playing_xi_selection';
+    this.status = 'completed';
 
     // Strict Rule: If any team does not have at least 11 players in their squad, disqualify and remove them!
     for (const team of this.teams.values()) {
@@ -333,7 +339,7 @@ export class AuctionEngine {
         if (!team.playingXI || team.playingXI.length < 11) {
           team.playingXI = this.generateDefaultPlayingXI(team);
         }
-        team.isXIConfirmed = Boolean(team.isBot || !team.userToken);
+        team.isXIConfirmed = true;
       }
 
       if (this.db) {
@@ -341,23 +347,30 @@ export class AuctionEngine {
       }
     }
 
-    // Auto-plan tournament league fixtures ONLY for qualified teams
+    // Compute the Monte Carlo Auction Verdict (20,000 / 10,000 season simulations from verified ball-by-ball record)
+    this.verdict = computeAuctionVerdict(Array.from(this.teams.values()), 10000);
+
+    // Auto-plan tournament league fixtures for qualified teams
     this.generateFixtures();
 
-    // Start XI selection countdown timer (Strict 2 minutes = 120s)
-    this.startXITimer();
-
     this.emit('auction_status_changed', { status: this.status });
-    this.emit('xi_selection_started', {
-      status: this.status,
-      timer: this.xiTimer,
-      xiTimerEndsAt: this.xiTimerEndsAt,
+    this.emit('auction_completed', {
+      results: this.results,
       teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t)),
-      fixtures: this.fixtures
+      verdict: this.verdict
     });
+    this.emit('verdict_updated', { verdict: this.verdict });
     this.emit('state_sync', this.getStateSnapshot());
     this.persist();
-    return { success: true, status: this.status, timer: this.xiTimer, xiTimerEndsAt: this.xiTimerEndsAt };
+    return { success: true, status: this.status, verdict: this.verdict };
+  }
+
+  calculateAuctionVerdict(simsCount = 10000) {
+    this.verdict = computeAuctionVerdict(Array.from(this.teams.values()), simsCount);
+    this.emit('verdict_updated', { verdict: this.verdict });
+    this.emit('state_sync', this.getStateSnapshot());
+    this.persist();
+    return this.verdict;
   }
 
   startXITimer() {
@@ -973,27 +986,72 @@ export class AuctionEngine {
     return { success: true, fixture };
   }
 
+  groupPlayersBySets(players) {
+    if (!Array.isArray(players)) return [];
+    const SET_ORDER = [
+      'M0', 'M1', 'M2',
+      'BA1', 'AL1', 'WK1', 'FA1', 'SP1',
+      'UBA1', 'UAL1', 'UWK1', 'UFA1', 'USP1',
+      'BA2', 'AL2', 'FA2', 'SP2',
+      'UBA2', 'UFA2'
+    ];
+    const grouped = {};
+    for (const s of SET_ORDER) {
+      grouped[s] = [];
+    }
+    const other = [];
+    for (const p of players) {
+      const setKey = p.set || 'OTHER';
+      if (grouped[setKey]) {
+        grouped[setKey].push(p);
+      } else {
+        other.push(p);
+      }
+    }
+    const result = [];
+    for (const s of SET_ORDER) {
+      if (grouped[s].length > 0) {
+        result.push(...grouped[s]);
+      }
+    }
+    result.push(...other);
+    return result;
+  }
+
   jumblePlayers() {
     const startIndex = this.status === 'active' && this.currentPlayer ? this.currentPlayerIndex + 1 : this.currentPlayerIndex;
     const remaining = this.playerQueue.slice(startIndex);
 
-    for (let i = remaining.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+    // Group remaining players by their set so sets remain divided and organized!
+    const setBuckets = new Map();
+    for (const p of remaining) {
+      const s = p.set || 'OTHER';
+      if (!setBuckets.has(s)) setBuckets.set(s, []);
+      setBuckets.get(s).push(p);
+    }
+
+    // Shuffle within each set
+    const shuffled = [];
+    for (const list of setBuckets.values()) {
+      for (let i = list.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [list[i], list[j]] = [list[j], list[i]];
+      }
+      shuffled.push(...list);
     }
 
     this.playerQueue = [
       ...this.playerQueue.slice(0, startIndex),
-      ...remaining
+      ...shuffled
     ];
 
     this.emit('queue_jumbled', {
-      totalRemaining: remaining.length,
+      totalRemaining: shuffled.length,
       nextPlayer: this.playerQueue[startIndex] || null
     });
     this.emit('state_sync', this.getStateSnapshot());
     this.persist();
-    return { success: true, count: remaining.length };
+    return { success: true, count: shuffled.length };
   }
 
   get matchMode() {
@@ -1505,26 +1563,14 @@ export class AuctionEngine {
     this.stopTimer();
 
     if (this.currentPlayerIndex >= this.playerQueue.length) {
-      // Current round complete! Check if accelerated round needed
-      if (this.round === 1 && this.unsoldQueue.length > 0) {
+      // Repeat unsold players in an Accelerated / Unsold Round!
+      if (this.unsoldQueue.length > 0 && this.round <= 5) {
         this.startAcceleratedRound();
         return;
       }
 
-      // Entire auction complete!
-      this.status = 'completed';
-      for (const team of this.teams.values()) {
-        if (!team.playingXI || team.playingXI.length === 0) {
-          team.playingXI = this.generateDefaultPlayingXI(team);
-        }
-      }
-      this.emit('auction_completed', {
-        results: this.results,
-        teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t)),
-        activeBattle: this.activeBattle
-      });
-      this.emit('state_sync', this.getStateSnapshot());
-      this.persist();
+      // Entire auction complete! Conclude and calculate Auction Verdict!
+      this.endAuction();
       return;
     }
 
@@ -1560,7 +1606,7 @@ export class AuctionEngine {
   }
 
   startAcceleratedRound() {
-    this.round = 2;
+    this.round++;
     this.isAcceleratedRound = true;
     this.playerQueue = [...this.unsoldQueue];
     this.unsoldQueue = [];
@@ -1568,9 +1614,9 @@ export class AuctionEngine {
 
     this.emit('accelerated_round_started', {
       totalPlayers: this.playerQueue.length,
-      round: 2
+      round: this.round
     });
-
+    this.emit('state_sync', this.getStateSnapshot());
     this.presentNextPlayer();
   }
 
@@ -2069,6 +2115,7 @@ export class AuctionEngine {
       standings: this.getTournamentStandings(),
       tournamentWinner: this.tournamentWinner,
       championTeam: this.championTeam ? this.sanitizeTeam(this.championTeam) : null,
+      verdict: this.verdict || null,
       matchMode: this.config.matchMode || 'ai_simulation'
     };
   }

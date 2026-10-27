@@ -340,6 +340,10 @@ export class RoomManager {
         case 'end_auction':
           res = engine.endAuction();
           break;
+        case 'compute_verdict':
+        case 'verdict':
+          res = { success: true, verdict: engine.calculateAuctionVerdict() };
+          break;
         case 'plan_fixtures':
           res = engine.generateFixtures();
           break;

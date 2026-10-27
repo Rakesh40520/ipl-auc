@@ -51,15 +51,15 @@
           <Users size={14} />
           <span>Lobby</span>
         </button>
-      {:else if store.roomState.status === 'active' || store.roomState.status === 'paused'}
-        <button
-          onclick={() => store.view = 'auction'}
-          class="flex items-center gap-1.5 px-3 py-1 text-xs sm:text-sm font-medium rounded-lg transition whitespace-nowrap {store.view === 'auction' ? 'bg-slate-800 text-white font-bold shadow-sm' : 'text-slate-400 hover:text-white'}"
-        >
-          <Gavel size={14} />
-          <span>Auction</span>
-        </button>
       {/if}
+
+      <button
+        onclick={() => store.view = 'auction'}
+        class="flex items-center gap-1.5 px-3 py-1 text-xs sm:text-sm font-medium rounded-lg transition whitespace-nowrap {store.view === 'auction' ? 'bg-slate-800 text-white font-bold shadow-sm' : 'text-slate-400 hover:text-white'}"
+      >
+        <Gavel size={14} />
+        <span>Auction</span>
+      </button>
 
       <button
         onclick={() => store.view = 'squads'}
@@ -69,13 +69,13 @@
         <span>Squads</span>
       </button>
 
-      {#if store.roomState.status === 'completed' || store.roomState.status === 'playing_xi_selection' || store.roomState.results?.length > 0}
+      {#if store.roomState.status === 'completed' || store.roomState.status === 'playing_xi_selection' || (store.roomState.results && store.roomState.results.length > 0) || store.roomState.verdict}
         <button
           onclick={() => store.view = 'results'}
           class="flex items-center gap-1.5 px-3 py-1 text-xs sm:text-sm font-medium rounded-lg transition whitespace-nowrap {store.view === 'results' ? 'bg-slate-800 text-white font-bold shadow-sm' : 'text-slate-400 hover:text-white'}"
         >
           <Trophy size={14} class="text-amber-400" />
-          <span>Fixtures</span>
+          <span>Verdict & Winner</span>
         </button>
       {/if}
     </nav>

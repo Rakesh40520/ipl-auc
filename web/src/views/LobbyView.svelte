@@ -49,16 +49,6 @@
   );
 
   async function handleStart() {
-    if (store.roomState.status === 'active') {
-      store.view = 'auction';
-      return;
-    }
-
-    if (store.roomState.status === 'playing_xi_selection' || store.roomState.status === 'completed') {
-      store.view = 'results';
-      return;
-    }
-
     if (!store.myTeamCode) {
       // If host hasn't selected a team yet, automatically claim the first open franchise
       const firstOpen = store.roomState.teams?.find(t => !t.isClaimed);
@@ -67,16 +57,13 @@
       }
     }
 
-    if (!store.roomState.config?.botsEnabled && claimedCount < 2) {
-      store.notify(`Tournament requirement: At least 2 players are required to start the auction and tournament (currently ${claimedCount} claimed). Please claim at least 2 teams or switch AI Bots ON.`);
-      return;
-    }
-
     starting = true;
     const res = await store.hostControl('start');
     starting = false;
     if (res?.success) {
       store.view = 'auction';
+    } else {
+      store.notify(res?.reason || res?.error || 'Failed to start auction');
     }
   }
 </script>

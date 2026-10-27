@@ -31,9 +31,57 @@
     History
   } from 'lucide-svelte';
 
-  // Sub-navigation tab when in tournament mode: 'fixtures' | 'standings' | 'history'
-  let activeTournamentTab = $state('fixtures');
+  // Primary Result Deciding View: 'verdict' | 'fixtures' | 'standings'
+  let activeTournamentTab = $state('verdict');
   let copied = $state(false);
+
+  // Auction Verdict State (Monte Carlo Season Simulator)
+  let selectedH2hTeamA = $state(null);
+  let selectedH2hTeamB = $state(null);
+  let isSimulatingVerdict = $state(false);
+
+  const verdict = $derived(store.roomState.verdict);
+
+  const h2hTeamA = $derived(
+    verdict?.rankings?.find(r => r.code === selectedH2hTeamA) || verdict?.rankings?.[0]
+  );
+  const h2hTeamB = $derived(
+    verdict?.rankings?.find(r => r.code === selectedH2hTeamB) || verdict?.rankings?.[1] || verdict?.rankings?.[0]
+  );
+
+  const h2hRunsMargin = $derived.by(() => {
+    if (!h2hTeamA || !h2hTeamB) return 0;
+    return Number(((h2hTeamA.runsEdge || 0) - (h2hTeamB.runsEdge || 0)).toFixed(1));
+  });
+
+  const h2hSingleMatchOdds = $derived.by(() => {
+    if (!h2hTeamA || !h2hTeamB) return 50;
+    const diff = (h2hTeamA.runsEdge || 0) - (h2hTeamB.runsEdge || 0);
+    const prob = 1 / (1 + Math.exp(-diff / 15));
+    return Math.round(prob * 100);
+  });
+
+  async function handleRerunVerdict() {
+    isSimulatingVerdict = true;
+    const res = await store.hostControl('compute_verdict');
+    isSimulatingVerdict = false;
+    if (res?.success) {
+      store.notify('10,000 Monte Carlo Season Simulations Completed!');
+    }
+  }
+
+  $effect(() => {
+    if (verdict?.rankings?.length >= 2) {
+      if (!selectedH2hTeamA) selectedH2hTeamA = verdict.rankings[0].code;
+      if (!selectedH2hTeamB) selectedH2hTeamB = verdict.rankings[1].code;
+    }
+  });
+
+  $effect(() => {
+    if (store.roomState.status === 'completed' && !store.roomState.verdict && store.isHost) {
+      store.hostControl('compute_verdict');
+    }
+  });
 
   // IPL Trophy Presentation Ceremony State
   let showTrophyModal = $state(false);
@@ -531,6 +579,19 @@
       <!-- Navigation Tabs & Stage Indicator -->
       <div class="flex items-center gap-1.5 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 self-stretch sm:self-auto overflow-x-auto">
         <button
+          onclick={() => activeTournamentTab = 'verdict'}
+          class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer {activeTournamentTab === 'verdict' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}"
+        >
+          <Award size={14} class="text-amber-400" />
+          <span>Auction Verdict</span>
+          {#if verdict?.champion}
+            <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold">
+              {verdict.champion.code} {verdict.champion.titleChance}%
+            </span>
+          {/if}
+        </button>
+
+        <button
           onclick={() => activeTournamentTab = 'fixtures'}
           class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer {activeTournamentTab === 'fixtures' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}"
         >
@@ -648,6 +709,324 @@
             </button>
           </div>
         </div>
+      </div>
+    {/if}
+
+    <!-- TAB: AUCTION VERDICT (MONTE CARLO SEASON SIMULATOR) -->
+    {#if activeTournamentTab === 'verdict'}
+      <div class="space-y-6">
+
+        {#if verdict && verdict.champion}
+          <!-- MOST LIKELY CHAMPION HERO CARD -->
+          <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-950/70 via-slate-900 to-indigo-950/70 border-2 border-amber-500/50 p-6 sm:p-8 shadow-2xl">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div class="space-y-2 max-w-2xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-black uppercase tracking-wider">
+                  <Trophy size={14} class="text-amber-400" />
+                  <span>Auction Verdict · Most Likely Champion</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight font-heading">
+                  {verdict.champion.name}
+                </h2>
+                <div class="flex flex-wrap items-center gap-3 pt-1">
+                  <span class="text-2xl sm:text-3xl font-black text-amber-400 font-mono">
+                    {verdict.champion.titleChance}%
+                  </span>
+                  <span class="text-xs text-slate-300">
+                    Trophy Win Chance ({verdict.simulations?.toLocaleString() || '10,000'} Simulated Seasons)
+                  </span>
+                  {#if verdict.runnerUp}
+                    <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700">
+                      Next Best: <strong class="text-white">{verdict.runnerUp.name}</strong> ({verdict.runnerUp.titleChance}%)
+                    </span>
+                  {/if}
+                </div>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed pt-2">
+                  {verdict.verdictExplanation}
+                </p>
+              </div>
+
+              <!-- Host Re-simulate Action Button -->
+              {#if store.isHost}
+                <div class="shrink-0 self-stretch sm:self-auto flex flex-col gap-2">
+                  <button
+                    onclick={handleRerunVerdict}
+                    disabled={isSimulatingVerdict}
+                    class="px-5 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-extrabold text-xs shadow-lg transition flex items-center justify-center gap-2 cursor-pointer border border-indigo-400/30"
+                  >
+                    <RotateCcw size={14} class={isSimulatingVerdict ? 'animate-spin' : ''} />
+                    <span>{isSimulatingVerdict ? 'Simulating 10,000 Seasons…' : 'Re-run Simulation'}</span>
+                  </button>
+                  <span class="text-[10px] text-slate-400 text-center">
+                    Simulates 10,000 full IPL league & playoff seasons
+                  </span>
+                </div>
+              {/if}
+            </div>
+          </div>
+
+          <!-- TEAM VS TEAM COMPARATIVE TABLE -->
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl space-y-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+              <div>
+                <h3 class="text-lg font-black text-white font-heading">
+                  Franchise Title & Playoff Probability Rankings
+                </h3>
+                <p class="text-xs text-slate-400">
+                  Runs edge per match vs league average, era-adjusted batting/bowling ratings, and title odds.
+                </p>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs sm:text-sm">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400 text-[11px] uppercase tracking-wider font-bold">
+                    <th class="py-2.5 px-3"># Rank</th>
+                    <th class="py-2.5 px-3">Team</th>
+                    <th class="py-2.5 px-3">Runs Edge</th>
+                    <th class="py-2.5 px-3">Batting</th>
+                    <th class="py-2.5 px-3">Bowling</th>
+                    <th class="py-2.5 px-3">Title Chance</th>
+                    <th class="py-2.5 px-3">Playoffs</th>
+                    <th class="py-2.5 px-3">Key Match Winner</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 font-medium">
+                  {#each verdict.rankings as rk, rankIdx}
+                    <tr class="hover:bg-slate-800/40 transition">
+                      <td class="py-3 px-3 font-mono font-bold text-slate-400">
+                        #{rankIdx + 1}
+                      </td>
+                      <td class="py-3 px-3">
+                        <div class="flex items-center gap-2">
+                          <span class="w-3 h-3 rounded-full shrink-0" style="background: {rk.team.primaryColor || '#6366f1'};"></span>
+                          <span class="font-bold text-white">{rk.name}</span>
+                          <span class="text-[10px] text-slate-400 hidden sm:inline">({rk.owner})</span>
+                        </div>
+                      </td>
+                      <td class="py-3 px-3 font-mono font-bold {rk.runsEdge >= 0 ? 'text-emerald-400' : 'text-rose-400'}">
+                        {rk.runsEdge >= 0 ? '+' : ''}{rk.runsEdge}
+                      </td>
+                      <td class="py-3 px-3 text-slate-300">
+                        {rk.battingRating} <span class="text-[10px] text-slate-500">(#{rk.battingRank})</span>
+                      </td>
+                      <td class="py-3 px-3 text-slate-300">
+                        {rk.bowlingRating} <span class="text-[10px] text-slate-500">(#{rk.bowlingRank})</span>
+                      </td>
+                      <td class="py-3 px-3">
+                        <span class="font-mono font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+                          {rk.titleChance}%
+                        </span>
+                      </td>
+                      <td class="py-3 px-3 font-mono text-slate-300">
+                        {rk.playoffChance}%
+                      </td>
+                      <td class="py-3 px-3 text-slate-300">
+                        <span class="text-white font-semibold">{rk.bestPlayer.name}</span>
+                        <span class="text-[10px] text-amber-300 font-mono ml-1 font-bold">({rk.bestPlayer.rating})</span>
+                      </td>
+                    </tr>
+                  {/each}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- HEAD-TO-HEAD COMPARISON TOOL -->
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl space-y-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div>
+                <h3 class="text-lg font-black text-white font-heading">
+                  Player by Player Head-to-Head Duel
+                </h3>
+                <p class="text-xs text-slate-400">
+                  Compare every batting slot and bowling attack option between two franchises.
+                </p>
+              </div>
+
+              <!-- Team Selectors -->
+              <div class="flex items-center gap-2">
+                <select
+                  bind:value={selectedH2hTeamA}
+                  class="bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-1.5 text-xs font-bold"
+                >
+                  {#each verdict.rankings as rk}
+                    <option value={rk.code}>{rk.name}</option>
+                  {/each}
+                </select>
+                <span class="text-xs font-black text-indigo-400">VS</span>
+                <select
+                  bind:value={selectedH2hTeamB}
+                  class="bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-1.5 text-xs font-bold"
+                >
+                  {#each verdict.rankings as rk}
+                    <option value={rk.code}>{rk.name}</option>
+                  {/each}
+                </select>
+              </div>
+            </div>
+
+            <!-- H2H Matchup Breakdown Table -->
+            {#if h2hTeamA && h2hTeamB}
+              <div class="space-y-3">
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left text-xs sm:text-sm">
+                    <thead>
+                      <tr class="border-b border-slate-800 text-slate-400 text-[11px] uppercase tracking-wider font-bold">
+                        <th class="py-2 px-3">Slot</th>
+                        <th class="py-2 px-3">{h2hTeamA.name}</th>
+                        <th class="py-2 px-3 text-right">Rating</th>
+                        <th class="py-2 px-3">{h2hTeamB.name}</th>
+                        <th class="py-2 px-3 text-right">Rating</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60 font-medium">
+                      <tr>
+                        <td colspan="5" class="py-2 px-3 bg-slate-950/60 text-[11px] font-bold uppercase tracking-wider text-indigo-300">
+                          🏏 Batting Order Matchups (Slots 1 to 11)
+                        </td>
+                      </tr>
+                      {#each Array(11) as _, i}
+                        {@const pA = h2hTeamA.xi[i]}
+                        {@const pB = h2hTeamB.xi[i]}
+                        {@const aWins = (pA?.battingRating || 40) > (pB?.battingRating || 40)}
+                        {@const bWins = (pB?.battingRating || 40) > (pA?.battingRating || 40)}
+                        <tr class="hover:bg-slate-800/30">
+                          <td class="py-2 px-3 text-slate-500 font-mono text-xs">Bat #{i + 1}</td>
+                          <td class="py-2 px-3 {aWins ? 'text-emerald-400 font-bold' : 'text-slate-300'}">
+                            {pA ? pA.name : '—'} <span class="text-[10px] text-slate-500">({pA?.role || 'BAT'})</span>
+                          </td>
+                          <td class="py-2 px-3 text-right font-mono font-bold {aWins ? 'text-emerald-400' : 'text-slate-400'}">
+                            {pA?.battingRating || 40}
+                          </td>
+                          <td class="py-2 px-3 {bWins ? 'text-emerald-400 font-bold' : 'text-slate-300'}">
+                            {pB ? pB.name : '—'} <span class="text-[10px] text-slate-500">({pB?.role || 'BAT'})</span>
+                          </td>
+                          <td class="py-2 px-3 text-right font-mono font-bold {bWins ? 'text-emerald-400' : 'text-slate-400'}">
+                            {pB?.battingRating || 40}
+                          </td>
+                        </tr>
+                      {/each}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-300 flex flex-wrap items-center justify-between gap-2">
+                  <span>
+                    Direct Match Odds: <strong class="text-white">{h2hTeamA.name}</strong> holds about <strong class="text-amber-400 font-mono">{h2hSingleMatchOdds}%</strong> to win against <strong class="text-white">{h2hTeamB.name}</strong>.
+                  </span>
+                  <span class="text-slate-400 font-mono">
+                    Expected Runs Margin: {h2hRunsMargin >= 0 ? '+' : ''}{h2hRunsMargin} runs
+                  </span>
+                </div>
+              </div>
+            {/if}
+          </div>
+
+          <!-- EVERY TEAM IN DETAIL ACCORDION -->
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl space-y-4">
+            <h3 class="text-lg font-black text-white font-heading border-b border-slate-800 pb-3">
+              Every Franchise in Detail
+            </h3>
+
+            <div class="space-y-3">
+              {#each verdict.rankings as rk, rkIndex}
+                <details class="group bg-slate-950 border border-slate-800 rounded-2xl p-4 transition open:ring-1 open:ring-indigo-500/40">
+                  <summary class="flex items-center justify-between gap-4 cursor-pointer list-none">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <span class="font-mono font-black text-sm text-slate-500">#{rkIndex + 1}</span>
+                      <span class="w-3 h-3 rounded-full shrink-0" style="background: {rk.team.primaryColor || '#6366f1'};"></span>
+                      <span class="font-extrabold text-white text-sm sm:text-base truncate">{rk.name}</span>
+                      <span class="text-xs text-slate-400 hidden sm:inline">({rk.owner})</span>
+                    </div>
+
+                    <div class="flex items-center gap-3 shrink-0">
+                      <div class="w-24 sm:w-40 h-2 rounded-full bg-slate-800 overflow-hidden hidden sm:block">
+                        <div
+                          class="h-full bg-gradient-to-r from-indigo-500 to-amber-400 rounded-full transition-all duration-700"
+                          style="width: {(rk.titleChance / (verdict.champion.titleChance || 1)) * 100}%"
+                        ></div>
+                      </div>
+                      <span class="font-mono font-black text-sm text-amber-400">
+                        {rk.titleChance}%
+                      </span>
+                      <span class="text-slate-500 group-open:rotate-90 transition transform">▶</span>
+                    </div>
+                  </summary>
+
+                  <div class="pt-4 mt-3 border-t border-slate-800/80 space-y-4 text-xs">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                        <span class="text-[10px] text-slate-500 uppercase font-bold block">Playoff Chance</span>
+                        <span class="text-sm font-black text-white font-mono">{rk.playoffChance}%</span>
+                      </div>
+                      <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                        <span class="text-[10px] text-slate-500 uppercase font-bold block">Expected Wins</span>
+                        <span class="text-sm font-black text-white font-mono">{rk.expectedWins} / 14</span>
+                      </div>
+                      <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                        <span class="text-[10px] text-slate-500 uppercase font-bold block">Batting Rating</span>
+                        <span class="text-sm font-black text-indigo-300 font-mono">{rk.battingRating} (Rank #{rk.battingRank})</span>
+                      </div>
+                      <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                        <span class="text-[10px] text-slate-500 uppercase font-bold block">Bowling Rating</span>
+                        <span class="text-sm font-black text-emerald-400 font-mono">{rk.bowlingRating} (Rank #{rk.bowlingRank})</span>
+                      </div>
+                    </div>
+
+                    <p class="text-slate-300 leading-relaxed">
+                      Expected to outscore the league average by <strong class="text-white font-mono">{rk.runsEdge >= 0 ? '+' : ''}{rk.runsEdge} runs per match</strong>. Batting lineup adds {rk.battingValue >= 0 ? '+' : ''}{rk.battingValue} runs and bowling attack saves {rk.bowlingValue >= 0 ? '+' : ''}{rk.bowlingValue} runs. Standout match winner: <strong class="text-amber-300">{rk.bestPlayer.name} ({rk.bestPlayer.rating})</strong>.
+                    </p>
+
+                    <!-- 11-man Table -->
+                    <div class="overflow-x-auto">
+                      <table class="w-full text-left text-xs">
+                        <thead>
+                          <tr class="border-b border-slate-800 text-slate-500 text-[10px] uppercase font-bold">
+                            <th class="py-1.5 px-2">#</th>
+                            <th class="py-1.5 px-2">Player</th>
+                            <th class="py-1.5 px-2">Role</th>
+                            <th class="py-1.5 px-2 text-right">Bat Rating</th>
+                            <th class="py-1.5 px-2 text-right">Bowl Rating</th>
+                          </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/40">
+                          {#each rk.xi as player, xiIdx}
+                            <tr>
+                              <td class="py-1.5 px-2 text-slate-500 font-mono">{xiIdx + 1}</td>
+                              <td class="py-1.5 px-2 font-bold text-white">{player.name}</td>
+                              <td class="py-1.5 px-2 text-slate-400">{player.role}</td>
+                              <td class="py-1.5 px-2 text-right font-mono text-indigo-300">{player.battingRating}</td>
+                              <td class="py-1.5 px-2 text-right font-mono text-emerald-400">{player.isBowler ? player.bowlingRating : '—'}</td>
+                            </tr>
+                          {/each}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </details>
+              {/each}
+            </div>
+          </div>
+        {:else}
+          <div class="p-8 text-center bg-slate-900 border border-slate-800 rounded-3xl space-y-3">
+            <Trophy size={36} class="text-amber-400 mx-auto" />
+            <h3 class="text-lg font-black text-white">Computing Auction Verdict…</h3>
+            <p class="text-xs text-slate-400 max-w-md mx-auto">
+              Running 10,000 Monte Carlo seasons across all assembled franchise squads to calculate title probability and trophy chances.
+            </p>
+            {#if store.isHost}
+              <button
+                onclick={handleRerunVerdict}
+                class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold transition shadow-sm cursor-pointer"
+              >
+                Run Simulation Now
+              </button>
+            {/if}
+          </div>
+        {/if}
+
       </div>
     {/if}
 

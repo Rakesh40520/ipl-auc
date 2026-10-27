@@ -525,18 +525,17 @@ export class AuctionStore {
 
   updateViewBasedOnState() {
     if (this.view === 'home') return;
+    // Preserve manual user navigation between views (e.g. squads <-> auction <-> results)
+    if (this.view === 'squads' || this.view === 'auction' || this.view === 'results') {
+      return;
+    }
+
     if (this.roomState.status === 'completed' || this.roomState.status === 'playing_xi_selection') {
-      if (this.view === 'auction' || this.view === 'lobby' || !this.view) {
-        this.view = 'results';
-      }
+      this.view = 'results';
     } else if (this.roomState.status === 'lobby') {
-      if (this.view !== 'squads') {
-        this.view = 'lobby';
-      }
+      this.view = 'lobby';
     } else {
-      if (this.view !== 'squads' && this.view !== 'results') {
-        this.view = 'auction';
-      }
+      this.view = 'auction';
     }
   }
 

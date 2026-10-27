@@ -111,15 +111,20 @@
   <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900 border border-slate-800 px-4 sm:px-5 py-3 rounded-2xl shadow-sm">
     <div class="flex items-center gap-3">
       <span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-        {#if store.roomState.isAcceleratedRound}
-          Accelerated Round
+        {#if store.roomState.isAcceleratedRound || (store.roomState.round && store.roomState.round > 1)}
+          ⚡ Unsold Repeat Round {store.roomState.round || 2}
         {:else}
-          {player?.setName || 'Marquee Set'}
+          🏷️ {player?.set ? `[${player.set}] ` : ''}{player?.setName || 'Marquee Set'}
         {/if}
       </span>
       <span class="text-xs text-slate-300">
-        Player {store.roomState.currentPlayerIndex + 1} of {store.roomState.totalPlayers || 188}
+        Player {store.roomState.currentPlayerIndex + 1} of {store.roomState.totalPlayers || 179}
       </span>
+      {#if store.roomState.isAcceleratedRound}
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
+          Unsold Player Returning
+        </span>
+      {/if}
     </div>
 
     <!-- Status / Round Indicator -->

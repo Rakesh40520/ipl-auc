@@ -111,6 +111,25 @@
       </p>
     </div>
 
+    <!-- Quick Back to Auction / Verdict Buttons -->
+    <div class="flex items-center gap-2">
+      <button
+        onclick={() => store.view = (store.roomState.status === 'lobby' ? 'lobby' : 'auction')}
+        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition shadow-sm cursor-pointer"
+      >
+        <span>← Back to {store.roomState.status === 'lobby' ? 'Lobby' : 'Auction'}</span>
+      </button>
+      {#if store.roomState.status === 'completed' || store.roomState.verdict}
+        <button
+          onclick={() => store.view = 'results'}
+          class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 text-xs font-bold transition shadow-sm cursor-pointer border border-slate-700"
+        >
+          <Award size={13} />
+          <span>Verdict & Winner</span>
+        </button>
+      {/if}
+    </div>
+
     <!-- Quick Mobile Franchise Selector Dropdown -->
     <div class="sm:hidden w-full">
       <label for="team-select" class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
