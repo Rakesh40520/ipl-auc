@@ -38,6 +38,7 @@ export const AuthProvider = ({ children }) => {
   });
 
   useEffect(() => {
+    if (!auth) return;
     try {
       const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
@@ -52,6 +53,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const loginWithGoogle = async () => {
+    if (!auth) return user;
     try {
       const result = await signInWithPopup(auth, googleProvider);
       setUser(result.user);
@@ -64,6 +66,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   const loginAsGuest = async (displayName) => {
+    if (!auth) {
+      const guestUser = {
+        uid: user?.uid || 'guest_' + Math.random().toString(36).substring(2, 9),
+        displayName: displayName || 'Manager',
+        isAnonymous: true
+      };
+      setUser(guestUser);
+      try { localStorage.setItem('ipl_user', JSON.stringify(guestUser)); } catch { /* ok */ }
+      return guestUser;
+    }
     try {
       const result = await signInAnonymously(auth);
       await updateProfile(result.user, { displayName });
@@ -84,9 +96,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    try {
-      await signOut(auth);
-    } catch { /* ok */ }
+    if (auth) {
+      try {
+        await signOut(auth);
+      } catch { /* ok */ }
+    }
     setUser(null);
     try { localStorage.removeItem('ipl_user'); } catch { /* ok */ }
   };

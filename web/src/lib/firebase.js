@@ -10,25 +10,41 @@ import {
 } from "./auctionServers";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  // Primary project: Auth, Firestore and the first Realtime Database.
-  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDummyKeyForLivePreviewDisplay1234",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "crick-auction-live.firebaseapp.com",
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || "https://crick-auction-live-default-rtdb.firebaseio.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "crick-auction-live",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "crick-auction-live.appspot.com",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789012",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789012:web:abcdef1234567890",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-ABCDEF1234"
 };
 
-const app = initializeApp(firebaseConfig);
+let app = null;
+let auth = null;
+let db = null;
 
-export const auth = getAuth(app);
-export const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({
-    tabManager: persistentMultipleTabManager()
-  })
-});
+try {
+  app = initializeApp(firebaseConfig);
+  try {
+    auth = getAuth(app);
+  } catch (err) {
+    console.warn('[firebase] Auth init bypassed:', err?.message);
+  }
+  try {
+    db = initializeFirestore(app, {
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+      })
+    });
+  } catch (err) {
+    console.warn('[firebase] Firestore init bypassed:', err?.message);
+  }
+} catch (err) {
+  console.warn('[firebase] App init bypassed:', err?.message);
+}
+
+export { app, auth, db };
 // Defer Analytics until after first paint — removes it from the critical path
 let analytics = null;
 if (typeof window !== 'undefined') {
@@ -91,7 +107,12 @@ function createOverrideDatabase(databaseURL, appName, envPrefix) {
   }
 }
 
-const primaryRtdb   = createOverrideDatabase(primaryDatabaseURL,   PRIMARY_APP_NAME,   'VITE_RTDB_A') || getDatabase(app);
+let primaryRtdb = null;
+try {
+  primaryRtdb = createOverrideDatabase(primaryDatabaseURL, PRIMARY_APP_NAME, 'VITE_RTDB_A') || (app ? getDatabase(app) : null);
+} catch (e) {
+  console.warn('[firebase] RTDB primary bypassed:', e?.message);
+}
 const secondaryRtdb = createOverrideDatabase(secondaryDatabaseURL, SECONDARY_APP_NAME, 'VITE_RTDB_B');
 
 export const SECONDARY_SERVER_ENABLED = Boolean(secondaryRtdb);

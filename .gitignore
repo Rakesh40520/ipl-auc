@@ -16,6 +16,7 @@ data/*.sqlite*
 .env
 .env.local
 .env.*.local
+!web/.env
 
 # Logs
 logs/
