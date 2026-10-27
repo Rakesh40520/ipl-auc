@@ -1,22 +1,31 @@
-import { defineConfig } from 'vite';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
-import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    react(),
     tailwindcss(),
-    svelte()
   ],
-  server: {
-    port: 5173,
-    proxy: {
-      '/socket.io': {
-        target: 'http://localhost:3000',
-        ws: true
-      },
-      '/api': {
-        target: 'http://localhost:3000'
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('firebase')) {
+              return 'firebase-vendor';
+            }
+            if (id.includes('framer-motion') || id.includes('lucide-react')) {
+              return 'icons-motion';
+            }
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'react-vendor';
+            }
+          }
+        }
       }
-    }
+    },
+    chunkSizeWarningLimit: 1200
   }
-});
+})

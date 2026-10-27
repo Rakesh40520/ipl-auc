@@ -1,23 +1,38 @@
 {
-  "name": "web",
+  "name": "ipl-auction",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@supabase/supabase-js": "^2.116.0",
+    "@tailwindcss/vite": "^4.2.2",
+    "canvas-confetti": "^1.9.4",
+    "firebase": "^12.11.0",
+    "framer-motion": "^12.38.0",
+    "html-to-image": "^1.11.13",
+    "lucide-react": "^1.0.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.2"
   },
   "devDependencies": {
-    "@lucide/svelte": "^1.59.0",
-    "@sveltejs/vite-plugin-svelte": "^7.3.0",
-    "@tailwindcss/vite": "^4.3.3",
-    "canvas-confetti": "^1.9.4",
-    "lucide-svelte": "^1.0.1",
-    "socket.io-client": "^4.8.4",
-    "svelte": "^5.57.0",
-    "tailwindcss": "^4.3.3",
-    "vite": "^8.3.0",
-    "zod": "^4.6.7"
+    "@eslint/js": "^9.39.4",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.4.0",
+    "tailwindcss": "^4.2.2",
+    "vite": "^6.0.0"
   }
 }
