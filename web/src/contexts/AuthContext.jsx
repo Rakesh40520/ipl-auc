@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-
 import { auth } from '../lib/firebase';
 import {
   onAuthStateChanged,
@@ -9,13 +8,10 @@ import {
   signInAnonymously,
   updateProfile
 } from 'firebase/auth';
-import { motion, AnimatePresence } from 'framer-motion';
-
-import PageLoader from '../components/PageLoader';
 
 const AuthContext = createContext({
   user: null,
-  loading: true,
+  loading: false,
   loginWithGoogle: async () => { },
   loginAsGuest: async () => { },
   logout: async () => { }
@@ -25,68 +21,79 @@ const googleProvider = new GoogleAuthProvider();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    // AuthProvider check failed
-  }
   return context || {};
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const hasSeen = sessionStorage.getItem('ipl_has_seen_loader');
-      if (hasSeen) return false;
-    }
-    return true;
+  const [user, setUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem('ipl_user');
+      if (stored) return JSON.parse(stored);
+    } catch { /* ok */ }
+    return {
+      uid: 'guest_' + Math.random().toString(36).substring(2, 9),
+      displayName: 'Manager',
+      isAnonymous: true
+    };
   });
 
-  const markLoaderSeen = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('ipl_has_seen_loader', 'true');
+  useEffect(() => {
+    try {
+      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        if (firebaseUser) {
+          setUser(firebaseUser);
+          try { localStorage.setItem('ipl_user', JSON.stringify(firebaseUser)); } catch { /* ok */ }
+        }
+      });
+      return unsubscribe;
+    } catch (err) {
+      console.warn("Auth state listener:", err);
     }
-    setLoading(false);
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      const isLandingPage = typeof window !== 'undefined' && window.location.pathname === '/';
-      if (!isLandingPage) {
-        setTimeout(markLoaderSeen, 1500);
-      }
-    });
-
-    return unsubscribe;
-  }, [markLoaderSeen]);
-
-  // Listen to manual skip/continue event from PageLoader
-  useEffect(() => {
-    const handleSkip = () => {
-      markLoaderSeen();
-    };
-    document.addEventListener('skipIntro', handleSkip);
-    return () => document.removeEventListener('skipIntro', handleSkip);
-  }, [markLoaderSeen]);
-
-
   const loginWithGoogle = async () => {
-    const result = await signInWithPopup(auth, googleProvider);
-    return result.user;
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      setUser(result.user);
+      try { localStorage.setItem('ipl_user', JSON.stringify(result.user)); } catch { /* ok */ }
+      return result.user;
+    } catch (err) {
+      console.warn("Google login unavailable:", err);
+      return user;
+    }
   };
 
   const loginAsGuest = async (displayName) => {
-    const result = await signInAnonymously(auth);
-    await updateProfile(result.user, { displayName });
-    setUser({ ...result.user, displayName });
-    return result.user;
+    try {
+      const result = await signInAnonymously(auth);
+      await updateProfile(result.user, { displayName });
+      const guestUser = { ...result.user, displayName: displayName || 'Manager' };
+      setUser(guestUser);
+      try { localStorage.setItem('ipl_user', JSON.stringify(guestUser)); } catch { /* ok */ }
+      return guestUser;
+    } catch (err) {
+      const guestUser = {
+        uid: user?.uid || 'guest_' + Math.random().toString(36).substring(2, 9),
+        displayName: displayName || 'Manager',
+        isAnonymous: true
+      };
+      setUser(guestUser);
+      try { localStorage.setItem('ipl_user', JSON.stringify(guestUser)); } catch { /* ok */ }
+      return guestUser;
+    }
   };
 
-  const logout = () => signOut(auth);
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch { /* ok */ }
+    setUser(null);
+    try { localStorage.removeItem('ipl_user'); } catch { /* ok */ }
+  };
 
   const value = {
     user,
-    loading,
+    loading: false,
     loginWithGoogle,
     loginAsGuest,
     logout
@@ -94,28 +101,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      <AnimatePresence mode="wait">
-        {loading ? (
-          <motion.div
-            key="loader"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeIn" }}
-            className="fixed inset-0 z-[9999]"
-          >
-            <PageLoader />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="content"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-          >
-            {children}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {children}
     </AuthContext.Provider>
   );
 };
