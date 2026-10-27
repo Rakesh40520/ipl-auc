@@ -8,7 +8,7 @@
     "accentColor": "#FFE14D",
     "textColor": "#1A1500",
     "titles": 5,
-    "logo": "https://documents.iplt20.com/ipl/CSK/logos/Logooutline/CSKoutline.png"
+    "logo": "/logos/CSK.png"
   },
   {
     "code": "MI",
@@ -19,7 +19,7 @@
     "accentColor": "#D1AB3E",
     "textColor": "#FFFFFF",
     "titles": 5,
-    "logo": "https://documents.iplt20.com/ipl/MI/Logos/Logooutline/MIoutline.png"
+    "logo": "/logos/MI.png"
   },
   {
     "code": "RCB",
@@ -30,7 +30,7 @@
     "accentColor": "#E0A922",
     "textColor": "#FFFFFF",
     "titles": 0,
-    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/d/d4/Royal_Challengers_Bengaluru_Logo.svg/960px-Royal_Challengers_Bengaluru_Logo.svg.png"
+    "logo": "/logos/RCB.png"
   },
   {
     "code": "KKR",
@@ -41,7 +41,7 @@
     "accentColor": "#F3C836",
     "textColor": "#FFFFFF",
     "titles": 3,
-    "logo": "https://documents.iplt20.com/ipl/KKR/Logos/Logooutline/KKRoutline.png"
+    "logo": "/logos/KKR.png"
   },
   {
     "code": "SRH",
@@ -52,7 +52,7 @@
     "accentColor": "#FF8F3D",
     "textColor": "#FFFFFF",
     "titles": 1,
-    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/5/51/Sunrisers_Hyderabad_Logo.svg/1280px-Sunrisers_Hyderabad_Logo.svg.png"
+    "logo": "/logos/SRH.png"
   },
   {
     "code": "DC",
@@ -63,7 +63,7 @@
     "accentColor": "#4DABF7",
     "textColor": "#FFFFFF",
     "titles": 0,
-    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/Delhi_Capitals.svg/960px-Delhi_Capitals.svg.png"
+    "logo": "/logos/DC.png"
   },
   {
     "code": "RR",
@@ -74,7 +74,7 @@
     "accentColor": "#F783AC",
     "textColor": "#FFFFFF",
     "titles": 1,
-    "logo": "https://static.vecteezy.com/system/resources/previews/075/244/952/non_2x/rajasthan-royals-logo-rr-logo-icon-on-transparent-background-free-png.png"
+    "logo": "/logos/RR.png"
   },
   {
     "code": "PBKS",
@@ -85,7 +85,7 @@
     "accentColor": "#D1AB3E",
     "textColor": "#FFFFFF",
     "titles": 0,
-    "logo": "https://documents.iplt20.com/ipl/PBKS/Logos/Logooutline/PBKSoutline.png"
+    "logo": "/logos/PBKS.png"
   },
   {
     "code": "LSG",
@@ -96,7 +96,7 @@
     "accentColor": "#FF5E3A",
     "textColor": "#FFFFFF",
     "titles": 0,
-    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/3/34/Lucknow_Super_Giants_Logo.svg/1920px-Lucknow_Super_Giants_Logo.svg.png"
+    "logo": "/logos/LSG.png"
   },
   {
     "code": "GT",
@@ -107,6 +107,6 @@
     "accentColor": "#D1AB3E",
     "textColor": "#FFFFFF",
     "titles": 1,
-    "logo": "https://documents.iplt20.com/ipl/GT/Logos/Logooutline/GToutline.png"
+    "logo": "/logos/GT.png"
   }
 ]

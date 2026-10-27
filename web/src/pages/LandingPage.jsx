@@ -127,52 +127,15 @@ const LandingPage = () => {
     }
   }, []);
 
-  // Fetch Public Lobbies directly from Supabase (0 RTDB bandwidth download cost)
+  // Fetch Public Lobbies directly from server API
   const fetchPublicLobbies = async () => {
     setLobbiesLoading(true);
     try {
-      if (supabase) {
-        const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
-        const threeHoursAgoISO = new Date(
-          Date.now() - THREE_HOURS_MS,
-        ).toISOString();
-
-        const { data: supabaseRooms, error } = await supabase
-          .from("auctions")
-          .select("*")
-          .in("status", ["waiting", "active"])
-          .eq("is_public", true)
-          .eq("host_online", true)
-          .gte("created_at", threeHoursAgoISO)
-          .order("created_at", { ascending: false })
-          
-        if (!error && supabaseRooms && supabaseRooms.length > 0) {
-          const list = supabaseRooms.map((r) => {
-            const players = r.players || [];
-            const uniquePlayers = [];
-            const seenIds = new Set();
-            players.forEach((p) => {
-              const pid = p?.id || p?.userId;
-              if (pid && !seenIds.has(pid)) {
-                seenIds.add(pid);
-                uniquePlayers.push(p);
-              }
-            });
-
-            const host =
-              uniquePlayers.find((p) => p.isHost) || uniquePlayers[0];
-            return {
-              roomId: r.id,
-              server: getAuctionServer(r),
-              hostName: r.host_name || host?.name || "Manager",
-              status: r.status,
-              auctionType: r.auction_type || "mega",
-              players: uniquePlayers,
-              squadLimit: toFiniteNumber(r.squad_limit, 25),
-              settings: r.settings || {},
-            };
-          });
-          setPublicRooms(list);
+      const res = await fetch('/api/public-rooms');
+      if (res.ok) {
+        const rooms = await res.json();
+        if (Array.isArray(rooms)) {
+          setPublicRooms(rooms);
           setLobbiesLoading(false);
           return;
         }

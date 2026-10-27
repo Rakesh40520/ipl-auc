@@ -63,6 +63,29 @@ fastify.post('/api/rooms', async (req, reply) => {
   return result;
 });
 
+fastify.get('/api/public-rooms', async () => {
+  const rooms = [];
+  for (const [code, engine] of roomManager.activeRooms.entries()) {
+    const snap = engine.getStateSnapshot();
+    rooms.push({
+      roomId: code,
+      hostName: snap.hostName,
+      status: snap.status === 'lobby' ? 'waiting' : snap.status,
+      auctionType: 'mega',
+      players: snap.teams.filter(t => t.userName).map(t => ({
+        id: t.userToken || t.code,
+        name: t.userName,
+        team: t.code,
+        teamName: t.name,
+        isHost: t.userToken === snap.hostToken
+      })),
+      squadLimit: 25,
+      settings: { budget: (snap.config?.defaultPurse || 10000) / 100, bidTimer: snap.config?.timerDuration || 10 }
+    });
+  }
+  return rooms;
+});
+
 fastify.get('/api/rooms/:code', async (req, reply) => {
   const engine = roomManager.getRoom(req.params.code);
   if (!engine) {

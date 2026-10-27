@@ -32,11 +32,7 @@ export const db = initializeFirestore(app, {
 // Defer Analytics until after first paint — removes it from the critical path
 let analytics = null;
 if (typeof window !== 'undefined') {
-  window.addEventListener('load', () => {
-    import('firebase/analytics').then(({ getAnalytics }) => {
-      analytics = getAnalytics(app);
-    });
-  }, { once: true });
+  // analytics disabled
 }
 export { analytics };
 
