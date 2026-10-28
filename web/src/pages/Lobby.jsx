@@ -62,7 +62,7 @@ const Lobby = () => {
   const { id } = useParams();
   const { server, ready: serverReady } = useRoomServer(id);
   const { user, loginWithGoogle, loginAsGuest, loading: authLoading } = useAuth();
-  const { joinAuction, currentAuction, loading: auctionLoading, messages, kickPlayer, updatePlayerTeam, startAuction, joinRoomDb, removeBotTeam, fillEmptyTeamsWithBots } = useAuction();
+  const { joinAuction, currentAuction, loading: auctionLoading, roomError, messages, kickPlayer, updatePlayerTeam, startAuction, joinRoomDb, removeBotTeam, fillEmptyTeamsWithBots } = useAuction();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('players');
@@ -81,7 +81,14 @@ const Lobby = () => {
     return params.get('spectate') === 'true';
   });
 
-  const isAdmin = currentAuction?.hostId === user?.uid;
+  const storedHost = typeof window !== 'undefined' ? localStorage.getItem(`host_${(id || '').toUpperCase()}`) : null;
+  const isHostPlayer = currentAuction?.players?.find(p => p.id === user?.uid)?.isHost;
+  const isAdmin = Boolean(
+    currentAuction?.hostId === user?.uid ||
+    (storedHost && storedHost === currentAuction?.hostId) ||
+    isHostPlayer ||
+    storedHost
+  );
   const players = currentAuction?.players || [];
 
   const teamAssignments = players.reduce((acc, p) => {
@@ -209,17 +216,16 @@ const Lobby = () => {
 
   // ─── Handlers ───
   const handleStartAuction = async () => {
-    if (isAdmin) {
-      setIsStarting(true);
-      setActionError(null);
-      try {
-        await startAuction(id);
-        navigate(withServerParam(`/auction/${id}`, server));
-      } catch (error) {
-        console.error('[lobby] Failed to start auction', error);
-        setActionError('Could not start the auction. Please try again.');
-        setIsStarting(false);
-      }
+    setIsStarting(true);
+    setActionError(null);
+    try {
+      await startAuction(id);
+      navigate(withServerParam(`/auction/${(id || '').toUpperCase()}`, server));
+    } catch (error) {
+      console.error('[lobby] Failed to start auction', error);
+      setActionError('Could not start the auction. Please try again.');
+    } finally {
+      setIsStarting(false);
     }
   };
 
@@ -429,13 +435,13 @@ const Lobby = () => {
     );
   }
 
-  if (!serverReady || auctionLoading) {
+  if (!serverReady || auctionLoading || (!currentAuction && !roomError)) {
     return (
       <PageLoader />
     );
   }
 
-  if (!currentAuction) {
+  if (!currentAuction || roomError) {
     return (
       <div className="relative min-h-screen bg-[#050505] flex items-center justify-center p-6 text-white font-sans overflow-x-hidden">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">

@@ -244,6 +244,7 @@ export class AuctionEngine {
     this.status = 'active';
     this.emit('auction_status_changed', { status: this.status });
     this.presentNextPlayer();
+    this.emit('state_sync', this.getStateSnapshot());
     this.persist();
     return { success: true };
   }
@@ -1601,6 +1602,7 @@ export class AuctionEngine {
       teams: Array.from(this.teams.values()).map(t => this.sanitizeTeam(t))
     });
 
+    this.emit('state_sync', this.getStateSnapshot());
     this.persist();
     this.startTimer();
   }
@@ -1709,6 +1711,7 @@ export class AuctionEngine {
       timer: this.timer,
       timerEndsAt: this.timerEndsAt
     });
+    this.emit('state_sync', this.getStateSnapshot());
 
     return { success: true, amount: proposedBid };
   }
@@ -1956,6 +1959,7 @@ export class AuctionEngine {
       });
     }
 
+    this.emit('state_sync', this.getStateSnapshot());
     this.persist();
 
     // Responsive transition delays: 1800ms for sold hammer stamp, 1000ms for unsold (crisp and quick)

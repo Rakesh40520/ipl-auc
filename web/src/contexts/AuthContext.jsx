@@ -30,11 +30,13 @@ export const AuthProvider = ({ children }) => {
       const stored = localStorage.getItem('ipl_user');
       if (stored) return JSON.parse(stored);
     } catch { /* ok */ }
-    return {
+    const guestUser = {
       uid: 'guest_' + Math.random().toString(36).substring(2, 9),
       displayName: 'Manager',
       isAnonymous: true
     };
+    try { localStorage.setItem('ipl_user', JSON.stringify(guestUser)); } catch { /* ok */ }
+    return guestUser;
   });
 
   useEffect(() => {
