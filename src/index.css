@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #07080b;
+    color: #f3f4f6;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom minimal scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #07080b;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1f2430;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3b82f6;
+  }
+}
+
+/* Supaste Floating Glass Pill Styling */
+.supaste-pill {
+  background: rgba(15, 17, 23, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+}
+
+.supaste-card {
+  background: rgba(17, 20, 28, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.supaste-card:hover {
+  background: rgba(22, 26, 38, 0.8);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
+}
+
+/* DG Cinema Cinematic Letterbox & Film Grain */
+.cinema-letterbox {
+  box-shadow: inset 0 60px 100px -30px rgba(0, 0, 0, 0.9), inset 0 -60px 100px -30px rgba(0, 0, 0, 0.9);
+}
+
+.cinema-frame {
+  position: relative;
+  overflow: hidden;
+}
+
+.cinema-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(7, 8, 11, 0) 50%, rgba(7, 8, 11, 0.85) 100%);
+  pointer-events: none;
+}
+
+/* Subtle glow */
+.glow-accent {
+  box-shadow: 0 0 35px rgba(28, 105, 212, 0.25);
+}
